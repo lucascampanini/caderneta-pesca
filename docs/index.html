@@ -1,0 +1,2228 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="Isca, montagem e equipamento para cada peixe do Pantanal, conforme a condição do rio."><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Caderneta Pantaneira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: app de bolso — cabeçalho fino, abas no topo (desktop) ou barra inferior (celular),
+   painel de condições à esquerda e resultado à direita no desktop, empilhados no celular. */
+:root {
+  --bg: #edf0e8; --surface: #f9faf6; --sunk: #e2e7dc; --ink: #18221c; --muted: #536159; --rule: #c9d2c4;
+  --accent: #5b3fc4; --accent-2: #ece7fb; --accent-ink: #ffffff;
+  --gold: #a86f08; --gold-2: #f6e8c6;
+  --ok: #2c7a4b; --ok-2: #ddf0e3; --warn: #9a610f; --warn-2: #f8ebd2; --bad: #b0412c; --bad-2: #f6dfd9;
+  --l1: #c99a06; --l1b: #8f5e00; --l2: #2b7fa3; --metal: #6c7a80; --lead: #5c6367; --rod: #3b2f2a; --bead: #c7312b; --float: #e5532d; --floatb: #f7f6f1;
+  --f-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --f-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1411; --surface: #161f1a; --sunk: #1e2a23; --ink: #e2e9e1; --muted: #98a79d; --rule: #2d3a32;
+    --accent: #a993ff; --accent-2: #262044; --accent-ink: #120d26;
+    --gold: #e6b13c; --gold-2: #392c10;
+    --ok: #63c48a; --ok-2: #173324; --warn: #e6a948; --warn-2: #3a2a10; --bad: #ec7d66; --bad-2: #3d1d16;
+    --l1: #efc12c; --l1b: #ff9f43; --l2: #5bb8de; --metal: #a6b3b8; --lead: #8f979b; --rod: #c4a68f; --bead: #ff6b5e; --float: #ff7a52; --floatb: #e9e8e1;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1411; --surface: #161f1a; --sunk: #1e2a23; --ink: #e2e9e1; --muted: #98a79d; --rule: #2d3a32;
+  --accent: #a993ff; --accent-2: #262044; --accent-ink: #120d26;
+  --gold: #e6b13c; --gold-2: #392c10;
+  --ok: #63c48a; --ok-2: #173324; --warn: #e6a948; --warn-2: #3a2a10; --bad: #ec7d66; --bad-2: #3d1d16;
+  --l1: #efc12c; --l1b: #ff9f43; --l2: #5bb8de; --metal: #a6b3b8; --lead: #8f979b; --rod: #c4a68f; --bead: #ff6b5e; --float: #ff7a52; --floatb: #e9e8e1;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15.5px; line-height: 1.5; padding-inline: 16px; padding-block: 0 96px; }
+@media (min-width: 900px) { body { padding-block: 0 40px; } }
+a { color: var(--accent); }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 800; letter-spacing: .01em; line-height: 1.05; text-wrap: balance; margin: 0; }
+.wrap { max-width: 1180px; margin: 0 auto; }
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.eyebrow { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+
+/* Cabeçalho */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-block: 18px 12px; }
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand h1 { font-size: clamp(30px, 6vw, 42px); text-transform: uppercase; }
+.brand h1 span { color: var(--accent); }
+.brand p { margin: 2px 0 0; font-size: 13.5px; color: var(--muted); }
+.piracema { font-family: var(--f-mono); font-size: 12.5px; padding: 6px 10px; border-radius: 999px; background: var(--gold-2); color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent); }
+.piracema.on { background: var(--bad-2); color: var(--bad); border-color: color-mix(in srgb, var(--bad) 40%, transparent); }
+
+/* Abas */
+.tabs { display: flex; gap: 4px; border-bottom: 1.5px solid var(--rule); margin-bottom: 18px; }
+.tabs button { display: flex; align-items: center; gap: 8px; background: none; border: 0; padding: 10px 14px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1.5px; }
+.tabs button svg { width: 20px; height: 20px; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+@media (max-width: 899px) {
+  .tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; margin: 0; border: 0; border-top: 1px solid var(--rule); background: var(--surface); padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px)); justify-content: space-around; box-shadow: 0 -6px 18px rgba(0,0,0,.08); }
+  .tabs button { flex-direction: column; gap: 2px; font-size: 11px; padding: 6px 4px; border-bottom: 0; flex: 1; min-width: 0; }
+  .tabs button[aria-selected="true"] { color: var(--accent); }
+  .tabs button span { white-space: nowrap; }
+}
+
+/* Blocos */
+.panel { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r); padding: 16px; min-width: 0; }
+.sec { display: grid; gap: 10px; }
+.sec + .sec { margin-top: 18px; }
+.sec h2 { font-size: 24px; }
+.sec h3 { font-size: 19px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+/* Condições */
+.pescar { display: grid; gap: 18px; }
+@media (min-width: 900px) { .pescar { grid-template-columns: 360px minmax(0, 1fr); align-items: start; } .controls { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); max-height: calc(100vh - 24px); overflow: auto; } }
+.controls { display: grid; gap: 14px; }
+.group { display: grid; gap: 6px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.group legend { padding: 0; margin-bottom: 6px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--rule); background: var(--surface); border-radius: 999px; padding: 6px 12px; font-size: 14px; cursor: pointer; line-height: 1.2; }
+.chip small { color: var(--muted); font-size: 11.5px; }
+.chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-2); color: var(--ink); font-weight: 700; }
+.chip .sw { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,.25); flex: none; }
+.species-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; }
+.sp-chip { flex: none; width: 104px; scroll-snap-align: start; border: 1.5px solid var(--rule); background: var(--sunk); border-radius: 10px; padding: 6px 6px 8px; cursor: pointer; display: grid; gap: 2px; text-align: center; }
+.sp-chip svg { width: 100%; height: 40px; }
+.sp-chip b { font-size: 13px; }
+.sp-chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-2); box-shadow: inset 0 0 0 1px var(--accent); }
+
+/* Resultado */
+.result { display: grid; gap: 16px; min-width: 0; }
+.hero { display: grid; gap: 14px; }
+@media (min-width: 640px) { .hero { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; } }
+.hero .art { background: var(--sunk); border-radius: 10px; padding: 10px; }
+.hero .art svg { width: 100%; height: auto; display: block; }
+.hero h2 { font-size: clamp(34px, 7vw, 48px); text-transform: uppercase; }
+.sci { font-style: italic; color: var(--muted); }
+.tag { display: inline-block; font-family: var(--f-mono); font-size: 11.5px; padding: 3px 8px; border-radius: 6px; background: var(--sunk); color: var(--muted); }
+.tag.rule { background: var(--gold-2); color: var(--gold); }
+.tag.exo { background: var(--accent-2); color: var(--accent); }
+
+.meter { display: grid; gap: 6px; }
+.meter .bar { height: 12px; border-radius: 6px; background: var(--sunk); overflow: hidden; position: relative; }
+.meter .bar i { position: absolute; inset: 0 auto 0 0; border-radius: 6px; background: var(--accent); }
+.meter .bar.b-otima i { background: var(--ok); } .meter .bar.b-boa i { background: color-mix(in srgb, var(--ok) 70%, var(--gold)); } .meter .bar.b-media i { background: var(--gold); } .meter .bar.b-baixa i { background: var(--bad); }
+.meter .v { display: flex; justify-content: space-between; align-items: baseline; }
+.meter .v b { font-family: var(--f-display); font-size: 28px; }
+.fatores { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 14px; }
+.fatores li { display: flex; gap: 8px; align-items: baseline; }
+.fatores li::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); transform: translateY(-1px); }
+.fatores li.neg::before { background: var(--bad); }
+
+.cols { display: grid; gap: 16px; }
+@media (min-width: 1040px) { .cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+
+.bait { display: grid; gap: 6px; }
+.bait-main { border-left: 4px solid var(--accent); padding: 4px 0 4px 12px; }
+.bait-main h3 { font-size: 24px; }
+.badge { display: inline-block; font-size: 11.5px; font-family: var(--f-mono); padding: 2px 7px; border-radius: 5px; background: var(--accent-2); color: var(--accent); vertical-align: middle; }
+.badge.nat { background: var(--ok-2); color: var(--ok); }
+.swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+.swatch { display: flex; align-items: center; gap: 6px; font-size: 13px; background: var(--sunk); padding: 4px 10px 4px 4px; border-radius: 999px; }
+.swatch i { width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(0,0,0,.3); display: block; }
+.alts { display: grid; gap: 8px; }
+.alt { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; font-size: 14px; }
+.alt b { font-size: 15px; }
+.alt .n { font-family: var(--f-display); font-size: 22px; color: var(--muted); grid-row: span 2; line-height: 1; }
+
+.rigbox { display: grid; gap: 12px; }
+@media (min-width: 640px) { .rigbox { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
+.rig-wrap { background: var(--sunk); border-radius: 10px; padding: 10px; overflow-x: auto; }
+svg.rig { width: 100%; min-width: 300px; height: auto; display: block; }
+.r-l1 { stroke: var(--l1); fill: none; } .r-l2 { stroke: var(--l2); fill: none; } .r-metal { stroke: var(--metal); } .r-metalf { fill: var(--metal); }
+.r-rod { stroke: var(--rod); } .r-lead { fill: var(--lead); } .r-bead { fill: var(--bead); } .r-knot { fill: var(--l1); stroke: var(--ink); stroke-width: 1; }
+.r-float { fill: var(--float); } .r-floatb { fill: var(--floatb); stroke: var(--metal); } .r-ink { stroke: var(--ink); }
+.r-lead-line { stroke: var(--muted); stroke-dasharray: 2 3; opacity: .7; }
+.r-t { font: 700 13px var(--f-body); fill: var(--ink); } .r-s { font: 11px var(--f-mono); fill: var(--muted); }
+.spec { width: 100%; border-collapse: collapse; font-size: 14px; }
+.spec th { text-align: left; font-weight: 700; padding: 7px 8px 7px 0; vertical-align: top; white-space: nowrap; color: var(--muted); font-size: 13px; }
+.spec td { padding: 7px 0; border-top: 1px solid var(--rule); }
+.spec tr:first-child td, .spec tr:first-child th { border-top: 0; }
+.spec tr th { border-top: 1px solid var(--rule); } .spec tr:first-child th { border-top: 0; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 22px; height: 3px; border-radius: 2px; display: inline-block; }
+
+.notes { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.linkbtn { background: none; border: 0; color: var(--accent); padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+
+/* Equipamento x recomendação */
+.match-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.match-head b { font-family: var(--f-display); font-size: 34px; }
+.comps { list-style: none; margin: 0; padding: 0; display: grid; }
+.comp { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 2px 10px; padding: 10px 0; border-top: 1px solid var(--rule); }
+.comp:first-child { border-top: 0; }
+.st { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 13px; grid-row: span 3; }
+.st.ok { background: var(--ok-2); color: var(--ok); } .st.perto { background: var(--warn-2); color: var(--warn); } .st.falta { background: var(--bad-2); color: var(--bad); } .st.info { background: var(--sunk); color: var(--muted); }
+.comp .need { font-size: 13px; color: var(--muted); font-family: var(--f-mono); }
+.comp .buy { font-size: 13px; display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* Botões */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1.5px solid var(--accent); background: var(--accent); color: var(--accent-ink); font-weight: 700; border-radius: 8px; padding: 9px 14px; cursor: pointer; text-decoration: none; }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn.small { padding: 6px 10px; font-size: 13.5px; }
+.btn.danger { border-color: var(--bad); color: var(--bad); background: transparent; }
+
+/* Peixes */
+.filters { margin-bottom: 14px; }
+.grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r); padding: 10px 12px 14px; display: grid; gap: 6px; cursor: pointer; text-align: left; }
+.card:hover { border-color: var(--accent); }
+.card .art { background: var(--sunk); border-radius: 8px; padding: 6px; aspect-ratio: 2 / 1; display: grid; place-items: center; max-width: 100%; }
+.card .art svg { width: 100%; height: 100%; }
+.card h3 { font-size: 24px; text-transform: uppercase; }
+.card p { margin: 0; font-size: 14px; color: var(--muted); }
+.detail { display: grid; gap: 16px; }
+.photo { border-radius: 10px; overflow: hidden; background: var(--sunk); }
+.photo img { display: block; width: 100%; height: auto; }
+.photo figcaption { font-size: 11.5px; color: var(--muted); padding: 6px 10px; }
+.hbars { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; align-items: end; height: 92px; }
+.hbars div { display: grid; gap: 4px; align-items: end; text-align: center; height: 100%; grid-template-rows: 1fr auto; }
+.hbars i { display: block; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 3px; align-self: end; }
+.hbars span { font-size: 11px; color: var(--muted); font-family: var(--f-mono); }
+.nivtab { width: 100%; border-collapse: collapse; font-size: 14px; }
+.nivtab th { text-align: left; padding: 7px 10px 7px 0; vertical-align: top; white-space: nowrap; }
+.nivtab td, .nivtab th { border-top: 1px solid var(--rule); }
+.nivtab tr:first-child td, .nivtab tr:first-child th { border-top: 0; }
+.nivtab td { padding: 7px 0; }
+
+/* Nós */
+.knots { display: grid; gap: 16px; }
+.knot-card { display: grid; gap: 10px; }
+.steps { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); counter-reset: s; }
+.step { background: var(--sunk); border-radius: 8px; padding: 8px 10px 10px; display: grid; gap: 6px; align-content: start; }
+.step svg { width: 100%; height: auto; }
+.step p { margin: 0; font-size: 14px; }
+.step p::before { counter-increment: s; content: counter(s) ". "; font-weight: 700; color: var(--accent); }
+.k-a { stroke: var(--l1); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.k-b { stroke: var(--l1b); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.k-c { stroke: var(--l2); stroke-width: 4; stroke-linecap: round; }
+.k-metal { stroke: var(--metal); }
+.k-dbl-o { stroke: var(--l1); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.k-dbl-i { stroke: var(--sunk); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.k-dot { fill: var(--l1b); } .k-dot2 { fill: var(--l2); }
+.k-arrow { stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 4 3; }
+.k-arrowhead { fill: var(--accent); }
+.k-blob { fill: var(--l1); stroke: var(--l1b); }
+
+/* Inventário */
+.inv { display: grid; gap: 18px; }
+@media (min-width: 900px) { .inv { grid-template-columns: minmax(0, 1fr) 380px; align-items: start; } }
+.form { display: grid; gap: 10px; }
+.fields { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); }
+.field { display: grid; gap: 4px; min-width: 0; }
+.field label { font-size: 13px; color: var(--muted); }
+.field input, .field select, textarea { width: 100%; border: 1.5px solid var(--rule); background: var(--bg); border-radius: 8px; padding: 8px 10px; min-width: 0; }
+.items { display: grid; gap: 16px; }
+.cat h3 { font-size: 20px; margin-bottom: 6px; }
+.item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--rule); }
+.item:first-of-type { border-top: 0; }
+.item .d { font-size: 13px; color: var(--muted); font-family: var(--f-mono); }
+.item .x { background: none; border: 1px solid var(--rule); border-radius: 6px; padding: 4px 9px; cursor: pointer; color: var(--muted); }
+.item .x:hover { color: var(--bad); border-color: var(--bad); }
+.ex { font-size: 11px; font-family: var(--f-mono); background: var(--gold-2); color: var(--gold); padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
+.save-state { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.save-state::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
+.save-state.cloud::before { background: var(--ok); }
+.cov { display: grid; gap: 8px; }
+.cov-row { display: grid; grid-template-columns: 110px minmax(0, 1fr) 44px; gap: 10px; align-items: center; font-size: 14px; cursor: pointer; background: none; border: 0; padding: 2px 0; text-align: left; }
+.cov-row .bar { height: 10px; background: var(--sunk); border-radius: 5px; overflow: hidden; }
+.cov-row .bar i { display: block; height: 100%; background: var(--ok); border-radius: 5px; }
+.cov-row .bar i.mid { background: var(--gold); } .cov-row .bar i.low { background: var(--bad); }
+.empty { text-align: center; padding: 26px 16px; display: grid; gap: 10px; justify-items: center; }
+.empty h3 { font-size: 24px; }
+
+.foot { margin-top: 28px; font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(86px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 9px 14px; border-radius: 8px; font-size: 14px; z-index: 40; }
+@media (min-width: 900px) { .toast { bottom: 24px; } }
+@media (prefers-reduced-motion: no-preference) { .meter .bar i, .cov-row .bar i { transition: width .35s ease; } }
+
+</style>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><div><h1>Caderneta <span>Pantaneira</span></h1><p>Pesca de água doce no Pantanal e em MS: isca, montagem e equipamento para cada condição do rio.</p></div></div>
+    <span class="piracema" id="pira"></span>
+  </header>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Seções"></nav>
+  <main>
+    <section id="v-pescar" role="tabpanel" aria-labelledby="tab-pescar">
+      <div class="pescar">
+        <aside class="panel controls" id="controls" aria-label="Condições da pescaria"></aside>
+        <div class="result" id="result" aria-live="polite"></div>
+      </div>
+    </section>
+    <section id="v-peixes" role="tabpanel" aria-labelledby="tab-peixes" hidden></section>
+    <section id="v-montagens" role="tabpanel" aria-labelledby="tab-montagens" hidden></section>
+    <section id="v-nos" role="tabpanel" aria-labelledby="tab-nos" hidden></section>
+    <section id="v-equip" role="tabpanel" aria-labelledby="tab-equip" hidden></section>
+  </main>
+  <footer class="foot">
+    <p style="margin:0">Regras de pesca mudam todo ano: confira o <a href="https://www.imasul.ms.gov.br" target="_blank" rel="noopener">Imasul</a> antes de sair. O índice de atividade é uma estimativa a partir de horário, temperatura, tempo, nível e cor da água.</p>
+    <p style="margin:0">Fontes: Imasul, Embrapa Pantanal, UEMS e guias de pesca esportiva. Ilustrações esquemáticas; use "Ver fotos reais" em cada peixe para conferir a identificação.</p>
+  </footer>
+</div>
+
+<script>
+/* ===== Dados: espécies, perfis de equipamento, iscas, nós, montagens ===== */
+
+const NIVEIS = [
+  { id: 'subindo', nome: 'Subindo', dica: 'repiquete, enchente' },
+  { id: 'cheio', nome: 'Cheio', dica: 'campo alagado' },
+  { id: 'baixando', nome: 'Baixando', dica: 'vazante' },
+  { id: 'seco', nome: 'Baixo e estável', dica: 'seca' }
+];
+const AGUAS = [
+  { id: 'clara', nome: 'Clara', sw: '#9fc9c4' },
+  { id: 'verde', nome: 'Esverdeada', sw: '#6f8f55' },
+  { id: 'barrenta', nome: 'Barrenta', sw: '#a2794a' }
+];
+const TEMPS = [
+  { id: 'frio', nome: 'Frio', dica: 'abaixo de 20 °C' },
+  { id: 'ameno', nome: 'Ameno', dica: '20 a 26 °C' },
+  { id: 'quente', nome: 'Quente', dica: 'acima de 26 °C' }
+];
+const CLIMAS = [
+  { id: 'sol', nome: 'Sol forte' },
+  { id: 'nublado', nome: 'Nublado' },
+  { id: 'chuva', nome: 'Chuva fina' },
+  { id: 'pre', nome: 'Frente fria chegando', dica: 'abafado, pressão caindo' },
+  { id: 'pos', nome: 'Pós-frente fria', dica: 'céu limpo, vento sul' }
+];
+const HORAS = [
+  { id: 'madrugada', nome: 'Madrugada' },
+  { id: 'amanhecer', nome: 'Amanhecer' },
+  { id: 'dia', nome: 'Meio do dia' },
+  { id: 'entardecer', nome: 'Entardecer' },
+  { id: 'noite', nome: 'Noite' }
+];
+const LOCAIS = [
+  { id: 'barco', nome: 'Barco' },
+  { id: 'barranco', nome: 'Barranco' }
+];
+const VARIANTES = [
+  { id: 'carretilha', nome: 'Carretilha' },
+  { id: 'molinete', nome: 'Molinete' }
+];
+
+/* Tipos de isca artificial (usados no inventário e na recomendação) */
+const ART_TIPOS = {
+  zara: 'Zara (stickbait)', helice: 'Hélice', popper: 'Popper', sapo: 'Sapo / frog',
+  meia: 'Meia-água (minnow)', crank: 'Crank / fundo', jig: 'Jig', shad: 'Shad de silicone',
+  colher: 'Colher', spinner: 'Spinner / rodadeira'
+};
+
+/* Cores de isca (cores físicas da isca, não do tema) */
+const CORES_ISCA = {
+  prata: { nome: 'Prata / cromado', sw: '#c9d0d4' },
+  osso: { nome: 'Osso / pérola', sw: '#ece4d2' },
+  natural: { nome: 'Natural (lambari)', sw: '#8fa7a0' },
+  transp: { nome: 'Transparente', sw: '#dfeef0' },
+  branco: { nome: 'Branco', sw: '#f7f7f4' },
+  dorsoverde: { nome: 'Dorso verde, barriga clara', sw: '#5f8a5a' },
+  dourado: { nome: 'Dourado', sw: '#d8a531' },
+  limao: { nome: 'Verde-limão / chartreuse', sw: '#c7e03a' },
+  fogo: { nome: 'Fogo (amarelo e laranja)', sw: '#f08a24' },
+  preto: { nome: 'Preto', sw: '#1e1e1e' },
+  roxo: { nome: 'Roxo', sw: '#5d3b8c' },
+  vermelho: { nome: 'Vermelho', sw: '#c7312b' },
+  laranja: { nome: 'Laranja', sw: '#f26b1d' },
+  amarelo: { nome: 'Amarelo', sw: '#f4cf2c' },
+  glow: { nome: 'Glow (fosforescente)', sw: '#d9f7b6' }
+};
+
+/* ---------- Perfis de equipamento ----------
+   Faixas: comp (m), lb (libras), tam (tamanho da carretilha/molinete),
+   anzol: escala numérica (4/0 = 4, 1/0 = 1, nº1 = 0, nº2 = -1, nº4 = -3).  */
+const PERFIS = {
+  'art-leve': {
+    nome: 'Isca artificial leve a média', rig: 'art-lider',
+    carretilha: {
+      vara: { tipo: 'carretilha', comp: [1.68, 1.83], lb: [12, 25], acao: 'rapida' },
+      reel: { tipo: ['perfil'], tam: [100, 150], txt: 'Perfil baixo 100–150, drag 5 kg+' },
+      linha: { tipo: 'multi', lb: [20, 30], txt: 'Multifilamento 8X 20–30 lb' },
+      lider: { tipo: 'fluor', lb: [30, 40], comp: '50–80 cm', txt: 'Fluorcarbono 30–40 lb, 50–80 cm' },
+      anzol: { modelo: 'offset', tam: [3, 5], txt: 'Garatéias da própria isca; anzol offset 3/0–5/0 no silicone', soSilicone: true },
+      chumbada: null, nos: ['fg', 'loop']
+    },
+    molinete: {
+      vara: { tipo: 'molinete', comp: [1.8, 1.98], lb: [8, 17], acao: 'rapida' },
+      reel: { tipo: ['molinete'], tam: [2500, 3000], txt: 'Molinete 2500–3000' },
+      linha: { tipo: 'multi', lb: [15, 20], txt: 'Multifilamento 15–20 lb' },
+      lider: { tipo: 'fluor', lb: [25, 30], comp: '60–100 cm', txt: 'Fluorcarbono 25–30 lb, 60–100 cm' },
+      anzol: { modelo: 'offset', tam: [2, 4], txt: 'Garatéias da própria isca; offset 2/0–4/0 no silicone', soSilicone: true },
+      chumbada: null, nos: ['fg', 'loop']
+    }
+  },
+  'art-ultra': {
+    nome: 'Isca artificial ultraleve', rig: 'art-lider',
+    carretilha: {
+      vara: { tipo: 'carretilha', comp: [1.68, 1.8], lb: [6, 14], acao: 'rapida' },
+      reel: { tipo: ['perfil'], tam: [100, 100], txt: 'Perfil baixo 100 com freio fino (BFS, se tiver)' },
+      linha: { tipo: 'multi', lb: [10, 15], txt: 'Multifilamento 10–15 lb' },
+      lider: { tipo: 'fluor', lb: [12, 16], comp: '80–120 cm', txt: 'Fluorcarbono 12–16 lb (0,28–0,30 mm)' },
+      anzol: null, chumbada: null, nos: ['fg', 'loop']
+    },
+    molinete: {
+      vara: { tipo: 'molinete', comp: [1.65, 1.8], lb: [4, 10], acao: 'rapida' },
+      reel: { tipo: ['molinete'], tam: [1000, 2000], txt: 'Molinete 1000–2000' },
+      linha: { tipo: 'multi', lb: [8, 12], txt: 'Multifilamento 8–12 lb ou mono 0,25 mm' },
+      lider: { tipo: 'fluor', lb: [10, 14], comp: '80–120 cm', txt: 'Fluorcarbono 10–14 lb' },
+      anzol: null, chumbada: null, nos: ['fg', 'loop']
+    }
+  },
+  'art-dourado': {
+    nome: 'Isca artificial com empate de aço', rig: 'art-aco',
+    carretilha: {
+      vara: { tipo: 'carretilha', comp: [1.68, 1.83], lb: [15, 30], acao: 'moderada' },
+      reel: { tipo: ['perfil'], tam: [150, 200], txt: 'Perfil baixo 150–200' },
+      linha: { tipo: 'multi', lb: [30, 50], txt: 'Multifilamento 30–50 lb' },
+      lider: { tipo: 'aco', lb: [30, 60], comp: '20–30 cm', txt: 'Empate de aço ou cabo flexível 30–60 lb, 20–30 cm' },
+      anzol: { modelo: 'garateia', tam: [1, 3], txt: 'Garatéias reforçadas 3X ou 4X no lugar das originais', soGarateia: true },
+      chumbada: null, nos: ['fg', 'palomar']
+    },
+    molinete: {
+      vara: { tipo: 'molinete', comp: [1.8, 2.1], lb: [15, 30], acao: 'moderada' },
+      reel: { tipo: ['molinete'], tam: [3000, 4000], txt: 'Molinete 3000–4000' },
+      linha: { tipo: 'multi', lb: [30, 40], txt: 'Multifilamento 30–40 lb' },
+      lider: { tipo: 'aco', lb: [30, 50], comp: '20–30 cm', txt: 'Empate de aço 30–50 lb, 20–30 cm' },
+      anzol: { modelo: 'garateia', tam: [1, 3], txt: 'Garatéias reforçadas 3X', soGarateia: true },
+      chumbada: null, nos: ['fg', 'palomar']
+    }
+  },
+  'fundo-bagre': {
+    nome: 'Fundo para bagre grande', rig: 'fundo-corrida',
+    carretilha: {
+      vara: { tipo: 'carretilha', comp: [1.8, 2.1], lb: [20, 50], acao: 'moderada' },
+      reel: { tipo: ['redonda', 'perfil'], tam: [300, 400], txt: 'Redonda 300–400 (ou perfil baixo 300)' },
+      linha: { tipo: 'multi', lb: [40, 65], txt: 'Multifilamento 4X 40–65 lb' },
+      lider: { tipo: 'mono', lb: [60, 90], comp: '50–80 cm', txt: 'Mono 0,70–0,90 mm, 50–80 cm' },
+      anzol: { modelo: 'circular', tam: [4, 8], txt: 'Circular 4/0–8/0' },
+      chumbada: { tipo: 'oliva', g: [20, 60], txt: 'Oliva corrida 20–60 g' }, nos: ['palomar', 'uni']
+    },
+    molinete: {
+      vara: { tipo: 'molinete', comp: [2.1, 2.4], lb: [20, 40], acao: 'moderada' },
+      reel: { tipo: ['molinete'], tam: [5000, 6000], txt: 'Molinete 5000–6000' },
+      linha: { tipo: 'mono', lb: [35, 45], txt: 'Mono 0,50–0,60 mm ou multi 40 lb' },
+      lider: { tipo: 'mono', lb: [60, 80], comp: '50–80 cm', txt: 'Mono 0,70–0,80 mm, 50–80 cm' },
+      anzol: { modelo: 'circular', tam: [4, 7], txt: 'Circular 4/0–7/0' },
+      chumbada: { tipo: 'oliva', g: [20, 60], txt: 'Oliva corrida 20–60 g' }, nos: ['palomar', 'uni']
+    }
+  },
+  'fundo-jau': {
+    nome: 'Fundo pesado', rig: 'fundo-pesado',
+    carretilha: {
+      vara: { tipo: 'carretilha', comp: [1.8, 2.1], lb: [40, 80], acao: 'moderada' },
+      reel: { tipo: ['redonda'], tam: [400, 500], txt: 'Redonda 400–500, drag 10 kg+' },
+      linha: { tipo: 'multi', lb: [80, 100], txt: 'Multifilamento 80–100 lb' },
+      lider: { tipo: 'aco', lb: [100, 150], comp: '60–100 cm', txt: 'Cabo de aço 100–150 lb ou mono 1,00 mm+' },
+      anzol: { modelo: 'circular', tam: [8, 12], txt: 'Circular 8/0–12/0' },
+      chumbada: { tipo: 'chata', g: [60, 150], txt: 'Chata 60–150 g (segura na correnteza)' }, nos: ['palomar', 'uni']
+    },
+    molinete: {
+      vara: { tipo: 'molinete', comp: [2.1, 2.4], lb: [40, 60], acao: 'moderada' },
+      reel: { tipo: ['molinete'], tam: [8000, 10000], txt: 'Molinete 8000+ (a carretilha é mais indicada)' },
+      linha: { tipo: 'multi', lb: [65, 80], txt: 'Multifilamento 65–80 lb' },
+      lider: { tipo: 'aco', lb: [100, 150], comp: '60–100 cm', txt: 'Cabo de aço 100–150 lb' },
+      anzol: { modelo: 'circular', tam: [8, 10], txt: 'Circular 8/0–10/0' },
+      chumbada: { tipo: 'chata', g: [60, 150], txt: 'Chata 60–150 g' }, nos: ['palomar', 'uni']
+    }
+  },
+  'fundo-medio': {
+    nome: 'Fundo médio', rig: 'fundo-corrida',
+    carretilha: {
+      vara: { tipo: 'carretilha', comp: [1.8, 2.1], lb: [15, 30], acao: 'moderada' },
+      reel: { tipo: ['perfil', 'redonda'], tam: [150, 300], txt: 'Perfil baixo 150–200 ou redonda 200–300' },
+      linha: { tipo: 'multi', lb: [25, 40], txt: 'Multifilamento 25–40 lb' },
+      lider: { tipo: 'mono', lb: [35, 45], comp: '40–60 cm', txt: 'Mono 0,50–0,60 mm, 40–60 cm' },
+      anzol: { modelo: 'circular', tam: [2, 5], txt: 'Circular 2/0–5/0' },
+      chumbada: { tipo: 'oliva', g: [15, 40], txt: 'Oliva corrida 15–40 g' }, nos: ['palomar', 'uni']
+    },
+    molinete: {
+      vara: { tipo: 'molinete', comp: [1.8, 2.1], lb: [15, 30], acao: 'moderada' },
+      reel: { tipo: ['molinete'], tam: [3000, 4000], txt: 'Molinete 3000–4000' },
+      linha: { tipo: 'mono', lb: [24, 30], txt: 'Mono 0,40–0,45 mm ou multi 25–30 lb' },
+      lider: { tipo: 'mono', lb: [35, 45], comp: '40–60 cm', txt: 'Mono 0,50–0,60 mm' },
+      anzol: { modelo: 'circular', tam: [2, 5], txt: 'Circular 2/0–5/0' },
+      chumbada: { tipo: 'oliva', g: [15, 40], txt: 'Oliva corrida 15–40 g' }, nos: ['palomar', 'uni']
+    }
+  },
+  'pacu': {
+    nome: 'Pacu na fruta e no caranguejo', rig: 'fruta',
+    carretilha: {
+      vara: { tipo: 'carretilha', comp: [1.8, 2.1], lb: [15, 30], acao: 'moderada' },
+      reel: { tipo: ['perfil'], tam: [150, 200], txt: 'Perfil baixo 150–200' },
+      linha: { tipo: 'multi', lb: [30, 40], txt: 'Multifilamento 30–40 lb' },
+      lider: { tipo: 'mono', lb: [35, 45], comp: '30–50 cm', txt: 'Mono 0,50–0,60 mm (o dente corta), 30–50 cm' },
+      anzol: { modelo: 'maruseigo', tam: [1, 4], txt: 'Maruseigo 1/0–4/0' },
+      chumbada: { tipo: 'oliva', g: [5, 20], txt: 'Oliva 5–20 g (sem chumbo na fruta batida)' }, nos: ['palomar', 'uni']
+    },
+    molinete: {
+      vara: { tipo: 'molinete', comp: [2.1, 2.4], lb: [15, 30], acao: 'moderada' },
+      reel: { tipo: ['molinete'], tam: [4000, 5000], txt: 'Molinete 4000–5000' },
+      linha: { tipo: 'mono', lb: [24, 35], txt: 'Mono 0,40–0,50 mm' },
+      lider: { tipo: 'mono', lb: [35, 45], comp: '30–50 cm', txt: 'Mono 0,50–0,60 mm, 30–50 cm' },
+      anzol: { modelo: 'maruseigo', tam: [1, 4], txt: 'Maruseigo 1/0–4/0' },
+      chumbada: { tipo: 'oliva', g: [5, 20], txt: 'Oliva 5–20 g' }, nos: ['palomar', 'uni']
+    }
+  },
+  'medio-escama': {
+    nome: 'Fundo leve para peixe de escama', rig: 'fundo-corrida',
+    carretilha: {
+      vara: { tipo: 'carretilha', comp: [1.8, 2.1], lb: [10, 20], acao: 'moderada' },
+      reel: { tipo: ['perfil'], tam: [100, 150], txt: 'Perfil baixo 100–150' },
+      linha: { tipo: 'multi', lb: [15, 25], txt: 'Multifilamento 15–25 lb' },
+      lider: { tipo: 'mono', lb: [18, 24], comp: '40 cm', txt: 'Mono 0,35–0,40 mm, 40 cm' },
+      anzol: { modelo: 'maruseigo', tam: [0, 2], txt: 'Maruseigo nº 1 a 2/0' },
+      chumbada: { tipo: 'oliva', g: [5, 20], txt: 'Oliva corrida 5–20 g' }, nos: ['palomar', 'uni']
+    },
+    molinete: {
+      vara: { tipo: 'molinete', comp: [1.8, 2.4], lb: [10, 20], acao: 'moderada' },
+      reel: { tipo: ['molinete'], tam: [2500, 4000], txt: 'Molinete 2500–4000' },
+      linha: { tipo: 'mono', lb: [14, 24], txt: 'Mono 0,30–0,40 mm' },
+      lider: { tipo: 'mono', lb: [18, 24], comp: '40 cm', txt: 'Mono 0,35–0,40 mm, 40 cm' },
+      anzol: { modelo: 'maruseigo', tam: [0, 2], txt: 'Maruseigo nº 1 a 2/0' },
+      chumbada: { tipo: 'oliva', g: [5, 20], txt: 'Oliva corrida 5–20 g' }, nos: ['palomar', 'uni']
+    }
+  },
+  'leve-escama': {
+    nome: 'Boia e linha fina', rig: 'boia',
+    carretilha: {
+      vara: { tipo: 'carretilha', comp: [1.68, 1.83], lb: [8, 17], acao: 'moderada' },
+      reel: { tipo: ['perfil'], tam: [100, 100], txt: 'Perfil baixo 100' },
+      linha: { tipo: 'mono', lb: [12, 16], txt: 'Mono 0,28–0,30 mm ou multi 10–15 lb' },
+      lider: { tipo: 'fluor', lb: [12, 16], comp: '40 cm', txt: 'Fluorcarbono 0,30 mm, 40 cm' },
+      anzol: { modelo: 'maruseigo', tam: [-3, 0], txt: 'Chinu ou maruseigo nº 4 a nº 1' },
+      chumbada: { tipo: 'chumbinho', g: [1, 5], txt: 'Chumbinho 1–5 g abaixo da boia' }, nos: ['palomar', 'clinch']
+    },
+    molinete: {
+      vara: { tipo: 'molinete', comp: [1.65, 1.8], lb: [6, 14], acao: 'moderada' },
+      reel: { tipo: ['molinete'], tam: [1000, 2500], txt: 'Molinete 1000–2500' },
+      linha: { tipo: 'mono', lb: [10, 14], txt: 'Mono 0,25–0,30 mm' },
+      lider: { tipo: 'fluor', lb: [12, 16], comp: '40 cm', txt: 'Fluorcarbono 0,30 mm, 40 cm' },
+      anzol: { modelo: 'maruseigo', tam: [-3, 0], txt: 'Chinu ou maruseigo nº 4 a nº 1' },
+      chumbada: { tipo: 'chumbinho', g: [1, 5], txt: 'Chumbinho 1–5 g abaixo da boia' }, nos: ['palomar', 'clinch']
+    }
+  },
+  'piranha': {
+    nome: 'Dente afiado (piranha, traíra na isca natural)', rig: 'piranha',
+    carretilha: {
+      vara: { tipo: 'carretilha', comp: [1.68, 1.83], lb: [12, 25], acao: 'moderada' },
+      reel: { tipo: ['perfil'], tam: [100, 150], txt: 'Perfil baixo 100–150' },
+      linha: { tipo: 'multi', lb: [20, 30], txt: 'Multifilamento 20–30 lb' },
+      lider: { tipo: 'aco', lb: [20, 40], comp: '15–20 cm', txt: 'Empate de aço curto 20–40 lb, 15–20 cm' },
+      anzol: { modelo: 'haste', tam: [1, 3], txt: 'Haste longa 1/0–3/0' },
+      chumbada: { tipo: 'oliva', g: [5, 15], txt: 'Oliva 5–15 g' }, nos: ['palomar', 'clinch']
+    },
+    molinete: {
+      vara: { tipo: 'molinete', comp: [1.65, 1.8], lb: [10, 20], acao: 'moderada' },
+      reel: { tipo: ['molinete'], tam: [2000, 3000], txt: 'Molinete 2000–3000' },
+      linha: { tipo: 'mono', lb: [18, 24], txt: 'Mono 0,35–0,40 mm' },
+      lider: { tipo: 'aco', lb: [20, 40], comp: '15–20 cm', txt: 'Empate de aço curto 20–40 lb, 15–20 cm' },
+      anzol: { modelo: 'haste', tam: [1, 3], txt: 'Haste longa 1/0–3/0' },
+      chumbada: { tipo: 'oliva', g: [5, 15], txt: 'Oliva 5–15 g' }, nos: ['palomar', 'clinch']
+    }
+  },
+  'isca-viva': {
+    nome: 'Isca viva com líder', rig: 'viva',
+    carretilha: {
+      vara: { tipo: 'carretilha', comp: [1.68, 1.83], lb: [12, 25], acao: 'moderada' },
+      reel: { tipo: ['perfil'], tam: [100, 150], txt: 'Perfil baixo 100–150' },
+      linha: { tipo: 'multi', lb: [20, 30], txt: 'Multifilamento 20–30 lb' },
+      lider: { tipo: 'fluor', lb: [30, 40], comp: '60 cm', txt: 'Fluorcarbono ou mono 30–40 lb, 60 cm' },
+      anzol: { modelo: 'offset', tam: [1, 3], txt: 'Wide gap ou circular 1/0–3/0' },
+      chumbada: { tipo: 'oliva', g: [3, 10], txt: 'Oliva leve 3–10 g (opcional)' }, nos: ['fg', 'palomar']
+    },
+    molinete: {
+      vara: { tipo: 'molinete', comp: [1.8, 2.1], lb: [10, 20], acao: 'moderada' },
+      reel: { tipo: ['molinete'], tam: [2500, 3000], txt: 'Molinete 2500–3000' },
+      linha: { tipo: 'mono', lb: [18, 24], txt: 'Mono 0,35–0,40 mm' },
+      lider: { tipo: 'fluor', lb: [25, 35], comp: '60 cm', txt: 'Fluorcarbono 25–35 lb, 60 cm' },
+      anzol: { modelo: 'offset', tam: [1, 3], txt: 'Wide gap ou circular 1/0–3/0' },
+      chumbada: { tipo: 'oliva', g: [3, 10], txt: 'Oliva leve 3–10 g (opcional)' }, nos: ['palomar', 'uni']
+    }
+  },
+  'isca-viva-aco': {
+    nome: 'Isca viva com empate de aço', rig: 'viva-aco',
+    carretilha: {
+      vara: { tipo: 'carretilha', comp: [1.68, 1.83], lb: [15, 30], acao: 'moderada' },
+      reel: { tipo: ['perfil'], tam: [150, 200], txt: 'Perfil baixo 150–200' },
+      linha: { tipo: 'multi', lb: [30, 40], txt: 'Multifilamento 30–40 lb' },
+      lider: { tipo: 'aco', lb: [30, 50], comp: '20–30 cm', txt: 'Empate de aço 30–50 lb, 20–30 cm' },
+      anzol: { modelo: 'circular', tam: [2, 4], txt: 'Circular ou wide gap 2/0–4/0' },
+      chumbada: { tipo: 'oliva', g: [5, 20], txt: 'Oliva 5–20 g conforme a correnteza' }, nos: ['fg', 'palomar']
+    },
+    molinete: {
+      vara: { tipo: 'molinete', comp: [1.8, 2.1], lb: [15, 30], acao: 'moderada' },
+      reel: { tipo: ['molinete'], tam: [3000, 4000], txt: 'Molinete 3000–4000' },
+      linha: { tipo: 'mono', lb: [24, 35], txt: 'Mono 0,40–0,50 mm' },
+      lider: { tipo: 'aco', lb: [30, 50], comp: '20–30 cm', txt: 'Empate de aço 30–50 lb' },
+      anzol: { modelo: 'circular', tam: [2, 4], txt: 'Circular ou wide gap 2/0–4/0' },
+      chumbada: { tipo: 'oliva', g: [5, 20], txt: 'Oliva 5–20 g' }, nos: ['palomar', 'uni']
+    }
+  }
+};
+
+/* ---------- Espécies ----------
+   h: atividade por horário (0–3); t: por temperatura (0–3);
+   c / n / a: ajuste por clima, nível e água (−2 a +2).
+   iscas: p = peso base (1–3), col = coluna d'água, hor/agua/niv = condições
+   em que a isca rende mais, frio:false = rende pouco no frio.               */
+const H = (madrugada, amanhecer, dia, entardecer, noite) => ({ madrugada, amanhecer, dia, entardecer, noite });
+
+const ESPECIES = [
+  {
+    id: 'pintado', nome: 'Pintado', outros: 'surubim-pintado, cambucu', sci: 'Pseudoplatystoma corruscans',
+    grupo: 'couro', origem: 'nativa', regra: 'Leve 1 exemplar entre 85 e 125 cm (cota de nativa)',
+    porte: 'Passa de 1 m. Comuns de 5 a 20 kg.',
+    resumo: 'O bagre mais procurado do Pantanal. Caça à noite, no fundo, atrás de tuvira e muçum.',
+    habitat: 'De dia fica em poços fundos do canal, bocas de baía e pauleira afundada. À noite sobe para praias e beiras rasas.',
+    come: 'Tuvira, muçum, peixes pequenos, caranguejo e até pequenos roedores.',
+    h: H(3, 2, 1, 3, 3), t: { frio: 1, ameno: 3, quente: 3 },
+    c: { sol: -1, nublado: 1, chuva: 1, pre: 2, pos: -1 }, n: { subindo: 0, cheio: -1, baixando: 2, seco: 1 }, a: { clara: -1, verde: 1, barrenta: 1 },
+    perfilNat: 'fundo-bagre', perfilArt: 'art-dourado',
+    iscas: [
+      { nome: 'Tuvira viva', tipo: 'natural', ic: 'tuvira', col: 'fundo', p: 3, como: 'Anzol atravessado logo atrás da cabeça. Deixe no fundo com a linha esticada.' },
+      { nome: 'Muçum', tipo: 'natural', ic: 'tuvira', col: 'fundo', p: 2.4, como: 'Vivo ou em pedaço de 10 cm, anzol pela boca.' },
+      { nome: 'Minhocuçu', tipo: 'natural', ic: 'minhoca', col: 'fundo', p: 2, agua: ['barrenta'], niv: ['subindo'], como: 'Inteiro, dobrado no anzol. Rende muito em água barrenta de repiquete.' },
+      { nome: 'Piau ou ximburé em pedaço', tipo: 'natural', ic: 'posta', col: 'fundo', p: 1.6, como: 'Postas de 4 a 6 cm com a pele. Solta cheiro na correnteza.' },
+      { nome: 'Crank de fundo', tipo: 'artificial', art: 'crank', col: 'fundo', p: 1, hor: ['entardecer', 'amanhecer'], frio: false, como: 'Recolhimento lento batendo no fundo e na pauleira, em água pouco turva.' }
+    ],
+    onde: {
+      subindo: 'Beiras de barranco recém-alagadas e entradas de corixo, onde a tuvira se esconde no capim.',
+      cheio: 'Espalhado no campo alagado e difícil de achar. Concentre-se em bocas de baía com água corrente.',
+      baixando: 'Melhor fase. Saídas de baía e de corixo no rio, onde ele espera a tuvira que deixa o campo.',
+      seco: 'Poços fundos do canal e pauleira afundada de dia. Praias rasas à noite.'
+    },
+    dicas: [
+      'Deixe o peixe levar a isca de 3 a 5 segundos antes de travar. Com anzol circular, só recolha firme, sem fisgada brusca.',
+      'Os ferrões das nadadeiras cortam. Segure por baixo, atrás da cabeça.',
+      'Freio leve na hora da puxada e firme depois de fisgar: ele corre para a pauleira.'
+    ],
+    d: { L: 285, ht: 34, hb: 30, hp: 11, tm: 0.33, head: 'flat', sy: 6, back: '#5c6b73', belly: '#eef0ee', fin: '#77858b',
+      tail: 'forked', tl: 62, th: 40, barbels: { n: 3, len: 95 }, eye: { x: 40, y: 10, r: 4 }, mouth: 'wide',
+      dorsal: { x: 0.3, w: 0.13, h: 30 }, adipose: { x: 0.73, w: 0.1, h: 9 }, anal: { x: 0.74, w: 0.08, h: 16 }, pelvic: { x: 0.52, h: 16 }, pectoral: true,
+      pattern: [{ t: 'spots', n: 70, r: [2.5, 5], c: '#1f2427', area: 0.75 }], lateral: true }
+  },
+  {
+    id: 'cachara', nome: 'Cachara', outros: 'surubim-cachara', sci: 'Pseudoplatystoma reticulatum',
+    grupo: 'couro', origem: 'nativa', regra: '1 exemplar dentro da medida mínima e máxima da Cartilha do Pescador (alterada em 2020)',
+    porte: 'Até 1 m. Comuns de 3 a 12 kg.',
+    resumo: 'Parente do pintado, com listras verticais. Mais agressivo em isca artificial no entardecer.',
+    habitat: 'Fundo do canal e pauleira de dia. No fim da tarde e à noite caça em praias, bocas de baía e beira de barranco raso.',
+    come: 'Tuvira, lambari, sairu, muçum e caranguejo.',
+    h: H(2, 2, 1, 3, 3), t: { frio: 1, ameno: 3, quente: 3 },
+    c: { sol: -1, nublado: 1, chuva: 1, pre: 2, pos: -1 }, n: { subindo: 0, cheio: -1, baixando: 2, seco: 1 }, a: { clara: 0, verde: 1, barrenta: 1 },
+    perfilNat: 'fundo-bagre', perfilArt: 'art-dourado',
+    iscas: [
+      { nome: 'Tuvira viva', tipo: 'natural', ic: 'tuvira', col: 'fundo', p: 3, como: 'Anzol atrás da cabeça; fundo com linha esticada ou deriva lenta na beira.' },
+      { nome: 'Lambari ou sairu vivo', tipo: 'natural', ic: 'peixe', col: 'meia', p: 2.2, como: 'Anzol pelo lombo para nadar livre, perto da pauleira.' },
+      { nome: 'Meia-água de 10–12 cm', tipo: 'artificial', art: 'meia', col: 'meia', p: 2, hor: ['entardecer', 'amanhecer'], agua: ['clara', 'verde'], frio: false, como: 'Recolhimento lento com pausas, rente à pauleira e às praias.' },
+      { nome: 'Crank de fundo', tipo: 'artificial', art: 'crank', col: 'fundo', p: 1.3, hor: ['entardecer'], como: 'Bata a barbela no fundo e na estrutura.' },
+      { nome: 'Muçum', tipo: 'natural', ic: 'tuvira', col: 'fundo', p: 1.8, como: 'Pedaço de 10 cm, anzol pela boca.' }
+    ],
+    onde: {
+      subindo: 'Beiras recém-alagadas e capim das entradas de corixo.',
+      cheio: 'Bocas de baía com água corrente e beiras de vegetação.',
+      baixando: 'Saídas de baía e corixo, e praias que vão aparecendo no fim da tarde.',
+      seco: 'Pauleira e poços do canal de dia; praias e rasos a partir do entardecer.'
+    },
+    dicas: [
+      'No fim da tarde, arremesse a meia-água rente às praias rasas antes de mudar para a isca natural.',
+      'Como o pintado, deixe levar a isca natural alguns segundos antes de recolher firme.'
+    ],
+    d: { L: 280, ht: 31, hb: 26, hp: 10, tm: 0.33, head: 'flat', sy: 5, back: '#6b6a5e', belly: '#efeee6', fin: '#7d7b6d',
+      tail: 'forked', tl: 60, th: 38, barbels: { n: 3, len: 90 }, eye: { x: 38, y: 9, r: 4 }, mouth: 'wide',
+      dorsal: { x: 0.3, w: 0.13, h: 28 }, adipose: { x: 0.73, w: 0.1, h: 9 }, anal: { x: 0.74, w: 0.08, h: 15 }, pelvic: { x: 0.52, h: 15 }, pectoral: true,
+      pattern: [{ t: 'bars', n: 13, c: '#24221d', w: 4, wobble: 1 }, { t: 'spots', n: 18, r: [2, 3.5], c: '#24221d', area: 0.6 }], lateral: true }
+  },
+  {
+    id: 'jau', nome: 'Jaú', outros: 'pacamão', sci: 'Zungaro jahu',
+    grupo: 'couro', origem: 'nativa', regra: '1 exemplar dentro da medida da Cartilha do Pescador (alterada em 2020)',
+    porte: 'O maior bagre da bacia; pode passar de 100 kg.',
+    resumo: 'Gigante de poço fundo e pé de cachoeira. Briga entocando na pedra.',
+    habitat: 'Poços fundos, pés de cachoeira, pedreiras e trechos de correnteza forte.',
+    come: 'Peixes inteiros: curimbatá, piau, piranha.',
+    h: H(3, 1, 0, 2, 3), t: { frio: 0, ameno: 2, quente: 3 },
+    c: { sol: -1, nublado: 0, chuva: 1, pre: 2, pos: -2 }, n: { subindo: 0, cheio: -1, baixando: 2, seco: 2 }, a: { clara: 0, verde: 1, barrenta: 1 },
+    perfilNat: 'fundo-jau', perfilArt: null,
+    iscas: [
+      { nome: 'Peixe inteiro ou posta grande', tipo: 'natural', ic: 'posta', col: 'fundo', p: 3, como: 'Curimbatá, piau ou piranha inteiros ou em postas grandes, com a pele.' },
+      { nome: 'Tuvira grande', tipo: 'natural', ic: 'tuvira', col: 'fundo', p: 2, como: 'Duas tuviras no mesmo anzol aumentam o volume.' },
+      { nome: 'Muçum', tipo: 'natural', ic: 'tuvira', col: 'fundo', p: 2, como: 'Inteiro, anzol pela boca.' }
+    ],
+    onde: {
+      subindo: 'Poços de remanso abaixo de corredeiras.',
+      cheio: 'Pés de cachoeira e poços de pedra.',
+      baixando: 'Poços fundos do canal e pedreiras com correnteza.',
+      seco: 'Poços fundos de pedra; é a melhor época para tentar.'
+    },
+    dicas: [
+      'Ao fisgar, tire o peixe da toca nos primeiros segundos, sem dar linha.',
+      'Freio quase travado e vara apoiada: a primeira arrancada é a mais forte.'
+    ],
+    d: { L: 275, ht: 46, hb: 38, hp: 15, tm: 0.3, head: 'flat', sy: 8, back: '#5b5136', belly: '#d8cfb4', fin: '#5f563c',
+      tail: 'forked', tl: 50, th: 40, barbels: { n: 3, len: 55 }, eye: { x: 44, y: 14, r: 3.5 }, mouth: 'wide',
+      dorsal: { x: 0.3, w: 0.12, h: 30 }, adipose: { x: 0.68, w: 0.16, h: 10 }, anal: { x: 0.74, w: 0.09, h: 18 }, pelvic: { x: 0.5, h: 18 }, pectoral: true,
+      pattern: [{ t: 'blotch', n: 16, c: '#3a3320', area: 0.8 }], lateral: true }
+  },
+  {
+    id: 'barbado', nome: 'Barbado', outros: 'barba-chata', sci: 'Pinirampus pirinampu',
+    grupo: 'couro', origem: 'nativa', regra: 'Mínimo 60 cm (cota de nativa)',
+    porte: 'Até 80 cm e cerca de 8 kg.',
+    resumo: 'Bagre prateado de barbilhões chatos, que anda em cardume no canal e come bem de dia em água barrenta.',
+    habitat: 'Canal do rio com correnteza média, fundo de areia e beira de barranco.',
+    come: 'Peixes pequenos e pedaços de peixe.',
+    h: H(2, 2, 2, 3, 3), t: { frio: 1, ameno: 3, quente: 3 },
+    c: { sol: 0, nublado: 1, chuva: 1, pre: 2, pos: -1 }, n: { subindo: 1, cheio: 0, baixando: 2, seco: 1 }, a: { clara: -1, verde: 1, barrenta: 2 },
+    perfilNat: 'fundo-medio', perfilArt: null,
+    iscas: [
+      { nome: 'Pedaço de peixe (piau, piranha)', tipo: 'natural', ic: 'posta', col: 'fundo', p: 3, como: 'Filé de 5 cm com a pele, bem preso no anzol.' },
+      { nome: 'Tuvira', tipo: 'natural', ic: 'tuvira', col: 'fundo', p: 2, como: 'Viva ou recém-morta.' },
+      { nome: 'Minhocuçu', tipo: 'natural', ic: 'minhoca', col: 'fundo', p: 2, agua: ['barrenta'], como: 'Inteiro, ótimo na água barrenta.' },
+      { nome: 'Coração de boi', tipo: 'natural', ic: 'coracao', col: 'fundo', p: 1.2, como: 'Tiras firmes de 6 cm.' }
+    ],
+    onde: {
+      subindo: 'Beira de barranco no canal, onde a água barrenta entra.',
+      cheio: 'Canal principal, atrás de bancos de areia.',
+      baixando: 'Canal e encontros de água, em cardume.',
+      seco: 'Poços do canal com fundo de areia.'
+    },
+    dicas: ['Quando um sai, insista no ponto: costuma estar em cardume.', 'Cuidado com os ferrões peitorais ao desanzolar.'],
+    d: { L: 270, ht: 30, hb: 24, hp: 9, tm: 0.33, head: 'flat', sy: 5, back: '#7c8790', belly: '#e9edef', fin: '#8e98a0',
+      tail: 'forked', tl: 70, th: 46, barbels: { n: 2, len: 120, flat: true }, eye: { x: 36, y: 8, r: 4 }, mouth: 'wide',
+      dorsal: { x: 0.3, w: 0.12, h: 30 }, adipose: { x: 0.55, w: 0.33, h: 8 }, anal: { x: 0.68, w: 0.18, h: 14 }, pelvic: { x: 0.48, h: 14 }, pectoral: true,
+      pattern: [], lateral: true }
+  },
+  {
+    id: 'jurupoca', nome: 'Jurupoca', outros: 'jerepoca, braço-de-moça', sci: 'Hemisorubim platyrhynchos',
+    grupo: 'couro', origem: 'nativa', regra: 'Mínimo 40 cm (cota de nativa)',
+    porte: 'Até 50 cm e cerca de 3 kg.',
+    resumo: 'Bagre de bico achatado e manchas escuras, de carne muito apreciada. Ativo à noite.',
+    habitat: 'Bocas de baía, beiras de rio e praias rasas à noite.',
+    come: 'Peixes pequenos e invertebrados.',
+    h: H(3, 1, 0, 2, 3), t: { frio: 1, ameno: 3, quente: 3 },
+    c: { sol: -1, nublado: 1, chuva: 1, pre: 2, pos: -1 }, n: { subindo: 0, cheio: 0, baixando: 2, seco: 1 }, a: { clara: 0, verde: 1, barrenta: 1 },
+    perfilNat: 'fundo-medio', perfilArt: null,
+    iscas: [
+      { nome: 'Lambari ou pedaço de peixe', tipo: 'natural', ic: 'peixe', col: 'fundo', p: 3, como: 'Lambari inteiro ou filé pequeno.' },
+      { nome: 'Tuvira pequena', tipo: 'natural', ic: 'tuvira', col: 'fundo', p: 2.2, como: 'Viva, anzol atrás da cabeça.' },
+      { nome: 'Minhoca ou minhocuçu', tipo: 'natural', ic: 'minhoca', col: 'fundo', p: 1.8, como: 'Bem enfiada no anzol.' }
+    ],
+    onde: {
+      subindo: 'Bocas de corixo e beira de vegetação.', cheio: 'Bocas de baía com corrente.',
+      baixando: 'Saídas de baía e praias que estão aparecendo.', seco: 'Praias rasas e beira de barranco à noite.'
+    },
+    dicas: ['Use equipamento médio: o peixe é pequeno, mas mora perto de pauleira.'],
+    d: { L: 265, ht: 26, hb: 22, hp: 8, tm: 0.38, head: 'duck', snout: 18, sy: 3, back: '#a08a52', belly: '#f1ead4', fin: '#9b8857',
+      tail: 'forked', tl: 58, th: 36, barbels: { n: 3, len: 50 }, eye: { x: 52, y: 8, r: 3.5 }, mouth: 'wide',
+      dorsal: { x: 0.33, w: 0.12, h: 26 }, adipose: { x: 0.72, w: 0.1, h: 8 }, anal: { x: 0.73, w: 0.08, h: 13 }, pelvic: { x: 0.52, h: 13 }, pectoral: true,
+      pattern: [{ t: 'blotch', n: 9, c: '#3d3318', area: 0.5, row: true }], lateral: true }
+  },
+  {
+    id: 'jurupensem', nome: 'Jurupensém', outros: 'bico-de-pato', sci: 'Sorubim lima',
+    grupo: 'couro', origem: 'nativa', regra: 'Cota de nativa (confira a medida na Cartilha)',
+    porte: 'Até 70 cm e cerca de 3 kg.',
+    resumo: 'Bico de pato longo e faixa escura do focinho à cauda. Anda em cardume em remansos.',
+    habitat: 'Remansos, baías e praias à noite.',
+    come: 'Peixes pequenos e invertebrados.',
+    h: H(3, 1, 1, 3, 3), t: { frio: 1, ameno: 3, quente: 3 },
+    c: { sol: -1, nublado: 1, chuva: 1, pre: 2, pos: -1 }, n: { subindo: 0, cheio: 0, baixando: 2, seco: 1 }, a: { clara: 0, verde: 1, barrenta: 1 },
+    perfilNat: 'fundo-medio', perfilArt: null,
+    iscas: [
+      { nome: 'Lambari vivo', tipo: 'natural', ic: 'peixe', col: 'fundo', p: 3, como: 'Vivo, anzol pelos lábios.' },
+      { nome: 'Minhocuçu', tipo: 'natural', ic: 'minhoca', col: 'fundo', p: 2, como: 'Inteiro.' },
+      { nome: 'Pedaço de peixe', tipo: 'natural', ic: 'posta', col: 'fundo', p: 1.8, como: 'Filé pequeno com pele.' }
+    ],
+    onde: { subindo: 'Remansos de beira.', cheio: 'Baías ligadas ao rio.', baixando: 'Saídas de baía e remansos.', seco: 'Praias e remansos à noite.' },
+    dicas: ['Boca pequena para o tamanho do bico: prefira anzol circular 2/0–3/0.'],
+    d: { L: 275, ht: 22, hb: 19, hp: 7, tm: 0.4, head: 'duck', snout: 34, sy: 2, back: '#8e979b', belly: '#f0f2f2', fin: '#9aa3a6',
+      tail: 'forked', tl: 56, th: 34, barbels: { n: 3, len: 40 }, eye: { x: 66, y: 6, r: 3.5 }, mouth: 'wide',
+      dorsal: { x: 0.36, w: 0.11, h: 24 }, adipose: { x: 0.72, w: 0.1, h: 7 }, anal: { x: 0.73, w: 0.08, h: 12 }, pelvic: { x: 0.54, h: 12 }, pectoral: true,
+      pattern: [{ t: 'band', c: '#2a2f33', y: 0, w: 7 }], lateral: false }
+  },
+  {
+    id: 'palmito', nome: 'Palmito', outros: 'mandubé, fidalgo', sci: 'Ageneiosus inermis',
+    grupo: 'couro', origem: 'nativa', regra: 'Cota de nativa (confira a medida na Cartilha)',
+    porte: 'Até 50 cm e cerca de 2,5 kg.',
+    resumo: 'Bagre prateado de boca grande e quase sem barbilhões. Carne muito saborosa.',
+    habitat: 'Remansos e beiras do rio, baías.',
+    come: 'Peixes pequenos e invertebrados.',
+    h: H(2, 2, 1, 3, 3), t: { frio: 1, ameno: 3, quente: 3 },
+    c: { sol: -1, nublado: 1, chuva: 1, pre: 2, pos: -1 }, n: { subindo: 1, cheio: 0, baixando: 2, seco: 1 }, a: { clara: 0, verde: 1, barrenta: 1 },
+    perfilNat: 'fundo-medio', perfilArt: null,
+    iscas: [
+      { nome: 'Lambari vivo', tipo: 'natural', ic: 'peixe', col: 'meia', p: 3, como: 'Pelos lábios, perto do fundo.' },
+      { nome: 'Pedaço de peixe', tipo: 'natural', ic: 'posta', col: 'fundo', p: 2, como: 'Filé pequeno.' },
+      { nome: 'Minhoca', tipo: 'natural', ic: 'minhoca', col: 'fundo', p: 1.6, como: 'Duas ou três no anzol.' }
+    ],
+    onde: { subindo: 'Remansos de beira.', cheio: 'Baías.', baixando: 'Remansos atrás de bancos e saídas de baía.', seco: 'Remansos e poços de beira.' },
+    dicas: ['Boca grande e mole: recolha firme e constante, sem trancos.'],
+    d: { L: 265, ht: 30, hb: 26, hp: 8, tm: 0.36, head: 'pointed', sy: 2, back: '#7d8a92', belly: '#f2f4f5', fin: '#9aa6ad',
+      tail: 'forked', tl: 60, th: 36, barbels: null, eye: { x: 30, y: 4, r: 5 }, mouth: 'big',
+      dorsal: { x: 0.25, w: 0.1, h: 30 }, adipose: { x: 0.74, w: 0.07, h: 6 }, anal: { x: 0.6, w: 0.22, h: 14 }, pelvic: { x: 0.45, h: 14 }, pectoral: true,
+      pattern: [], lateral: true }
+  },
+  {
+    id: 'pacu', nome: 'Pacu', outros: 'pacu-caranha, caranha', sci: 'Piaractus mesopotamicus',
+    grupo: 'escama', origem: 'nativa', regra: 'Leve 1 exemplar entre 45 e 65 cm (cota de nativa)',
+    porte: 'Até cerca de 15 kg. Comuns de 2 a 6 kg.',
+    resumo: 'Come frutas, sementes e caranguejo. Briga forte e corta linha com os dentes.',
+    habitat: 'Sob árvores frutíferas na margem, galhada, remansos e baías ligadas ao rio.',
+    come: 'Frutas nativas, sementes, caranguejo, caramujo e peixes.',
+    h: H(1, 3, 2, 3, 1), t: { frio: 0, ameno: 2, quente: 3 },
+    c: { sol: 0, nublado: 1, chuva: 0, pre: 2, pos: -2 }, n: { subindo: 2, cheio: 2, baixando: 1, seco: -1 }, a: { clara: 0, verde: 1, barrenta: 0 },
+    perfilNat: 'pacu', perfilArt: 'art-leve',
+    iscas: [
+      { nome: 'Fruta nativa (ximbuva, tucum, laranjinha-de-pacu, figo)', tipo: 'natural', ic: 'fruta', col: 'sup', p: 3, niv: ['subindo', 'cheio'], hor: ['amanhecer', 'dia', 'entardecer'], como: 'Pesque sob a árvore que está soltando fruta e bata a isca na água para imitar a queda.' },
+      { nome: 'Caranguejo', tipo: 'natural', ic: 'caranguejo', col: 'fundo', p: 2.8, niv: ['baixando', 'seco'], como: 'Inteiro sem as patas grandes, ou em pedaço, no fundo perto da galhada.' },
+      { nome: 'Coquinho (bocaiuva, acuri)', tipo: 'natural', ic: 'fruta', col: 'meia', p: 2, como: 'Inteiro, anzol pelo lado. Funciona bem com ceva.' },
+      { nome: 'Milho verde', tipo: 'natural', ic: 'milho', col: 'fundo', p: 1.8, como: 'Dois a quatro grãos. Bom com ceva de milho no ponto.' },
+      { nome: 'Meia-água pequena', tipo: 'artificial', art: 'meia', col: 'meia', p: 0.8, frio: false, agua: ['clara', 'verde'], como: 'Recolhimento lento perto da galhada; pacu ataca por reação no calor.' }
+    ],
+    onde: {
+      subindo: 'Margens com frutíferas começando a alagar. É a época da fruta.',
+      cheio: 'Dentro da mata alagada e sob frutíferas; procure o barulho da fruta caindo.',
+      baixando: 'Galhada e remansos na saída das baías; troque a fruta pelo caranguejo.',
+      seco: 'Poços com galhada e remansos fundos. Caranguejo e massa no fundo.'
+    },
+    dicas: [
+      'Espere o pacu levar a isca e fisgue firme: a boca é dura.',
+      'Ele parte para a galhada. Segure com a vara e não deixe correr.',
+      'A pesca com fruta batida é uma técnica tradicional pantaneira descrita pela Embrapa Pantanal.'
+    ],
+    d: { L: 225, ht: 62, hb: 60, hp: 13, tm: 0.42, head: 'blunt', sy: 8, back: '#4b4f4a', belly: '#e1c78a', fin: '#c46a2e',
+      tail: 'truncate', tl: 46, th: 46, tailColor: '#3d403c', barbels: null, eye: { x: 30, y: 14, r: 6 }, mouth: 'small',
+      dorsal: { x: 0.42, w: 0.17, h: 34 }, adipose: { x: 0.8, w: 0.06, h: 8 }, anal: { x: 0.68, w: 0.2, h: 20 }, pelvic: { x: 0.5, h: 18 }, pectoral: true,
+      pattern: [{ t: 'belly', c: '#d9a654' }], scales: true, lateral: true }
+  },
+  {
+    id: 'pacupeva', nome: 'Pacu-peva', outros: 'pacu-manteiga', sci: 'Mylossoma duriventre',
+    grupo: 'escama', origem: 'nativa', regra: 'Cota de nativa (confira a medida na Cartilha)',
+    porte: 'Até cerca de 25 cm e 1 kg.',
+    resumo: 'Pacu pequeno e arredondado, de cardume. Diversão com equipamento leve.',
+    habitat: 'Baías, remansos e beiras com vegetação.',
+    come: 'Frutinhas, sementes, insetos e plantas.',
+    h: H(0, 3, 3, 3, 0), t: { frio: 0, ameno: 2, quente: 3 },
+    c: { sol: 0, nublado: 1, chuva: 0, pre: 1, pos: -2 }, n: { subindo: 1, cheio: 2, baixando: 1, seco: 0 }, a: { clara: 1, verde: 1, barrenta: -1 },
+    perfilNat: 'leve-escama', perfilArt: null,
+    iscas: [
+      { nome: 'Massa (farinha e fubá)', tipo: 'natural', ic: 'massa', col: 'meia', p: 3, como: 'Bolinha cobrindo o anzol, com ceva no ponto.' },
+      { nome: 'Milho cozido', tipo: 'natural', ic: 'milho', col: 'meia', p: 2.5, como: 'Um ou dois grãos.' },
+      { nome: 'Frutinha', tipo: 'natural', ic: 'fruta', col: 'sup', p: 2, niv: ['cheio', 'subindo'], como: 'Pequena, na boia rasa.' }
+    ],
+    onde: { subindo: 'Beiras com vegetação recém-alagada.', cheio: 'Baías e mata alagada.', baixando: 'Saídas de baía.', seco: 'Remansos com vegetação.' },
+    dicas: ['Boia sensível e anzol pequeno: ele belisca antes de engolir.'],
+    d: { L: 200, ht: 66, hb: 64, hp: 11, tm: 0.45, head: 'blunt', sy: 6, back: '#9aa3a2', belly: '#e9ddb8', fin: '#d28a4a',
+      tail: 'truncate', tl: 40, th: 40, tailColor: '#8f9897', barbels: null, eye: { x: 26, y: 14, r: 6 }, mouth: 'small',
+      dorsal: { x: 0.45, w: 0.15, h: 28 }, adipose: { x: 0.8, w: 0.06, h: 6 }, anal: { x: 0.62, w: 0.26, h: 18 }, pelvic: { x: 0.5, h: 14 }, pectoral: true,
+      pattern: [{ t: 'belly', c: '#e6b866' }], scales: true, lateral: true }
+  },
+  {
+    id: 'piavucu', nome: 'Piavuçu', outros: 'piau, piau-açu', sci: 'Leporinus macrocephalus',
+    grupo: 'escama', origem: 'nativa', regra: 'Cota de nativa (confira a medida na Cartilha)',
+    porte: 'Até 60 cm e cerca de 3 kg.',
+    resumo: 'Tira a isca com delicadeza sem se fisgar. Pede atenção e fisgada rápida.',
+    habitat: 'Barrancos, canais, baías com vegetação e pés de cachoeira.',
+    come: 'Caranguejo, caramujo, frutas, sementes e plantas.',
+    h: H(1, 3, 2, 3, 1), t: { frio: 1, ameno: 3, quente: 3 },
+    c: { sol: 0, nublado: 1, chuva: 0, pre: 2, pos: -1 }, n: { subindo: 1, cheio: 1, baixando: 2, seco: 1 }, a: { clara: 1, verde: 1, barrenta: 0 },
+    perfilNat: 'medio-escama', perfilArt: null,
+    iscas: [
+      { nome: 'Caranguejo', tipo: 'natural', ic: 'caranguejo', col: 'fundo', p: 3, como: 'Pedaços pequenos, cobrindo bem o anzol.' },
+      { nome: 'Massa com ceva', tipo: 'natural', ic: 'massa', col: 'fundo', p: 2.6, como: 'Massa firme, com ceva de milho ou ração no ponto.' },
+      { nome: 'Milho verde', tipo: 'natural', ic: 'milho', col: 'fundo', p: 2, como: 'Dois ou três grãos.' },
+      { nome: 'Caramujo', tipo: 'natural', ic: 'caranguejo', col: 'fundo', p: 1.8, como: 'Sem a casca, bem preso.' }
+    ],
+    onde: { subindo: 'Beira de barranco com vegetação.', cheio: 'Canais e baías.', baixando: 'Barrancos do canal e pés de cachoeira.', seco: 'Poços de beira com fundo limpo.' },
+    dicas: ['Fisgue no primeiro toque firme; se esperar, ele limpa o anzol.', 'Caniço de bambu ou molinete leve funcionam bem no barranco.'],
+    d: { L: 260, ht: 34, hb: 28, hp: 10, tm: 0.38, head: 'pointed', sy: 3, back: '#6e7d5b', belly: '#ece8d6', fin: '#a8916a',
+      tail: 'forked', tl: 56, th: 34, barbels: null, eye: { x: 26, y: 7, r: 5 }, mouth: 'small',
+      dorsal: { x: 0.36, w: 0.13, h: 30 }, adipose: { x: 0.76, w: 0.06, h: 7 }, anal: { x: 0.74, w: 0.08, h: 14 }, pelvic: { x: 0.52, h: 14 }, pectoral: true,
+      pattern: [{ t: 'spots3', c: '#222a1e' }], scales: true, lateral: true }
+  },
+  {
+    id: 'piraputanga', nome: 'Piraputanga', outros: '', sci: 'Brycon hilarii',
+    grupo: 'escama', origem: 'nativa', regra: 'Mínimo 30 cm (cota de nativa)',
+    porte: 'Até 50 cm e cerca de 2,5 kg.',
+    resumo: 'Peixe ágil de rio de água clara (Bonito, Miranda, Aquidauana). Muito arisco.',
+    habitat: 'Corredeiras, remansos sob frutíferas e beiras de vegetação.',
+    come: 'Frutas (figo, ingá, goiaba), sementes, insetos e peixinhos.',
+    h: H(0, 3, 2, 3, 0), t: { frio: 1, ameno: 3, quente: 2 },
+    c: { sol: 0, nublado: 1, chuva: -1, pre: 1, pos: -1 }, n: { subindo: -1, cheio: 0, baixando: 1, seco: 2 }, a: { clara: 2, verde: 0, barrenta: -2 },
+    perfilNat: 'leve-escama', perfilArt: 'art-ultra',
+    iscas: [
+      { nome: 'Frutinha (figo, ingá)', tipo: 'natural', ic: 'fruta', col: 'sup', p: 3, como: 'Na boia rasa ou solta, descendo com a correnteza sob a árvore.' },
+      { nome: 'Spinner pequeno', tipo: 'artificial', art: 'spinner', col: 'meia', p: 2.4, agua: ['clara'], como: 'Recolhimento contínuo, cruzando a correnteza.' },
+      { nome: 'Milho cozido', tipo: 'natural', ic: 'milho', col: 'meia', p: 2, como: 'Um ou dois grãos, linha fina.' },
+      { nome: 'Meia-água de 5–7 cm', tipo: 'artificial', art: 'meia', col: 'meia', p: 1.8, agua: ['clara', 'verde'], como: 'Toques curtos e pausas nos remansos.' },
+      { nome: 'Lambari vivo', tipo: 'natural', ic: 'peixe', col: 'meia', p: 1.4, como: 'Pelos lábios, sem chumbo.' }
+    ],
+    onde: { subindo: 'Água turvando: procure remansos laterais mais limpos.', cheio: 'Remansos sob frutíferas.', baixando: 'Corredeiras e remansos de água clara.', seco: 'Corredeiras rasas e poços claros.' },
+    dicas: [
+      'Aproxime-se em silêncio e use linha fina.',
+      'Ao ser fisgada, libera na água uma substância de alarme que afasta o cardume. Depois da primeira, mude de ponto.'
+    ],
+    d: { L: 255, ht: 34, hb: 30, hp: 9, tm: 0.4, head: 'pointed', sy: 2, back: '#7f8c86', belly: '#eef0ec', fin: '#c9643a',
+      tail: 'forked', tl: 58, th: 36, tailColor: '#d6602f', tailBand: '#1c1c1c', barbels: null, eye: { x: 24, y: 6, r: 5.5 }, mouth: 'small',
+      dorsal: { x: 0.42, w: 0.11, h: 26 }, adipose: { x: 0.78, w: 0.06, h: 6 }, anal: { x: 0.66, w: 0.2, h: 13 }, pelvic: { x: 0.52, h: 12 }, pectoral: true,
+      pattern: [{ t: 'pedband', c: '#1c1c1c' }], scales: true, lateral: true }
+  },
+  {
+    id: 'dourado', nome: 'Dourado', outros: 'rei do rio', sci: 'Salminus brasiliensis',
+    grupo: 'escama', origem: 'nativa', regra: 'Captura proibida em MS (moratória). Só pesque e solte',
+    porte: 'Até 1 m e 20 kg. Comuns de 2 a 8 kg.',
+    resumo: 'Predador de correnteza que salta muito depois de fisgado.',
+    habitat: 'Corredeiras, saídas de corixo, pontas de pedra, encontros de água e remansos atrás de estruturas.',
+    come: 'Sairu, curimbatá, lambari, tuvira.',
+    h: H(1, 3, 2, 3, 0), t: { frio: 1, ameno: 3, quente: 2 },
+    c: { sol: 0, nublado: 1, chuva: 0, pre: 2, pos: -1 }, n: { subindo: -1, cheio: -1, baixando: 2, seco: 1 }, a: { clara: 1, verde: 1, barrenta: -1 },
+    perfilNat: 'isca-viva-aco', perfilArt: 'art-dourado',
+    iscas: [
+      { nome: 'Meia-água de 8–12 cm', tipo: 'artificial', art: 'meia', col: 'meia', p: 3, como: 'Arremesse rio acima e recolha a favor da correnteza, com toques.' },
+      { nome: 'Colher', tipo: 'artificial', art: 'colher', col: 'meia', p: 2.2, como: 'Recolhimento contínuo cruzando a corredeira, ou corrico rio abaixo.' },
+      { nome: 'Hélice', tipo: 'artificial', art: 'helice', col: 'sup', p: 2, hor: ['amanhecer', 'entardecer'], frio: false, como: 'Na corredeira, nas horas de pouca luz.' },
+      { nome: 'Jig', tipo: 'artificial', art: 'jig', col: 'fundo', p: 1.5, como: 'Deixe afundar no poço abaixo da corredeira e dê toques.' },
+      { nome: 'Tuvira ou lambari vivo', tipo: 'natural', ic: 'tuvira', col: 'meia', p: 2, como: 'Com empate de aço, à deriva na correnteza.' }
+    ],
+    onde: {
+      subindo: 'Água suja espalha o dourado. Procure encontros onde entra água mais limpa.',
+      cheio: 'Saídas de baía com correnteza e água limpa.',
+      baixando: 'Melhor fase. Saídas de corixo e de baía, onde ele espera o sairu que deixa o campo.',
+      seco: 'Corredeiras, pontas de pedra e poços logo abaixo.'
+    },
+    dicas: [
+      'Fisgue forte e mais de uma vez: a boca é dura.',
+      'Mantenha a linha esticada nos saltos e abaixe a ponta da vara quando ele pular.',
+      'Troque garatéias finas por reforçadas e use empate de aço.'
+    ],
+    d: { L: 265, ht: 40, hb: 34, hp: 12, tm: 0.38, head: 'pointed', sy: 2, back: '#a8781f', belly: '#f3dc8b', fin: '#e07a2a',
+      tail: 'forked', tl: 62, th: 40, tailColor: '#e0662a', tailBand: '#1d1a14', barbels: null, eye: { x: 28, y: 6, r: 5.5 }, mouth: 'big',
+      dorsal: { x: 0.42, w: 0.12, h: 28 }, adipose: { x: 0.79, w: 0.06, h: 7 }, anal: { x: 0.68, w: 0.18, h: 14 }, pelvic: { x: 0.52, h: 13 }, pectoral: true,
+      pattern: [{ t: 'dashrows', c: '#3d2c0d' }], scales: true, lateral: false }
+  },
+  {
+    id: 'traira', nome: 'Traíra', outros: '', sci: 'Hoplias malabaricus',
+    grupo: 'escama', origem: 'nativa', regra: 'Cota de nativa',
+    porte: 'Até 60 cm e cerca de 3 kg.',
+    resumo: 'Predador de emboscada de água rasa e parada. Ataca a superfície com violência.',
+    habitat: 'Baías rasas, corixos, beira de aguapé, capim e baceiro, lagoas e represas.',
+    come: 'Peixes, rãs e insetos.',
+    h: H(2, 3, 1, 3, 3), t: { frio: 0, ameno: 2, quente: 3 },
+    c: { sol: -1, nublado: 1, chuva: 1, pre: 1, pos: -1 }, n: { subindo: 1, cheio: 1, baixando: 1, seco: 0 }, a: { clara: 0, verde: 1, barrenta: 0 },
+    perfilNat: 'piranha', perfilArt: 'art-leve',
+    iscas: [
+      { nome: 'Sapo / frog anti-enrosco', tipo: 'artificial', art: 'sapo', col: 'sup', p: 3, frio: false, como: 'Arraste por cima do aguapé e pare nas clareiras. Espere meio segundo antes de fisgar.' },
+      { nome: 'Zara pequena', tipo: 'artificial', art: 'zara', col: 'sup', p: 2.5, hor: ['amanhecer', 'entardecer', 'noite'], frio: false, como: 'Zigue-zague lento com pausas na beira da vegetação.' },
+      { nome: 'Hélice', tipo: 'artificial', art: 'helice', col: 'sup', p: 2, frio: false, agua: ['verde', 'barrenta'], como: 'Recolhimento lento e barulhento.' },
+      { nome: 'Shad com anzol offset', tipo: 'artificial', art: 'shad', col: 'meia', p: 1.8, como: 'Recolhimento lento perto do fundo; rende no frio.' },
+      { nome: 'Lambari vivo', tipo: 'natural', ic: 'peixe', col: 'meia', p: 2, como: 'Anzol de haste longa, sem chumbo, perto da vegetação.' },
+      { nome: 'Coração de frango', tipo: 'natural', ic: 'coracao', col: 'fundo', p: 1.4, como: 'Inteiro, no fundo raso.' }
+    ],
+    onde: { subindo: 'Capim recém-alagado nas beiras.', cheio: 'Baceiro e aguapé das baías.', baixando: 'Corixos e baías rasas que estão secando.', seco: 'Lagoas e poças com vegetação.' },
+    dicas: ['Dentes muito afiados: use alicate para tirar o anzol.', 'No verão ela ataca muito na superfície. Preto, vermelho e amarelo são as cores mais citadas.'],
+    d: { L: 255, ht: 30, hb: 28, hp: 15, tm: 0.42, head: 'pointed', sy: 4, back: '#4f4a32', belly: '#c9bf98', fin: '#5a5338',
+      tail: 'rounded', tl: 48, th: 32, barbels: null, eye: { x: 28, y: 8, r: 5 }, mouth: 'teeth',
+      dorsal: { x: 0.36, w: 0.15, h: 26 }, adipose: null, anal: { x: 0.74, w: 0.1, h: 16 }, pelvic: { x: 0.5, h: 16 }, pectoral: true,
+      pattern: [{ t: 'bars', n: 7, c: '#2b2818', w: 10, wobble: 4, soft: true }, { t: 'blotch', n: 10, c: '#2b2818', area: 0.7 }], scales: true, lateral: true }
+  },
+  {
+    id: 'piranha', nome: 'Piranha', outros: 'piranha-vermelha, pirambeba', sci: 'Pygocentrus nattereri',
+    grupo: 'escama', origem: 'nativa', regra: 'Até 5 exemplares, além da cota de nativa',
+    porte: 'Até cerca de 30 cm e 1,5 kg.',
+    resumo: 'Abundante no Pantanal. Cuidado ao desanzolar.',
+    habitat: 'Remansos, baías e beira de barranco.',
+    come: 'Pedaços de peixe, nadadeiras e animais feridos.',
+    h: H(1, 2, 3, 2, 1), t: { frio: 0, ameno: 2, quente: 3 },
+    c: { sol: 1, nublado: 0, chuva: 0, pre: 1, pos: -1 }, n: { subindo: 0, cheio: 0, baixando: 1, seco: 2 }, a: { clara: 0, verde: 1, barrenta: 0 },
+    perfilNat: 'piranha', perfilArt: 'art-leve',
+    iscas: [
+      { nome: 'Pedaço de peixe', tipo: 'natural', ic: 'posta', col: 'meia', p: 3, como: 'Filé com pele, bem preso no anzol de haste longa.' },
+      { nome: 'Coração de boi', tipo: 'natural', ic: 'coracao', col: 'meia', p: 2.5, como: 'Tiras firmes.' },
+      { nome: 'Meia-água pequena', tipo: 'artificial', art: 'meia', col: 'meia', p: 1, como: 'Recolhimento médio; ela destrói isca macia.' }
+    ],
+    onde: { subindo: 'Beiras de remanso.', cheio: 'Baías.', baixando: 'Remansos e beira de barranco.', seco: 'Poços e baías isoladas, onde se concentra.' },
+    dicas: ['Use alicate e segure por trás da cabeça.', 'Empate de aço curto: ela corta mono e multi.'],
+    d: { L: 210, ht: 56, hb: 56, hp: 12, tm: 0.42, head: 'blunt', sy: 12, back: '#7d8790', belly: '#c8452f', fin: '#57616a',
+      tail: 'truncate', tl: 40, th: 38, tailBand: '#1d2125', barbels: null, eye: { x: 30, y: 14, r: 6 }, mouth: 'jaw',
+      dorsal: { x: 0.48, w: 0.15, h: 26 }, adipose: { x: 0.8, w: 0.06, h: 7 }, anal: { x: 0.66, w: 0.22, h: 18 }, pelvic: { x: 0.5, h: 12 }, pectoral: true,
+      pattern: [{ t: 'belly', c: '#d14a2f' }, { t: 'speckle', c: '#d7dde0', n: 60 }], scales: true, lateral: true }
+  },
+  {
+    id: 'curimbata', nome: 'Curimbatá', outros: 'curimba, papa-terra', sci: 'Prochilodus lineatus',
+    grupo: 'escama', origem: 'nativa', regra: 'Cota de nativa (confira a medida na Cartilha)',
+    porte: 'Até 40 cm e cerca de 5 kg.',
+    resumo: 'Come lodo e detritos do fundo. Quase não ataca isca artificial.',
+    habitat: 'Águas calmas, em grandes cardumes; barrancos e remansos.',
+    come: 'Lodo, algas e pequenos invertebrados do fundo.',
+    h: H(1, 3, 2, 3, 1), t: { frio: 1, ameno: 3, quente: 3 },
+    c: { sol: 0, nublado: 1, chuva: 0, pre: 1, pos: -1 }, n: { subindo: 1, cheio: 1, baixando: 1, seco: 1 }, a: { clara: 0, verde: 1, barrenta: 0 },
+    perfilNat: 'leve-escama', perfilArt: null,
+    iscas: [
+      { nome: 'Massa de farinha', tipo: 'natural', ic: 'massa', col: 'fundo', p: 3, como: 'Massa bem mole, com ceva no ponto.' },
+      { nome: 'Massa com ração', tipo: 'natural', ic: 'massa', col: 'fundo', p: 2.4, como: 'Ração triturada misturada à massa.' }
+    ],
+    onde: { subindo: 'Remansos de barranco.', cheio: 'Baías e remansos.', baixando: 'Barrancos e remansos.', seco: 'Remansos com fundo de lodo.' },
+    dicas: ['Equipamento leve e ceva constante. Fisgue suave: a boca é delicada.'],
+    d: { L: 250, ht: 44, hb: 34, hp: 11, tm: 0.38, head: 'blunt', sy: 8, back: '#6f7a7e', belly: '#eef1f1', fin: '#8b979b',
+      tail: 'forked', tl: 58, th: 38, barbels: null, eye: { x: 26, y: 10, r: 5 }, mouth: 'under',
+      dorsal: { x: 0.36, w: 0.14, h: 30 }, adipose: { x: 0.78, w: 0.06, h: 7 }, anal: { x: 0.72, w: 0.1, h: 14 }, pelvic: { x: 0.5, h: 14 }, pectoral: true,
+      pattern: [], scales: true, lateral: true }
+  },
+  {
+    id: 'cachorra', nome: 'Cachorra', outros: 'peixe-cachorro, dourado-facão', sci: 'Rhaphiodon vulpinus',
+    grupo: 'escama', origem: 'nativa', regra: 'Cota de nativa',
+    porte: 'Até 80 cm e cerca de 3 kg.',
+    resumo: 'Predador alongado de boca virada para cima, com presas. Ataca em correnteza.',
+    habitat: 'Correnteza, encontros de água e beira de canal.',
+    come: 'Peixes pequenos.',
+    h: H(1, 3, 2, 3, 1), t: { frio: 1, ameno: 3, quente: 2 },
+    c: { sol: 0, nublado: 1, chuva: 0, pre: 2, pos: -1 }, n: { subindo: 0, cheio: 0, baixando: 2, seco: 1 }, a: { clara: 1, verde: 1, barrenta: -1 },
+    perfilNat: 'isca-viva-aco', perfilArt: 'art-dourado',
+    iscas: [
+      { nome: 'Meia-água fina', tipo: 'artificial', art: 'meia', col: 'meia', p: 3, como: 'Recolhimento rápido cruzando a correnteza.' },
+      { nome: 'Colher', tipo: 'artificial', art: 'colher', col: 'meia', p: 2.4, como: 'Contínua, na corredeira.' },
+      { nome: 'Lambari vivo', tipo: 'natural', ic: 'peixe', col: 'meia', p: 2, como: 'Com empate de aço.' }
+    ],
+    onde: { subindo: 'Encontros de água.', cheio: 'Saídas de baía.', baixando: 'Corredeiras e encontros.', seco: 'Corredeiras e beira de canal.' },
+    dicas: ['As presas cortam: empate de aço sempre.', 'Boca óssea: fisgue firme.'],
+    d: { L: 290, ht: 26, hb: 30, hp: 9, tm: 0.38, head: 'pointed', sy: -4, back: '#8d979c', belly: '#f0f2f2', fin: '#b2bbbf',
+      tail: 'forked', tl: 56, th: 32, barbels: null, eye: { x: 26, y: 4, r: 5.5 }, mouth: 'up',
+      dorsal: { x: 0.56, w: 0.08, h: 22 }, adipose: { x: 0.8, w: 0.05, h: 6 }, anal: { x: 0.45, w: 0.4, h: 12 }, pelvic: { x: 0.4, h: 10 }, pectoral: 'big',
+      pattern: [], scales: true, lateral: true }
+  },
+  {
+    id: 'tucunare', nome: 'Tucunaré', outros: 'tucunaré-amarelo, açu', sci: 'Cichla spp.',
+    grupo: 'escama', origem: 'exotica', regra: 'Espécie exótica em MS: sem cota',
+    porte: 'Comuns de 1 a 4 kg; o açu da Amazônia passa de 10 kg.',
+    resumo: 'Predador territorial de água quente e parada, que ataca por reação. Em MS vive nas represas e na bacia do Paraná.',
+    habitat: 'Pauleira, pedras, pontas de ilha, bocas de lagoa e praias rasas de manhã.',
+    come: 'Peixes, camarão e o que cair na água perto da estrutura.',
+    h: H(0, 3, 2, 3, 0), t: { frio: 0, ameno: 2, quente: 3 },
+    c: { sol: 0, nublado: 1, chuva: 0, pre: 2, pos: -2 }, n: { subindo: 0, cheio: -1, baixando: 1, seco: 1 }, a: { clara: 1, verde: 1, barrenta: -1 },
+    perfilNat: 'isca-viva', perfilArt: 'art-leve',
+    iscas: [
+      { nome: 'Zara', tipo: 'artificial', art: 'zara', col: 'sup', p: 3, hor: ['amanhecer', 'entardecer'], frio: false, como: 'Toques curtos com a linha frouxa. No ataque errado, pare a isca: ele volta.' },
+      { nome: 'Hélice', tipo: 'artificial', art: 'helice', col: 'sup', p: 2.5, hor: ['amanhecer', 'entardecer'], frio: false, como: 'Recolhimento em trancos, fazendo barulho perto da estrutura.' },
+      { nome: 'Meia-água', tipo: 'artificial', art: 'meia', col: 'meia', p: 2.5, hor: ['dia'], como: 'Recolhimento com toques e pausas quando o sol sobe.' },
+      { nome: 'Jig de penas', tipo: 'artificial', art: 'jig', col: 'fundo', p: 2, como: 'Deixe afundar na pauleira e dê toques curtos. Rende no frio.' },
+      { nome: 'Shad de silicone', tipo: 'artificial', art: 'shad', col: 'fundo', p: 1.8, como: 'Recolhimento lento perto do fundo na pós-frente fria.' },
+      { nome: 'Popper', tipo: 'artificial', art: 'popper', col: 'sup', p: 1.8, frio: false, como: 'Estalos curtos com pausas, quando ele não sobe para a zara.' },
+      { nome: 'Lambari vivo', tipo: 'natural', ic: 'peixe', col: 'meia', p: 1, como: 'Pelo lombo, perto da estrutura.' }
+    ],
+    onde: { subindo: 'Bocas de lagoa e beiras com pauleira.', cheio: 'Dentro da vegetação alagada: difícil.', baixando: 'Pontas de ilha e saídas de lagoa.', seco: 'Pauleira, pedras e praias rasas.' },
+    dicas: [
+      'O primeiro metro depois da queda da isca é quando mais ataca.',
+      'Técnica da catimba: arremesse a zara no ponto e, quase sem recolher, dê toques de ponta de vara até irritar o peixe. É o trabalho para o qual Johnny Hoffmann e a Marine Sports desenharam a Animal 130.'
+    ],
+    d: { L: 255, ht: 42, hb: 38, hp: 14, tm: 0.4, head: 'pointed', sy: 4, back: '#7c8b3a', belly: '#f0d35c', fin: '#c98a35',
+      tail: 'rounded', tl: 46, th: 38, barbels: null, eye: { x: 28, y: 9, r: 5.5, iris: '#c8341e' }, mouth: 'big',
+      dorsal: { x: 0.3, w: 0.42, h: 24, spiny: true }, adipose: null, anal: { x: 0.74, w: 0.1, h: 18 }, pelvic: { x: 0.4, h: 18 }, pectoral: true,
+      pattern: [{ t: 'bars', n: 3, c: '#2a2a18', w: 13, from: 0.3, to: 0.72 }, { t: 'ocellus' }, { t: 'belly', c: '#e8a33a' }], scales: true, lateral: true }
+  },
+  {
+    id: 'corvina', nome: 'Corvina', outros: 'pescada-do-piauí', sci: 'Plagioscion squamosissimus',
+    grupo: 'escama', origem: 'exotica', regra: 'Espécie exótica em MS: sem cota',
+    porte: 'Comuns de 1 a 3 kg.',
+    resumo: 'Peixe de cardume de represas e rios grandes (bacia do Paraná). Fica no fundo e caça ao entardecer.',
+    habitat: 'Fundo de represas, canais de rio grande e beira de barrancos fundos.',
+    come: 'Camarão, peixes pequenos.',
+    h: H(2, 2, 1, 3, 2), t: { frio: 1, ameno: 3, quente: 3 },
+    c: { sol: 0, nublado: 1, chuva: 0, pre: 2, pos: -1 }, n: { subindo: 0, cheio: 0, baixando: 1, seco: 1 }, a: { clara: 0, verde: 1, barrenta: 0 },
+    perfilNat: 'fundo-medio', perfilArt: 'art-leve',
+    iscas: [
+      { nome: 'Jig', tipo: 'artificial', art: 'jig', col: 'fundo', p: 3, como: 'Vertical no cardume marcado no sonar, toques curtos.' },
+      { nome: 'Shad de silicone', tipo: 'artificial', art: 'shad', col: 'fundo', p: 2.6, como: 'Recolhimento lento pulando no fundo.' },
+      { nome: 'Camarão ou lambari', tipo: 'natural', ic: 'peixe', col: 'fundo', p: 2.4, como: 'No fundo, chumbada corrida.' },
+      { nome: 'Crank de fundo', tipo: 'artificial', art: 'crank', col: 'fundo', p: 1.6, como: 'Bata no fundo nas beiras de canal.' }
+    ],
+    onde: { subindo: 'Beira de canal.', cheio: 'Canais fundos.', baixando: 'Beiras de canal e encontros.', seco: 'Fundo de represa e poços.' },
+    dicas: ['Onde sai uma, há cardume: repita o arremesso no mesmo ponto.'],
+    d: { L: 250, ht: 44, hb: 30, hp: 11, tm: 0.38, head: 'pointed', sy: 6, back: '#8e9aa2', belly: '#f1f2f0', fin: '#c2b48a',
+      tail: 'pointed', tl: 50, th: 30, barbels: null, eye: { x: 26, y: 10, r: 6 }, mouth: 'big',
+      dorsal: { x: 0.3, w: 0.5, h: 24, spiny: true, split: true }, adipose: null, anal: { x: 0.72, w: 0.08, h: 16 }, pelvic: { x: 0.36, h: 16 }, pectoral: true,
+      pattern: [], scales: true, lateral: true }
+  },
+  {
+    id: 'tilapia', nome: 'Tilápia', outros: '', sci: 'Oreochromis niloticus',
+    grupo: 'escama', origem: 'exotica', regra: 'Espécie exótica em MS: sem cota',
+    porte: 'Comuns de 0,5 a 2 kg.',
+    resumo: 'Peixe de represa, lagoa e pesqueiro. Ótimo para treinar ceva e boia.',
+    habitat: 'Represas, lagoas, remansos e margens rasas.',
+    come: 'Algas, plantas, ração e pequenos invertebrados.',
+    h: H(0, 2, 3, 2, 0), t: { frio: 0, ameno: 2, quente: 3 },
+    c: { sol: 1, nublado: 0, chuva: 0, pre: 1, pos: -2 }, n: { subindo: 0, cheio: 0, baixando: 1, seco: 1 }, a: { clara: 1, verde: 1, barrenta: 0 },
+    perfilNat: 'leve-escama', perfilArt: null,
+    iscas: [
+      { nome: 'Massa (fubá, farinha, ração)', tipo: 'natural', ic: 'massa', col: 'meia', p: 3, como: 'Bolinha pequena cobrindo o anzol, com ceva regular.' },
+      { nome: 'Minhoca', tipo: 'natural', ic: 'minhoca', col: 'meia', p: 2.4, como: 'Pedaço pequeno.' },
+      { nome: 'Milho', tipo: 'natural', ic: 'milho', col: 'meia', p: 2, como: 'Um grão.' }
+    ],
+    onde: { subindo: 'Margens rasas.', cheio: 'Margens com vegetação.', baixando: 'Remansos.', seco: 'Margens rasas e ensolaradas.' },
+    dicas: ['Ceva pouca e frequente segura o cardume no ponto.', 'Anzol nº 8 a 12 e boia sensível.'],
+    d: { L: 220, ht: 50, hb: 44, hp: 14, tm: 0.42, head: 'blunt', sy: 6, back: '#6c7a76', belly: '#e3e6df', fin: '#7d6a6a',
+      tail: 'truncate', tl: 42, th: 38, barbels: null, eye: { x: 28, y: 12, r: 6 }, mouth: 'small',
+      dorsal: { x: 0.3, w: 0.52, h: 26, spiny: true }, adipose: null, anal: { x: 0.68, w: 0.16, h: 18 }, pelvic: { x: 0.36, h: 18 }, pectoral: true,
+      pattern: [{ t: 'bars', n: 7, c: '#4a5651', w: 8, soft: true }, { t: 'tailbars' }], scales: true, lateral: true }
+  }
+];
+
+/* ---------- Nós ---------- */
+const NOS = [
+  { id: 'palomar', nome: 'Palomar', uso: 'Isca, anzol ou girador', forca: 'Muito alta', linhas: 'Multi, mono e fluorcarbono',
+    passos: ['Dobre 15 cm de linha e passe a dobra pelo olho do anzol.', 'Dê um nó simples com a linha dupla, sem apertar. A alça fica pendurada.', 'Passe a alça por cima do anzol ou da isca, molhe e aperte puxando as duas pontas. Corte a sobra.'] },
+  { id: 'clinch', nome: 'Clinch melhorado', uso: 'Isca e anzol com mono', forca: 'Alta', linhas: 'Mono e fluorcarbono',
+    passos: ['Passe a ponta pelo olho e enrole 5 a 7 voltas na linha principal (menos voltas em linha grossa).', 'Volte a ponta pela primeira alça, junto ao olho, e depois pela alça grande que se formou.', 'Molhe, aperte devagar e deslize as voltas até o olho.'] },
+  { id: 'uni', nome: 'Uni (Grinner)', uso: 'Isca, anzol e união de linhas (uni-uni)', forca: 'Alta', linhas: 'Todas',
+    passos: ['Passe a ponta pelo olho e deite-a paralela à linha principal, formando uma alça por cima.', 'Enrole a ponta 5 a 6 vezes por dentro da alça, abraçando as duas linhas.', 'Molhe, aperte pela ponta e deslize o nó até o olho.'] },
+  { id: 'fg', nome: 'FG', uso: 'União do multifilamento com o líder', forca: 'A mais alta entre as uniões', linhas: 'Multi + fluor ou mono',
+    passos: ['Com o multi bem esticado, cruze o líder e enrole o multi em volta dele, alternando por cima e por baixo, 15 a 20 cruzamentos.', 'Trave com 2 meio-nós no líder e aperte forte, molhado.', 'Corte a ponta do líder e finalize com meio-nós só no multi. O nó fica fino e passa liso nos passadores.'] },
+  { id: 'albright', nome: 'Albright', uso: 'União de linhas de diâmetros diferentes', forca: 'Alta', linhas: 'Multi + líder, mono + mono',
+    passos: ['Dobre a ponta do líder formando uma alça e passe o multi por dentro dela.', 'Enrole o multi 10 a 12 vezes sobre ele mesmo e as duas pernas da alça, em direção à curva.', 'Saia pela mesma alça por onde entrou, molhe e aperte as quatro pontas.'] },
+  { id: 'loop', nome: 'Laço (Rapala)', uso: 'Iscas de superfície e meia-água', forca: 'Alta', linhas: 'Mono e fluorcarbono',
+    passos: ['Faça um nó simples frouxo na linha, passe a ponta pelo olho da isca e volte por dentro do nó simples.', 'Enrole a ponta 3 a 4 vezes na linha principal.', 'Volte a ponta pelo nó simples e depois pela alça formada. Aperte: fica um laço que deixa a isca nadar solta.'] }
+];
+
+/* ---------- Montagens (para a aba Montagens) ---------- */
+const MONTAGENS = [
+  { id: 'fundo-corrida', nome: 'Fundo com chumbada corrida', perfil: 'fundo-bagre', isca: { tipo: 'natural', ic: 'tuvira', nome: 'Tuvira viva' },
+    quando: 'Isca natural no fundo. O peixe puxa a linha pela chumbada sem sentir o peso.', especies: ['pintado', 'cachara', 'barbado', 'jurupoca', 'piavucu'],
+    ajuste: 'Correnteza forte: suba a chumbada ou troque por chata. Remanso: use o mínimo que toque o fundo.' },
+  { id: 'fundo-pesado', nome: 'Fundo pesado', perfil: 'fundo-jau', isca: { tipo: 'natural', ic: 'posta', nome: 'Posta de peixe' },
+    quando: 'Poços fundos e correnteza forte, peixe acima de 30 kg.', especies: ['jau'],
+    ajuste: 'Chumbada chata não rola. Cabo de aço protege da pedra.' },
+  { id: 'art-lider', nome: 'Isca artificial com líder', perfil: 'art-leve', isca: { tipo: 'artificial', art: 'zara', nome: 'Zara' },
+    quando: 'Artificial em estrutura e água clara. O líder protege da abrasão e some na água.', especies: ['tucunare', 'traira', 'corvina'],
+    ajuste: 'Iscas de superfície: nó de laço para nadar solto. Silicone: anzol offset para não enroscar.' },
+  { id: 'art-aco', nome: 'Isca artificial com empate de aço', perfil: 'art-dourado', isca: { tipo: 'artificial', art: 'meia', nome: 'Meia-água' },
+    quando: 'Peixe de dente que corta linha: dourado, cachorra, e piranha por perto.', especies: ['dourado', 'cachorra'],
+    ajuste: 'Empate curto (20–30 cm) não atrapalha o nado. Troque garatéias por reforçadas.' },
+  { id: 'fruta', nome: 'Fruta e caranguejo para pacu', perfil: 'pacu', isca: { tipo: 'natural', ic: 'fruta', nome: 'Fruta nativa' },
+    quando: 'Pacu sob frutíferas (fruta batida, sem chumbo) ou caranguejo no fundo da galhada (com chumbo).', especies: ['pacu', 'pacupeva'],
+    ajuste: 'Fruta batida: tire a chumbada e bata a isca na água. Caranguejo: oliva leve no fundo.' },
+  { id: 'boia', nome: 'Boia e linha fina', perfil: 'leve-escama', isca: { tipo: 'natural', ic: 'massa', nome: 'Massa' },
+    quando: 'Peixe de escama que belisca a isca: piraputanga, piau, tilápia, curimbatá.', especies: ['piraputanga', 'tilapia', 'curimbata', 'pacupeva'],
+    ajuste: 'Regule a profundidade da boia para a isca ficar a um palmo do fundo.' },
+  { id: 'piranha', nome: 'Empate curto e anzol de haste longa', perfil: 'piranha', isca: { tipo: 'natural', ic: 'posta', nome: 'Pedaço de peixe' },
+    quando: 'Piranha e traíra na isca natural.', especies: ['piranha', 'traira'],
+    ajuste: 'Haste longa facilita tirar o anzol com alicate, longe dos dentes.' },
+  { id: 'viva-aco', nome: 'Isca viva com empate', perfil: 'isca-viva-aco', isca: { tipo: 'natural', ic: 'peixe', nome: 'Lambari vivo' },
+    quando: 'Peixe vivo à deriva para dourado e cachorra.', especies: ['dourado', 'cachorra'],
+    ajuste: 'Sem chumbo em água rasa; oliva leve na correnteza.' }
+];
+
+const FOTOS_URL = (sci) => 'https://commons.wikimedia.org/w/index.php?title=Special:MediaSearch&type=image&search=' + encodeURIComponent(sci.replace(' spp.', ''));
+const INAT_URL = (sci) => 'https://www.inaturalist.org/taxa/search?q=' + encodeURIComponent(sci.replace(' spp.', ''));
+const ML_URL = (q) => 'https://lista.mercadolivre.com.br/' + encodeURIComponent(q.toLowerCase().replace(/[\/]/g, '-').replace(/\s+/g, '-')).replace(/%2C/g, ',');
+const AMZ_URL = (q) => 'https://www.amazon.com.br/s?k=' + encodeURIComponent(q).replace(/%20/g, '+');
+const YT_URL = (q) => 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q).replace(/%20/g, '+');
+
+/* ===== Motor: recomendação por condição e cruzamento com o inventário ===== */
+
+const MONO_TAB = [[0.2, 8], [0.25, 11], [0.28, 13], [0.3, 15], [0.35, 20], [0.4, 25], [0.45, 30], [0.5, 36], [0.6, 48], [0.7, 62], [0.8, 78], [0.9, 95], [1.0, 115], [1.2, 150]];
+function monoToLb(mm) {
+  mm = +mm; if (!mm) return 0;
+  if (mm <= MONO_TAB[0][0]) return Math.round(MONO_TAB[0][1] * mm / MONO_TAB[0][0]);
+  for (let i = 1; i < MONO_TAB.length; i++) {
+    const [a, la] = MONO_TAB[i - 1], [b, lb] = MONO_TAB[i];
+    if (mm <= b) return Math.round(la + (lb - la) * (mm - a) / (b - a));
+  }
+  return Math.round(MONO_TAB[MONO_TAB.length - 1][1] * mm / 1.2);
+}
+function hookNum(s) {
+  if (s === undefined || s === null || s === '') return null;
+  s = String(s).trim().toLowerCase().replace('nº', '').replace('n°', '').trim();
+  const m = s.match(/^(\d+)\s*\/\s*0$/);
+  if (m) return +m[1];
+  const n = parseFloat(s);
+  return isNaN(n) ? null : 1 - n;
+}
+function hookTxt(n) { return n >= 1 ? n + '/0' : 'nº ' + (1 - n); }
+function lbOf(item) { return item.unid === 'mm' ? monoToLb(item.res) : +item.res || 0; }
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const fmtN = (v) => String(v).replace('.', ',');
+
+function luzDe(st) {
+  return (['madrugada', 'amanhecer', 'entardecer', 'noite'].includes(st.hora) || ['nublado', 'chuva'].includes(st.clima)) ? 'baixa' : 'alta';
+}
+
+function coresPara(st, sp) {
+  const luz = luzDe(st);
+  const t = {
+    clara: { alta: ['prata', 'natural', 'osso', 'transp'], baixa: ['branco', 'osso', 'dorsoverde', 'preto'] },
+    verde: { alta: ['dourado', 'dorsoverde', 'fogo', 'prata'], baixa: ['fogo', 'limao', 'branco', 'preto'] },
+    barrenta: { alta: ['limao', 'laranja', 'fogo', 'preto'], baixa: ['preto', 'roxo', 'limao', 'vermelho'] }
+  };
+  let lista = t[st.agua][luz].slice();
+  if (st.hora === 'noite' || st.hora === 'madrugada') lista = ['preto', 'glow'].concat(lista.filter(c => c !== 'preto')).slice(0, 4);
+  if (sp && sp.id === 'traira') lista = ['preto', 'vermelho', 'amarelo'].concat(lista.filter(c => !['preto', 'vermelho', 'amarelo'].includes(c))).slice(0, 4);
+  const pq = {
+    clara: 'Água clara: o peixe vê detalhes. Imite a presa.',
+    verde: 'Água esverdeada: cor natural com contraste.',
+    barrenta: 'Água barrenta: silhueta e cor sólida aparecem melhor.'
+  }[st.agua] + (luz === 'baixa' ? ' Pouca luz: prefira silhueta escura ou cor clara sólida.' : '');
+  return { lista, pq };
+}
+
+function pontuaIsca(b, st) {
+  let s = b.p * 10;
+  if (b.hor) s += b.hor.includes(st.hora) ? 8 : -6;
+  if (b.agua) s += b.agua.includes(st.agua) ? 6 : -6;
+  if (b.niv) s += b.niv.includes(st.nivel) ? 8 : -5;
+  if (st.temp === 'frio' && b.frio === false) s -= 12;
+  if (st.clima === 'pos') s += b.col === 'sup' ? -18 : b.col === 'fundo' ? 8 : -4;
+  if (st.clima === 'pre' && b.tipo === 'artificial') s += 4;
+  if (st.hora === 'dia' && st.clima === 'sol' && b.col === 'sup') s -= 8;
+  if ((st.hora === 'noite' || st.hora === 'madrugada') && b.tipo === 'artificial' && !(b.hor || []).includes(st.hora)) s -= 4;
+  if (st.agua === 'barrenta' && b.tipo === 'natural') s += 4;
+  if (st.agua === 'barrenta' && b.tipo === 'artificial' && b.col !== 'sup') s -= 3;
+  if (st.local === 'barranco' && b.tipo === 'artificial') s -= 2;
+  return s;
+}
+
+function ajustaChumbada(ch, st) {
+  if (!ch) return null;
+  const [a, b] = ch.g, mid = Math.round((a + b) / 2);
+  let g = ch.g, por = '';
+  if (st.nivel === 'subindo' || st.nivel === 'cheio') { g = [mid, b]; por = 'mais correnteza'; }
+  else if (st.nivel === 'seco') { g = [a, mid]; por = 'pouca correnteza'; }
+  return Object.assign({}, ch, { g, txtAjustado: (ch.tipo === 'chumbinho' ? 'Chumbinho' : ch.tipo === 'chata' ? 'Chata' : 'Oliva corrida') + ' ' + g[0] + '–' + g[1] + ' g' + (por ? ' (' + por + ')' : '') });
+}
+
+function recomenda(st) {
+  const sp = ESPECIES.find(e => e.id === st.esp) || ESPECIES[0];
+  // índice de atividade
+  let s = sp.h[st.hora] / 3 * 45 + sp.t[st.temp] / 3 * 25 + 10 + sp.c[st.clima] * 6 + sp.n[st.nivel] * 5 + sp.a[st.agua] * 4;
+  s = Math.round(clamp(s, 0, 100));
+  const rotulo = s >= 72 ? 'Ótima' : s >= 52 ? 'Boa' : s >= 32 ? 'Média' : 'Baixa';
+
+  // fatores que mais pesaram
+  const f = [];
+  const hv = sp.h[st.hora];
+  f.push({ v: hv - 1.5, t: hv >= 3 ? 'Horário de pico para esta espécie' : hv >= 2 ? 'Horário bom' : hv === 1 ? 'Horário fraco para esta espécie' : 'Fora do horário de alimentação' });
+  const tv = sp.t[st.temp];
+  if (tv <= 1) f.push({ v: -1.2, t: 'Temperatura baixa reduz a atividade' });
+  if (sp.c[st.clima] !== 0) f.push({ v: sp.c[st.clima], t: { sol: 'Sol forte', nublado: 'Céu nublado', chuva: 'Chuva fina', pre: 'Frente fria chegando', pos: 'Pós-frente fria' }[st.clima] + (sp.c[st.clima] > 0 ? ' favorece' : ' atrapalha') });
+  if (sp.n[st.nivel] !== 0) f.push({ v: sp.n[st.nivel], t: 'Rio ' + NIVEIS.find(n => n.id === st.nivel).nome.toLowerCase() + (sp.n[st.nivel] > 0 ? ': fase boa' : ': fase difícil') });
+  if (sp.a[st.agua] !== 0) f.push({ v: sp.a[st.agua], t: 'Água ' + AGUAS.find(a => a.id === st.agua).nome.toLowerCase() + (sp.a[st.agua] > 0 ? ' ajuda' : ' atrapalha') });
+  f.sort((x, y) => Math.abs(y.v) - Math.abs(x.v));
+
+  // iscas
+  const iscas = sp.iscas.map(b => Object.assign({}, b, { sc: pontuaIsca(b, st) })).sort((x, y) => y.sc - x.sc);
+  const top = iscas[0];
+  let pk = top.tipo === 'artificial' ? sp.perfilArt : sp.perfilNat;
+  if (!pk) pk = sp.perfilNat || sp.perfilArt;
+  const perfil = PERFIS[pk];
+  const spec = Object.assign({}, perfil[st.variante]);
+  spec.chumbada = ajustaChumbada(spec.chumbada, st);
+
+  const temArt = iscas.slice(0, 3).some(b => b.tipo === 'artificial');
+  const cores = temArt ? coresPara(st, sp) : null;
+
+  const notas = [];
+  if (st.agua === 'clara') notas.push('Água clara: linha mais fina ou líder de fluorcarbono mais longo, e arremessos longos.');
+  if (st.agua === 'barrenta') notas.push('Água barrenta: o peixe caça pelo cheiro e pela vibração. Isca natural fresca, ou artificial barulhenta e de cor forte.');
+  if (st.clima === 'pos') notas.push('Pós-frente fria: peixe parado. Isca menor, mais lenta e mais perto do fundo.');
+  if (st.clima === 'pre') notas.push('Frente fria chegando: o peixe come forte nas horas anteriores. Aproveite ao máximo.');
+  if (st.clima === 'sol' && st.hora === 'dia') notas.push('Sol a pino: procure sombra, pauleira e fundo.');
+  if (st.temp === 'frio') notas.push('Frio: reduza o tamanho da isca e o ritmo do trabalho.');
+  if (st.local === 'barranco') notas.push('Do barranco: vara 0,2 a 0,3 m mais longa ajuda a arremessar longe e tirar o peixe da beira.');
+  if (pk === 'fundo-jau' && st.variante === 'molinete') notas.push('Para jaú, a carretilha redonda é bem mais indicada que o molinete.');
+  if (top.ic === 'fruta' && sp.id === 'pacu') notas.push('Fruta batida: tire a chumbada e bata a isca na água sob a árvore.');
+
+  return { sp, st, score: s, rotulo, fatores: f.slice(0, 4), top, alts: iscas.slice(1, 3), pk, perfil, spec, cores, onde: sp.onde[st.nivel], notas, rigId: perfil.rig };
+}
+
+/* ---------- Cruzamento com o inventário ---------- */
+function faixa(have, need, tol) {
+  // 1 = cobre; 0.5 = perto; 0 = fora
+  const [h0, h1] = have, [n0, n1] = need;
+  if (h1 >= n0 && h0 <= n1) return 1;
+  const gap = h1 < n0 ? n0 - h1 : h0 - n1;
+  return gap <= tol ? 0.5 : 0;
+}
+const ST = (sc) => sc >= 1 ? 'ok' : sc > 0 ? 'perto' : 'falta';
+const lbTxt = (r) => r[0] + '–' + r[1] + ' lb';
+
+function cruza(rec, inv) {
+  const spec = rec.spec, v = rec.st.variante, comps = [];
+  const varaNome = v === 'carretilha' ? 'vara para carretilha' : 'vara para molinete';
+
+  // Vara
+  {
+    const need = spec.vara;
+    const cand = inv.filter(i => i.cat === 'vara' && i.tipo === need.tipo);
+    let best = null, bs = 0, nota = '';
+    cand.forEach(i => {
+      let sc = faixa([+i.lbMin || 0, +i.lbMax || 0], need.lb, 6);
+      if (sc === 1 && i.comp && (i.comp < need.comp[0] - 0.25 || i.comp > need.comp[1] + 0.35)) sc = 0.5;
+      if (sc > bs) { bs = sc; best = i; }
+    });
+    if (!best && inv.some(i => i.cat === 'vara')) nota = 'Suas varas são para ' + (v === 'carretilha' ? 'molinete' : 'carretilha') + '.';
+    if (best && bs < 1) nota = 'Libragem ou comprimento fora da faixa ideal; funciona com cuidado no freio.';
+    comps.push({ nome: 'Vara', precisa: fmtN(need.comp[0]) + '–' + fmtN(need.comp[1]) + ' m, ' + lbTxt(need.lb) + ', ação ' + need.acao, tem: best, status: ST(bs), sc: bs, nota, buy: varaNome + ' ' + need.lb[0] + '-' + need.lb[1] + 'lb' });
+  }
+  // Carretilha / molinete
+  {
+    const need = spec.reel;
+    let best = null, bs = 0, nota = '';
+    if (v === 'carretilha') {
+      inv.filter(i => i.cat === 'carretilha').forEach(i => {
+        const t = +i.tam || 0;
+        let sc = (t >= need.tam[0] * 0.75 && t <= need.tam[1] * 1.34) ? 1 : (t >= need.tam[0] * 0.5 && t <= need.tam[1] * 2) ? 0.5 : 0;
+        if (!need.tipo.includes(i.perfil)) sc = Math.min(sc, 0.5);
+        if (sc > bs) { bs = sc; best = i; }
+      });
+    } else {
+      inv.filter(i => i.cat === 'molinete').forEach(i => {
+        const t = +i.tam || 0;
+        const sc = (t >= need.tam[0] * 0.66 && t <= need.tam[1] * 1.5) ? 1 : (t >= need.tam[0] * 0.4 && t <= need.tam[1] * 2.5) ? 0.5 : 0;
+        if (sc > bs) { bs = sc; best = i; }
+      });
+    }
+    if (best && bs < 1) nota = 'Tamanho diferente do ideal: confira a capacidade de linha e o drag.';
+    comps.push({ nome: v === 'carretilha' ? 'Carretilha' : 'Molinete', precisa: need.txt, tem: best, status: ST(bs), sc: bs, nota, buy: v === 'carretilha' ? ('carretilha ' + (need.tipo[0] === 'redonda' ? 'redonda ' : 'perfil baixo ') + need.tam[0]) : ('molinete ' + need.tam[0]) });
+  }
+  // Linha principal
+  {
+    const need = spec.linha;
+    let best = null, bs = 0, nota = '';
+    inv.filter(i => i.cat === 'linha' && i.tipo !== 'fluor').forEach(i => {
+      const lb = lbOf(i);
+      let sc = (lb >= need.lb[0] * 0.85 && lb <= need.lb[1] * 1.2) ? 1 : (lb >= need.lb[0] * 0.6 && lb <= need.lb[1] * 1.7) ? 0.5 : 0;
+      if (i.tipo !== need.tipo && sc === 1) sc = (need.tipo === 'mono' && i.tipo === 'multi') ? 1 : 0.5;
+      if (sc > bs) { bs = sc; best = i; }
+    });
+    if (best && bs < 1) nota = 'Resistência ou tipo de linha fora da faixa ideal.';
+    comps.push({ nome: 'Linha principal', precisa: need.txt, tem: best, status: ST(bs), sc: bs, nota, buy: need.tipo === 'multi' ? ('linha multifilamento ' + need.lb[1] + 'lb') : ('linha monofilamento ' + need.lb[1] + 'lb') });
+  }
+  // Líder / empate
+  {
+    const need = spec.lider;
+    let best = null, bs = 0, nota = '';
+    if (need.tipo === 'aco') {
+      inv.filter(i => i.cat === 'empate').forEach(i => {
+        const sc = (+i.lb || 0) >= need.lb[0] * 0.7 ? 1 : 0.5;
+        if (sc > bs) { bs = sc; best = i; }
+      });
+      if (!best) nota = 'Sem empate de aço o dente corta a linha.';
+    } else {
+      inv.filter(i => i.cat === 'linha' && (i.tipo === 'fluor' || i.tipo === 'mono')).forEach(i => {
+        const lb = lbOf(i);
+        let sc = (lb >= need.lb[0] * 0.8 && lb <= need.lb[1] * 1.3) ? 1 : (lb >= need.lb[0] * 0.55 && lb <= need.lb[1] * 1.8) ? 0.5 : 0;
+        if (need.tipo === 'fluor' && i.tipo === 'mono' && sc === 1) sc = rec.st.agua === 'clara' ? 0.5 : 1;
+        if (sc > bs) { bs = sc; best = i; }
+      });
+      if (best && bs < 1) nota = need.tipo === 'fluor' && best.tipo === 'mono' ? 'Mono serve, mas em água clara o fluorcarbono é menos visível.' : 'Resistência do líder fora da faixa ideal.';
+    }
+    comps.push({ nome: need.tipo === 'aco' ? 'Empate de aço' : 'Líder', precisa: need.txt, tem: best, status: ST(bs), sc: bs, nota, buy: need.tipo === 'aco' ? 'empate de aço pesca' : (need.tipo === 'fluor' ? 'linha fluorcarbono ' + need.lb[1] + 'lb' : 'linha monofilamento ' + need.lb[1] + 'lb') });
+  }
+  // Anzol
+  const usaOffset = rec.top.art === 'shad';
+  if (spec.anzol && !(spec.anzol.soSilicone && !usaOffset) && !spec.anzol.soGarateia) {
+    const need = spec.anzol;
+    let best = null, bs = 0, nota = '';
+    inv.filter(i => i.cat === 'anzol').forEach(i => {
+      const a = hookNum(i.min), b = hookNum(i.max === '' || i.max === undefined ? i.min : i.max);
+      if (a === null) return;
+      const r = [Math.min(a, b === null ? a : b), Math.max(a, b === null ? a : b)];
+      let sc = faixa(r, need.tam, 1);
+      if (i.modelo !== need.modelo) sc = Math.min(sc, 0.5);
+      if (sc > bs) { bs = sc; best = i; }
+    });
+    if (best && bs < 1) nota = best.modelo !== need.modelo ? 'Modelo diferente do ideal, mas o tamanho atende.' : 'Tamanho fora da faixa ideal.';
+    const nomeMod = { circular: 'circular', maruseigo: 'maruseigo', offset: 'offset', haste: 'haste longa', jcomum: '', garateia: '' }[need.modelo] || '';
+    comps.push({ nome: 'Anzol', precisa: need.txt, tem: best, status: ST(bs), sc: bs, nota, buy: 'anzol ' + nomeMod + ' ' + hookTxt(need.tam[1]) });
+  } else if (spec.anzol && spec.anzol.soGarateia) {
+    comps.push({ nome: 'Garatéias', precisa: spec.anzol.txt, tem: null, status: 'info', sc: null, nota: 'Confira se as garatéias das suas iscas são reforçadas.', buy: 'garateia reforçada 4x' });
+  }
+  // Chumbada
+  if (spec.chumbada) {
+    const need = spec.chumbada;
+    let best = null, bs = 0, nota = '';
+    inv.filter(i => i.cat === 'chumbada').forEach(i => {
+      let sc = faixa([+i.gMin || 0, +i.gMax || +i.gMin || 0], need.g, 5);
+      if (i.tipo !== need.tipo) sc = Math.min(sc, 0.5);
+      if (sc > bs) { bs = sc; best = i; }
+    });
+    if (best && bs < 1) nota = 'Tipo ou peso diferente do ideal.';
+    comps.push({ nome: 'Chumbada', precisa: need.txtAjustado, tem: best, status: ST(bs), sc: bs, nota, buy: 'chumbada ' + need.tipo + ' ' + need.g[1] + 'g' });
+  }
+  // Iscas artificiais recomendadas
+  const arts = [rec.top].concat(rec.alts).filter(b => b.tipo === 'artificial').slice(0, 2);
+  arts.forEach((b, idx) => {
+    const tenho = inv.filter(i => i.cat === 'isca' && i.art === b.art);
+    let best = null, bs = 0, nota = '';
+    tenho.forEach(i => {
+      const sc = rec.cores && rec.cores.lista.includes(i.cor) ? 1 : 0.5;
+      if (sc > bs) { bs = sc; best = i; }
+    });
+    if (best && bs < 1) nota = 'Você tem o tipo certo; a cor indicada hoje é ' + rec.cores.lista.slice(0, 2).map(c => CORES_ISCA[c].nome.toLowerCase()).join(' ou ') + '.';
+    comps.push({ nome: idx === 0 && b === rec.top ? 'Isca principal' : 'Isca alternativa', precisa: ART_TIPOS[b.art], tem: best, status: ST(bs), sc: bs, nota, buy: 'isca artificial ' + ART_TIPOS[b.art].split(' (')[0] + (rec.sp.id === 'tucunare' || rec.sp.id === 'traira' ? ' ' + rec.sp.nome : '') });
+  });
+  if (rec.top.tipo === 'natural') {
+    comps.push({ nome: 'Isca natural', precisa: rec.top.nome, tem: null, status: 'info', sc: null, nota: 'Compre com isqueiro da região ou capture no local.', buy: null });
+  }
+  const pontuados = comps.filter(c => c.sc !== null);
+  const pct = pontuados.length ? Math.round(pontuados.reduce((a, c) => a + c.sc, 0) / pontuados.length * 100) : 0;
+  return { comps, pct };
+}
+
+/* Cobertura: o quanto o equipamento atende cada espécie em uma condição típica boa */
+function cobertura(inv) {
+  return ESPECIES.map(sp => {
+    const melhorHora = Object.keys(sp.h).sort((a, b) => sp.h[b] - sp.h[a])[0];
+    let best = { pct: -1 };
+    ['carretilha', 'molinete'].forEach(v => {
+      const st = { esp: sp.id, agua: 'verde', nivel: 'baixando', temp: 'quente', clima: 'nublado', hora: melhorHora, local: 'barco', variante: v };
+      const r = recomenda(st);
+      const m = cruza(r, inv);
+      if (m.pct > best.pct) best = { pct: m.pct, variante: v, falta: m.comps.filter(c => c.status === 'falta').map(c => c.nome) };
+    });
+    return Object.assign({ sp }, best);
+  }).sort((a, b) => b.pct - a.pct);
+}
+
+/* Kit de exemplo para o inventário vazio */
+function kitExemplo() {
+  const id = () => Math.random().toString(36).slice(2, 9);
+  return [
+    { cat: 'vara', nome: 'Vara de carretilha 1,80 m', tipo: 'carretilha', comp: 1.8, lbMin: 12, lbMax: 25, acao: 'rapida' },
+    { cat: 'vara', nome: 'Vara de fundo 2,10 m', tipo: 'carretilha', comp: 2.1, lbMin: 20, lbMax: 40, acao: 'moderada' },
+    { cat: 'vara', nome: 'Vara de molinete 1,80 m', tipo: 'molinete', comp: 1.8, lbMin: 8, lbMax: 17, acao: 'moderada' },
+    { cat: 'carretilha', nome: 'Carretilha perfil baixo', perfil: 'perfil', tam: 150 },
+    { cat: 'carretilha', nome: 'Carretilha redonda', perfil: 'redonda', tam: 300 },
+    { cat: 'molinete', nome: 'Molinete', tam: 3000 },
+    { cat: 'linha', nome: 'Multi 8X', tipo: 'multi', res: 30, unid: 'lb' },
+    { cat: 'linha', nome: 'Multi 4X', tipo: 'multi', res: 50, unid: 'lb' },
+    { cat: 'linha', nome: 'Mono', tipo: 'mono', res: 0.35, unid: 'mm' },
+    { cat: 'linha', nome: 'Fluorcarbono', tipo: 'fluor', res: 35, unid: 'lb' },
+    { cat: 'linha', nome: 'Mono grosso (líder)', tipo: 'mono', res: 0.7, unid: 'mm' },
+    { cat: 'empate', nome: 'Empate de aço 25 cm', lb: 40 },
+    { cat: 'anzol', nome: 'Circular', modelo: 'circular', min: '4/0', max: '7/0' },
+    { cat: 'anzol', nome: 'Maruseigo', modelo: 'maruseigo', min: '1/0', max: '3/0' },
+    { cat: 'chumbada', nome: 'Oliva', tipo: 'oliva', gMin: 10, gMax: 40 },
+    { cat: 'isca', nome: 'Zara 9 cm', art: 'zara', cor: 'osso', cm: 9 },
+    { cat: 'isca', nome: 'Meia-água 9 cm', art: 'meia', cor: 'dourado', cm: 9 },
+    { cat: 'isca', nome: 'Sapo anti-enrosco', art: 'sapo', cor: 'preto', cm: 6 },
+    { cat: 'isca', nome: 'Jig de penas', art: 'jig', cor: 'branco', cm: 7 }
+  ].map(i => Object.assign(i, { id: id(), exemplo: true }));
+}
+
+
+/* ===== Desenhos: peixes, montagens e nós (SVG gerado) ===== */
+
+let _uid = 0;
+const uid = (p) => p + (++_uid);
+
+function hexToRgb(h) { h = h.replace('#', ''); return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); }
+function mix(a, b, t) {
+  const A = hexToRgb(a), B = hexToRgb(b);
+  return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join('');
+}
+function rng(seed) {
+  let h = 2166136261;
+  for (const c of String(seed)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
+  return function () { h += 0x6D2B79F5; let t = h; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+function bez(p0, p1, p2, p3, t) {
+  const u = 1 - t;
+  return [u * u * u * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t * t * t * p3[0],
+    u * u * u * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t * t * t * p3[1]];
+}
+const f1 = (n) => Math.round(n * 10) / 10;
+const P = (pt) => f1(pt[0]) + ',' + f1(pt[1]);
+
+/* ---------- Peixe ---------- */
+function fishSVG(sp, opts) {
+  opts = opts || {};
+  const d = sp.d, W = 420, HH = 214, cy = 107;
+  const sn = d.snout || 0, L = d.L, tl = d.tl;
+  const x0 = (W - (sn + L + tl)) / 2 + 4;
+  const xs = x0, xh = x0 + sn, xp = x0 + sn + L;
+  const xT = xh + L * d.tm, xB = xh + L * Math.min(d.tm + 0.06, 0.6);
+  const sy = cy + (d.sy || 0);
+  const ht = d.ht, hb = d.hb, hp = d.hp;
+
+  // contorno: topo em 2 curvas, base em 2 curvas
+  let tc1, tc2, bc2;
+  if (d.head === 'flat') { tc1 = [xs + (xT - xs) * 0.22, sy - ht * 0.5]; tc2 = [xT - (xT - xs) * 0.38, cy - ht]; bc2 = [xs + (xB - xs) * 0.1, sy + hb * 0.55]; }
+  else if (d.head === 'blunt') { tc1 = [xs + 1, sy - ht * 0.8]; tc2 = [xT - (xT - xs) * 0.55, cy - ht]; bc2 = [xs + 2, sy + hb * 0.62]; }
+  else if (d.head === 'duck') { tc1 = [xs + sn * 0.95, sy - 4]; tc2 = [xT - (xT - xh) * 0.55, cy - ht]; bc2 = [xs + sn * 0.95, sy + 4]; }
+  else { tc1 = [xs + (xT - xs) * 0.2, sy - ht * 0.38]; tc2 = [xT - (xT - xs) * 0.45, cy - ht]; bc2 = [xs + (xB - xs) * 0.2, sy + hb * 0.32]; }
+  const S = [xs, sy], T = [xT, cy - ht], Pt = [xp, cy - hp], Pb = [xp, cy + hp], B = [xB, cy + hb];
+  const segs = {
+    t1: [S, tc1, tc2, T],
+    t2: [T, [xT + (xp - xT) * 0.42, cy - ht], [xp - (xp - xT) * 0.3, cy - hp], Pt],
+    b1: [Pb, [xp - (xp - xB) * 0.3, cy + hp], [xB + (xp - xB) * 0.42, cy + hb], B],
+    b2: [B, [xB - (xB - xs) * 0.42, cy + hb], bc2, S]
+  };
+  const bodyPath = 'M' + P(S) + ' C' + P(tc1) + ' ' + P(tc2) + ' ' + P(T) + ' C' + P(segs.t2[1]) + ' ' + P(segs.t2[2]) + ' ' + P(Pt) +
+    ' L' + P(Pb) + ' C' + P(segs.b1[1]) + ' ' + P(segs.b1[2]) + ' ' + P(B) + ' C' + P(segs.b2[1]) + ' ' + P(segs.b2[2]) + ' ' + P(S) + 'Z';
+
+  const sample = (seg) => { const a = []; for (let i = 0; i <= 40; i++) a.push(bez(seg[0], seg[1], seg[2], seg[3], i / 40)); return a; };
+  const top = sample(segs.t1).concat(sample(segs.t2));
+  const bot = sample(segs.b2).reverse().concat(sample(segs.b1).reverse());
+  const interp = (arr, x) => {
+    if (x <= arr[0][0]) return arr[0][1];
+    for (let i = 1; i < arr.length; i++) if (arr[i][0] >= x) { const [a, ya] = arr[i - 1], [b, yb] = arr[i]; return b === a ? yb : ya + (yb - ya) * (x - a) / (b - a); }
+    return arr[arr.length - 1][1];
+  };
+  const topY = (x) => interp(top, x), botY = (x) => interp(bot, x);
+
+  const id = uid('f'), R = rng(sp.id);
+  const out = [];
+  const stroke = 'stroke="rgba(18,22,20,.55)" stroke-width="1.3" stroke-linejoin="round"';
+  const finFill = d.fin, finStroke = 'stroke="rgba(18,22,20,.45)" stroke-width="1"';
+
+  out.push('<defs>');
+  out.push(`<linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${mix(d.back, '#000000', 0.12)}"/><stop offset=".42" stop-color="${d.back}"/><stop offset=".62" stop-color="${mix(d.back, d.belly, 0.75)}"/><stop offset="1" stop-color="${d.belly}"/></linearGradient>`);
+  out.push(`<clipPath id="${id}c"><path d="${bodyPath}"/></clipPath>`);
+  out.push(`<pattern id="${id}s" width="10" height="9" patternUnits="userSpaceOnUse"><path d="M0,4.5 A5,5 0 0 0 10,4.5 M-5,9 A5,5 0 0 0 5,9 M5,9 A5,5 0 0 0 15,9" fill="none" stroke="rgba(0,0,0,.16)" stroke-width=".8"/></pattern>`);
+  out.push('</defs>');
+
+  // nadadeira caudal
+  const tc = d.tailColor || finFill, th = d.th;
+  let tail;
+  if (d.tail === 'forked') tail = `M${f1(xp - 3)},${f1(cy - hp)} C${f1(xp + tl * .35)},${f1(cy - hp - th * .25)} ${f1(xp + tl * .7)},${f1(cy - th * .9)} ${f1(xp + tl)},${f1(cy - th)} C${f1(xp + tl * .8)},${f1(cy - th * .55)} ${f1(xp + tl * .55)},${f1(cy - th * .2)} ${f1(xp + tl * .45)},${cy} C${f1(xp + tl * .55)},${f1(cy + th * .2)} ${f1(xp + tl * .8)},${f1(cy + th * .55)} ${f1(xp + tl)},${f1(cy + th)} C${f1(xp + tl * .7)},${f1(cy + th * .9)} ${f1(xp + tl * .35)},${f1(cy + hp + th * .25)} ${f1(xp - 3)},${f1(cy + hp)}Z`;
+  else if (d.tail === 'rounded') tail = `M${f1(xp - 3)},${f1(cy - hp)} C${f1(xp + tl * .3)},${f1(cy - hp - th * .35)} ${f1(xp + tl * .95)},${f1(cy - th * .95)} ${f1(xp + tl)},${cy} C${f1(xp + tl * .95)},${f1(cy + th * .95)} ${f1(xp + tl * .3)},${f1(cy + hp + th * .35)} ${f1(xp - 3)},${f1(cy + hp)}Z`;
+  else if (d.tail === 'pointed') tail = `M${f1(xp - 3)},${f1(cy - hp)} C${f1(xp + tl * .4)},${f1(cy - th)} ${f1(xp + tl * .8)},${f1(cy - th * .45)} ${f1(xp + tl)},${cy} C${f1(xp + tl * .8)},${f1(cy + th * .45)} ${f1(xp + tl * .4)},${f1(cy + th)} ${f1(xp - 3)},${f1(cy + hp)}Z`;
+  else tail = `M${f1(xp - 3)},${f1(cy - hp)} C${f1(xp + tl * .3)},${f1(cy - hp)} ${f1(xp + tl * .8)},${f1(cy - th)} ${f1(xp + tl)},${f1(cy - th)} C${f1(xp + tl * .92)},${f1(cy - th * .4)} ${f1(xp + tl * .92)},${f1(cy + th * .4)} ${f1(xp + tl)},${f1(cy + th)} C${f1(xp + tl * .8)},${f1(cy + th)} ${f1(xp + tl * .3)},${f1(cy + hp)} ${f1(xp - 3)},${f1(cy + hp)}Z`;
+  out.push(`<clipPath id="${id}t"><path d="${tail}"/></clipPath>`);
+  out.push(`<path d="${tail}" fill="${tc}" ${finStroke}/>`);
+  // raios da cauda
+  let rays = '';
+  for (let i = -4; i <= 4; i++) rays += `M${f1(xp + 2)},${f1(cy + i * hp * 0.2)} L${f1(xp + tl)},${f1(cy + i * th * 0.24)} `;
+  out.push(`<path d="${rays}" stroke="rgba(0,0,0,.18)" stroke-width=".8" fill="none" clip-path="url(#${id}t)"/>`);
+  if (d.tailBand) {
+    if (sp.id === 'piranha') out.push(`<rect x="${f1(xp + tl * .62)}" y="${cy - th - 4}" width="${f1(tl * .25)}" height="${th * 2 + 8}" fill="${d.tailBand}" opacity=".85" clip-path="url(#${id}t)"/>`);
+    else out.push(`<path d="M${f1(xp - 4)},${cy - 4} L${f1(xp + tl * .5)},${cy - 3.5} L${f1(xp + tl * .5)},${cy + 3.5} L${f1(xp - 4)},${cy + 4}Z" fill="${d.tailBand}" clip-path="url(#${id}t)"/>`);
+  }
+  if ((d.pattern || []).some(p => p.t === 'tailbars')) {
+    for (let i = 1; i <= 4; i++) out.push(`<path d="M${f1(xp + tl * i * 0.22)},${cy - th - 2} q4,${th} 0,${th * 2 + 4}" stroke="rgba(0,0,0,.35)" stroke-width="2.5" fill="none" clip-path="url(#${id}t)"/>`);
+  }
+
+  // dorsal
+  if (d.dorsal) {
+    const x1 = xh + L * d.dorsal.x, x2 = x1 + L * d.dorsal.w, h = d.dorsal.h, w = x2 - x1;
+    const b1 = topY(x1) + 4, b2 = topY(x2) + 4;
+    let p;
+    if (d.dorsal.spiny) {
+      const spinyEnd = x1 + w * (d.dorsal.split ? 0.38 : 0.62);
+      const n = Math.max(5, Math.round((spinyEnd - x1) / 9));
+      const step = (spinyEnd - x1) / n;
+      p = `M${f1(x1)},${f1(b1)}`;
+      for (let i = 0; i < n; i++) {
+        const x = x1 + step * i, prof = 0.65 + 0.35 * Math.sin(Math.PI * (i + 0.5) / n * 0.9);
+        p += ` L${f1(x + step * 0.45)},${f1(topY(x) - h * prof)} L${f1(x + step)},${f1(topY(x + step) - h * prof * 0.6)}`;
+      }
+      const vy = d.dorsal.split ? topY(spinyEnd) - h * 0.15 : topY(spinyEnd) - h * 0.55;
+      p += ` L${f1(spinyEnd + 3)},${f1(vy)} C${f1(spinyEnd + w * 0.1)},${f1(topY(spinyEnd) - h * 1.05)} ${f1(x2 - w * 0.12)},${f1(topY(x2) - h * 1.1)} ${f1(x2)},${f1(b2)}Z`;
+    } else {
+      p = `M${f1(x1)},${f1(b1)} C${f1(x1 + w * .05)},${f1(b1 - h * 1.1)} ${f1(x1 + w * .4)},${f1(b1 - h * 1.05)} ${f1(x1 + w * .55)},${f1(b1 - h * .85)} C${f1(x1 + w * .75)},${f1(b1 - h * .55)} ${f1(x2 - w * .1)},${f1(b2 - h * .2)} ${f1(x2)},${f1(b2)}Z`;
+    }
+    out.push(`<path d="${p}" fill="${finFill}" ${finStroke}/>`);
+  }
+  if (d.adipose) {
+    const x1 = xh + L * d.adipose.x, w = L * d.adipose.w, h = d.adipose.h, b = topY(x1 + w / 2) + 3;
+    out.push(`<path d="M${f1(x1)},${f1(topY(x1) + 3)} C${f1(x1 + w * .15)},${f1(b - h * 1.25)} ${f1(x1 + w * .8)},${f1(b - h * 1.2)} ${f1(x1 + w)},${f1(topY(x1 + w) + 3)}Z" fill="${mix(d.back, finFill, .4)}" ${finStroke}/>`);
+  }
+  if (d.anal) {
+    const x1 = xh + L * d.anal.x, x2 = x1 + L * d.anal.w, h = d.anal.h, w = x2 - x1, b1 = botY(x1) - 4, b2 = botY(x2) - 4;
+    out.push(`<path d="M${f1(x1)},${f1(b1)} C${f1(x1 + w * .08)},${f1(b1 + h * 1.05)} ${f1(x1 + w * .45)},${f1(b1 + h * 1.05)} ${f1(x1 + w * .6)},${f1(b1 + h * .85)} C${f1(x1 + w * .8)},${f1(b1 + h * .55)} ${f1(x2 - w * .08)},${f1(b2 + h * .2)} ${f1(x2)},${f1(b2)}Z" fill="${finFill}" ${finStroke}/>`);
+  }
+  if (d.pelvic) {
+    const x = xh + L * d.pelvic.x, h = d.pelvic.h, b = botY(x) - 3;
+    out.push(`<path d="M${f1(x - 6)},${f1(b)} C${f1(x)},${f1(b + h)} ${f1(x + 16)},${f1(b + h * .95)} ${f1(x + 22)},${f1(b + h * .8)} L${f1(x + 14)},${f1(botY(x + 14) - 3)}Z" fill="${finFill}" ${finStroke}/>`);
+  }
+
+  // barbilhões do lado de trás
+  if (d.barbels) {
+    const bl = d.barbels.len, sw = d.barbels.flat ? 3.4 : 1.6, col = d.barbels.flat ? mix(d.belly, '#555555', .35) : '#3a3a36';
+    out.push(`<path d="M${f1(xs + 9)},${f1(sy + 1)} C${f1(xs - 6)},${f1(sy + 14)} ${f1(xs + bl * .25)},${f1(sy + 30)} ${f1(xs + bl * .9)},${f1(sy + 28)}" stroke="${col}" stroke-width="${sw}" fill="none" stroke-linecap="round" opacity=".55"/>`);
+  }
+
+  // corpo
+  out.push(`<path d="${bodyPath}" fill="url(#${id}g)"/>`);
+  // padrões
+  const g = [];
+  const xl = xh + L * 0.12;
+  (d.pattern || []).forEach(pt => {
+    if (pt.t === 'spots') {
+      for (let i = 0; i < pt.n; i++) {
+        const x = xl + R() * (xp - xl), yt = topY(x), yb = botY(x);
+        const y = yt + 3 + R() * (yb - yt) * (pt.area || 0.7);
+        const r = pt.r[0] + R() * (pt.r[1] - pt.r[0]);
+        g.push(`<circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(r)}" fill="${pt.c}" opacity=".85"/>`);
+      }
+    } else if (pt.t === 'bars') {
+      const a = pt.from !== undefined ? pt.from : 0.14, b = pt.to !== undefined ? pt.to : 0.98;
+      for (let i = 0; i < pt.n; i++) {
+        const x = xh + L * (a + (b - a) * (pt.n === 1 ? 0.5 : i / (pt.n - 1)));
+        const yt = topY(x) - 2, yb = topY(x) + (botY(x) - topY(x)) * 0.78, wob = pt.wobble || 2;
+        const dx = (R() - .5) * wob * 2;
+        g.push(`<path d="M${f1(x)},${f1(yt)} C${f1(x + dx + wob)},${f1(yt + (yb - yt) * .35)} ${f1(x - wob + dx)},${f1(yt + (yb - yt) * .65)} ${f1(x + dx * .5)},${f1(yb)}" stroke="${pt.c}" stroke-width="${pt.w}" stroke-linecap="round" fill="none" opacity="${pt.soft ? .5 : .85}"/>`);
+      }
+    } else if (pt.t === 'blotch') {
+      for (let i = 0; i < pt.n; i++) {
+        const x = xl + (pt.row ? (i + .5) / pt.n : R()) * (xp - xl), yt = topY(x), yb = botY(x);
+        const y = pt.row ? cy - 2 + (R() - .5) * 8 : yt + 4 + R() * (yb - yt) * (pt.area || .7);
+        g.push(`<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="${f1(5 + R() * 9)}" ry="${f1(4 + R() * 6)}" transform="rotate(${Math.round(R() * 60 - 30)} ${f1(x)} ${f1(y)})" fill="${pt.c}" opacity=".55"/>`);
+      }
+    } else if (pt.t === 'dashrows') {
+      for (let r = 0; r < 7; r++) {
+        for (let x = xh + L * 0.18 + (r % 2) * 4; x < xp - 4; x += 8) {
+          const yt = topY(x), yb = botY(x), y = yt + (yb - yt) * (0.12 + r * 0.095);
+          g.push(`<path d="M${f1(x)},${f1(y)} l3.5,-.8" stroke="${pt.c}" stroke-width="1.6" stroke-linecap="round" opacity=".55"/>`);
+        }
+      }
+    } else if (pt.t === 'band') {
+      g.push(`<path d="M${f1(xs + 2)},${f1(sy)} C${f1(xh + L * .3)},${cy - 2} ${f1(xh + L * .7)},${cy} ${f1(xp + 2)},${cy}" stroke="${pt.c}" stroke-width="${pt.w}" fill="none" opacity=".85"/>`);
+    } else if (pt.t === 'spots3') {
+      [0.4, 0.6, 0.8].forEach((fx, i) => g.push(`<ellipse cx="${f1(xh + L * fx)}" cy="${f1(cy - 2)}" rx="${7 - i}" ry="${8 - i}" fill="${pt.c}" opacity=".82"/>`));
+    } else if (pt.t === 'speckle') {
+      for (let i = 0; i < pt.n; i++) {
+        const x = xl + R() * (xp - xl), yt = topY(x), yb = botY(x), y = yt + 3 + R() * (yb - yt) * 0.6;
+        g.push(`<circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(.8 + R() * 1.1)}" fill="${pt.c}" opacity=".7"/>`);
+      }
+    } else if (pt.t === 'belly') {
+      g.push(`<linearGradient id="${id}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${pt.c}" stop-opacity="0"/><stop offset=".5" stop-color="${pt.c}" stop-opacity=".75"/><stop offset="1" stop-color="${pt.c}" stop-opacity=".9"/></linearGradient>`);
+      g.push(`<rect x="${f1(xs)}" y="${cy}" width="${f1(xp - xs)}" height="${hb + 10}" fill="url(#${id}b)"/>`);
+    } else if (pt.t === 'ocellus') {
+      g.push(`<circle cx="${f1(xp - 8)}" cy="${f1(cy - 3)}" r="9" fill="#1d1d14" stroke="#f2c443" stroke-width="2.5"/>`);
+    } else if (pt.t === 'pedband') {
+      g.push(`<path d="M${f1(xp - L * .14)},${cy} L${f1(xp + 2)},${cy}" stroke="${pt.c}" stroke-width="6" fill="none" opacity=".85"/>`);
+    }
+  });
+  if (d.scales) g.push(`<rect x="${f1(xh + L * .14)}" y="${cy - ht - 4}" width="${f1(L)}" height="${ht + hb + 8}" fill="url(#${id}s)"/>`);
+  if (d.lateral) g.push(`<path d="M${f1(xh + L * .17)},${f1(cy - ht * .22)} C${f1(xh + L * .45)},${f1(cy - ht * .28)} ${f1(xh + L * .75)},${f1(cy - 2)} ${f1(xp)},${cy}" stroke="rgba(0,0,0,.28)" stroke-width="1" stroke-dasharray="3 2" fill="none"/>`);
+  // opérculo
+  const xg = xh + L * (d.head === 'flat' ? 0.18 : 0.15);
+  g.push(`<path d="M${f1(xg - 2)},${f1(topY(xg) + 6)} Q${f1(xg + 10)},${cy} ${f1(xg - 2)},${f1(botY(xg) - 5)}" stroke="rgba(0,0,0,.32)" stroke-width="1.4" fill="none"/>`);
+  out.push(`<g clip-path="url(#${id}c)">${g.join('')}</g>`);
+  out.push(`<path d="${bodyPath}" fill="none" ${stroke}/>`);
+
+  // peitoral
+  if (d.pectoral) {
+    const big = d.pectoral === 'big' ? 1.5 : 1;
+    const px = xg + 6, py = cy + hb * 0.3;
+    out.push(`<path d="M${f1(px)},${f1(py)} C${f1(px + 10 * big)},${f1(py + 3)} ${f1(px + 32 * big)},${f1(py + 13 * big)} ${f1(px + 40 * big)},${f1(py + 20 * big)} C${f1(px + 27 * big)},${f1(py + 19 * big)} ${f1(px + 9)},${f1(py + 12)} ${f1(px)},${f1(py + 6)}Z" fill="${finFill}" ${finStroke} opacity=".92"/>`);
+  }
+  // boca
+  const m = d.mouth;
+  if (m === 'wide') out.push(`<path d="M${f1(xs + 2)},${f1(sy + 2)} Q${f1(xs + 16)},${f1(sy + 7)} ${f1(xs + 30)},${f1(sy + 5)}" stroke="rgba(20,20,20,.7)" stroke-width="1.6" fill="none"/>`);
+  else if (m === 'big' || m === 'teeth') {
+    out.push(`<path d="M${f1(xs)},${f1(sy)} Q${f1(xs + 14)},${f1(sy + 7)} ${f1(xs + 28)},${f1(sy + 3)}" stroke="rgba(20,20,20,.7)" stroke-width="1.6" fill="none"/>`);
+    if (m === 'teeth') for (let i = 0; i < 4; i++) out.push(`<path d="M${f1(xs + 5 + i * 5)},${f1(sy + 3)} l1.5,3 l1.5,-3" fill="#f4f1e6" stroke="rgba(0,0,0,.4)" stroke-width=".5"/>`);
+  } else if (m === 'jaw') {
+    out.push(`<path d="M${f1(xs - 3)},${f1(sy + 4)} Q${f1(xs + 10)},${f1(sy + 10)} ${f1(xs + 22)},${f1(sy + 2)}" stroke="rgba(20,20,20,.75)" stroke-width="1.8" fill="none"/>`);
+    for (let i = 0; i < 4; i++) out.push(`<path d="M${f1(xs - 1 + i * 5)},${f1(sy + 4 + i * .6)} l1.8,-4 l1.8,4" fill="#f7f4ea" stroke="rgba(0,0,0,.45)" stroke-width=".5"/>`);
+  } else if (m === 'up') {
+    out.push(`<path d="M${f1(xs - 2)},${f1(sy - 2)} Q${f1(xs + 12)},${f1(sy + 4)} ${f1(xs + 26)},${f1(sy + 1)}" stroke="rgba(20,20,20,.7)" stroke-width="1.6" fill="none"/>`);
+    out.push(`<path d="M${f1(xs + 4)},${f1(sy + 1)} l1.5,-6 l1.5,6 M${f1(xs + 12)},${f1(sy + 3)} l1.5,-5 l1.5,5" fill="#f7f4ea" stroke="rgba(0,0,0,.45)" stroke-width=".6"/>`);
+  } else if (m === 'under') out.push(`<ellipse cx="${f1(xs + 5)}" cy="${f1(sy + 4)}" rx="5" ry="3" fill="rgba(60,40,40,.55)"/>`);
+  else out.push(`<path d="M${f1(xs + 1)},${f1(sy + 1)} q6,3 12,1" stroke="rgba(20,20,20,.7)" stroke-width="1.5" fill="none"/>`);
+
+  // olho
+  const ex = xh + d.eye.x, ey = cy - d.eye.y, er = d.eye.r;
+  out.push(`<circle cx="${f1(ex)}" cy="${f1(ey)}" r="${er}" fill="${d.eye.iris || '#e9d58f'}" stroke="rgba(0,0,0,.6)" stroke-width="1"/><circle cx="${f1(ex + .3)}" cy="${f1(ey)}" r="${f1(er * .58)}" fill="#111"/><circle cx="${f1(ex - er * .25)}" cy="${f1(ey - er * .3)}" r="${f1(Math.max(.8, er * .2))}" fill="#fff"/>`);
+
+  // barbilhões da frente
+  if (d.barbels) {
+    const bl = d.barbels.len, sw = d.barbels.flat ? 3.8 : 1.8, col = d.barbels.flat ? mix(d.belly, '#444444', .45) : '#2c2c29';
+    out.push(`<path d="M${f1(xs + 7)},${f1(sy + 2)} C${f1(xs - 12)},${f1(sy + 18)} ${f1(xs + bl * .2)},${f1(sy + 42)} ${f1(xs + bl)},${f1(sy + 46)}" stroke="${col}" stroke-width="${sw}" fill="none" stroke-linecap="round"/>`);
+    if (d.barbels.n >= 3) {
+      out.push(`<path d="M${f1(xs + 14)},${f1(sy + 8)} C${f1(xs + 8)},${f1(sy + 20)} ${f1(xs + 18)},${f1(sy + 30)} ${f1(xs + 18 + bl * .22)},${f1(sy + 34)}" stroke="${col}" stroke-width="1.3" fill="none" stroke-linecap="round"/>`);
+      out.push(`<path d="M${f1(xs + 20)},${f1(sy + 9)} C${f1(xs + 18)},${f1(sy + 19)} ${f1(xs + 26)},${f1(sy + 26)} ${f1(xs + 28 + bl * .18)},${f1(sy + 28)}" stroke="${col}" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".8"/>`);
+    }
+  }
+  const label = opts.label === false ? '' : ` role="img" aria-label="Ilustração: ${sp.nome}"`;
+  const yMin = Math.min(cy - ht - (d.dorsal ? d.dorsal.h * 1.12 : 0), cy - th) - 6;
+  const yMax = Math.max(cy + hb + (d.anal ? d.anal.h : 0), cy + hb + (d.pelvic ? d.pelvic.h : 0), cy + th, d.barbels ? sy + 48 : 0) + 6;
+  const xMin = xs - (d.barbels ? 16 : 6), xMax = xp + tl + 6;
+  return `<svg viewBox="${f1(xMin)} ${f1(yMin)} ${f1(xMax - xMin)} ${f1(yMax - yMin)}" class="fish"${label}>${out.join('')}</svg>`;
+}
+
+/* ---------- Montagem (diagrama vertical) ---------- */
+function wrapTxt(s, n) {
+  const words = String(s).split(' '), lines = [];
+  let cur = '';
+  words.forEach(w => { if ((cur + ' ' + w).trim().length > n && cur) { lines.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); });
+  if (cur) lines.push(cur);
+  return lines;
+}
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+function lureSVG(art, x, y, col) {
+  col = col || '#d8a531';
+  const dark = mix(col, '#000000', .45), tre = (tx, ty) => `<path d="M${tx},${ty} v6 m-4,0 q0,5 4,5 q4,0 4,-5" class="r-metal" fill="none"/>`;
+  const eye = (ex, ey) => `<circle cx="${ex}" cy="${ey}" r="2.2" fill="#fff" stroke="#111" stroke-width=".6"/><circle cx="${ex}" cy="${ey}" r="1.1" fill="#111"/>`;
+  switch (art) {
+    case 'zara': return `<g><path d="M${x},${y} m0,4 c-9,0 -9,52 0,58 c9,-6 9,-58 0,-58z" fill="${col}" stroke="${dark}" stroke-width="1.2"/><path d="M${x},${y + 4} c-9,0 -9,20 0,22 z" fill="${dark}" opacity=".35"/>${eye(x + 3, y + 12)}${tre(x, y + 26)}${tre(x, y + 60)}</g>`;
+    case 'helice': return `<g><path d="M${x},${y + 8} c-8,0 -8,44 0,46 c8,-2 8,-46 0,-46z" fill="${col}" stroke="${dark}" stroke-width="1.2"/><path d="M${x - 9},${y + 6} l18,4 M${x - 9},${y + 58} l18,-4" class="r-metal" stroke-width="2.4"/>${eye(x + 3, y + 16)}${tre(x, y + 32)}${tre(x, y + 58)}</g>`;
+    case 'popper': return `<g><path d="M${x - 8},${y + 4} h16 l-4,48 c-2,6 -6,6 -8,0z" fill="${col}" stroke="${dark}" stroke-width="1.2"/><ellipse cx="${x}" cy="${y + 5}" rx="8" ry="3" fill="${dark}"/>${eye(x + 4, y + 13)}${tre(x, y + 28)}${tre(x, y + 54)}</g>`;
+    case 'sapo': return `<g><path d="M${x},${y + 4} c-11,0 -13,22 -8,32 c3,6 13,6 16,0 c5,-10 3,-32 -8,-32z" fill="${col}" stroke="${dark}" stroke-width="1.2"/><path d="M${x - 6},${y + 36} c-6,8 -10,14 -14,22 M${x + 6},${y + 36} c6,8 10,14 14,22" stroke="${col}" stroke-width="4" stroke-linecap="round"/>${eye(x - 4, y + 10)}${eye(x + 4, y + 10)}<path d="M${x - 4},${y + 34} q4,8 8,0" class="r-metal" fill="none"/></g>`;
+    case 'crank': return `<g><path d="M${x - 6},${y + 6} l12,0 l4,-8 l-20,0z" fill="rgba(200,220,230,.6)" stroke="${dark}" stroke-width="1"/><path d="M${x},${y + 6} c-13,2 -13,40 0,44 c13,-4 13,-42 0,-44z" fill="${col}" stroke="${dark}" stroke-width="1.2"/>${eye(x + 4, y + 14)}${tre(x, y + 30)}${tre(x, y + 50)}</g>`;
+    case 'jig': return `<g><circle cx="${x}" cy="${y + 10}" r="7" fill="${dark}" stroke="#111" stroke-width=".8"/>${eye(x + 2, y + 9)}<path d="M${x - 6},${y + 16} c-4,14 -6,30 -2,42 M${x - 3},${y + 16} c-2,14 -2,30 0,44 M${x},${y + 17} c0,14 1,30 3,43 M${x + 3},${y + 16} c3,14 5,30 4,42 M${x + 6},${y + 16} c4,14 7,28 7,40" stroke="${col}" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M${x},${y + 16} v30 q0,8 8,8 q6,0 6,-8" class="r-metal" fill="none"/></g>`;
+    case 'shad': return `<g><circle cx="${x}" cy="${y + 9}" r="6" fill="${dark}"/><path d="M${x - 6},${y + 12} c-2,16 0,30 2,40 c2,4 6,4 8,0 c2,-10 4,-24 2,-40z" fill="${col}" stroke="${dark}" stroke-width="1"/><path d="M${x},${y + 52} l-8,10 h16z" fill="${col}" stroke="${dark}" stroke-width="1"/>${eye(x + 2, y + 9)}<path d="M${x},${y + 14} v22 q0,6 5,6" class="r-metal" fill="none"/></g>`;
+    case 'colher': return `<g><path d="M${x},${y + 6} c-12,6 -12,40 0,48 c12,-8 12,-42 0,-48z" fill="#c9d0d4" stroke="#6c7a80" stroke-width="1.2"/><path d="M${x},${y + 10} c-6,6 -6,32 0,38" stroke="${col}" stroke-width="4" fill="none" opacity=".7"/>${tre(x, y + 54)}</g>`;
+    case 'spinner': return `<g><path d="M${x},${y} v52" class="r-metal"/><ellipse cx="${x + 8}" cy="${y + 16}" rx="7" ry="12" transform="rotate(25 ${x + 8} ${y + 16})" fill="#c9d0d4" stroke="#6c7a80"/><rect x="${x - 3}" y="${y + 26}" width="6" height="16" rx="3" fill="${col}" stroke="${dark}"/>${tre(x, y + 52)}</g>`;
+    default: return `<g><path d="M${x},${y + 4} c-11,4 -11,44 0,50 c11,-6 11,-46 0,-50z" fill="${col}" stroke="${dark}" stroke-width="1.2"/><path d="M${x - 5},${y + 4} l10,0 l3,-7 l-16,0z" fill="rgba(200,220,230,.6)" stroke="${dark}" stroke-width=".8"/>${eye(x + 3, y + 14)}${tre(x, y + 28)}${tre(x, y + 54)}</g>`;
+  }
+}
+function naturalSVG(ic, x, y) {
+  switch (ic) {
+    case 'tuvira': return `<path d="M${x + 14},${y + 2} c-10,4 -18,14 -10,24 c8,10 -4,18 -10,26 c-4,6 2,12 6,10" stroke="#7a5a3a" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="${x + 14}" cy="${y + 2}" r="1.5" fill="#111"/>`;
+    case 'minhoca': return `<path d="M${x + 6},${y} c-12,8 10,14 -2,24 c-12,10 10,16 -2,26" stroke="#c97a7a" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+    case 'fruta': return `<circle cx="${x + 4}" cy="${y + 14}" r="12" fill="#5b2d6e" stroke="#2e1438"/><path d="M${x + 4},${y + 2} v-6" stroke="#4a6b2a" stroke-width="2"/><circle cx="${x}" cy="${y + 10}" r="3" fill="#fff" opacity=".25"/>`;
+    case 'massa': return `<path d="M${x - 8},${y + 10} c0,-10 18,-12 20,0 c2,12 -4,16 -10,16 c-8,0 -10,-6 -10,-16z" fill="#e5cf9a" stroke="#a7884a"/>`;
+    case 'posta': return `<rect x="${x - 10}" y="${y}" width="22" height="28" rx="5" fill="#e8a7a0" stroke="#9a5a54"/><path d="M${x - 10},${y + 6} h22" stroke="#7c8790" stroke-width="5"/>`;
+    case 'peixe': return `<path d="M${x + 2},${y} c-8,4 -8,30 0,36 c8,-6 8,-32 0,-36z" fill="#b9c4c8" stroke="#6c7a80"/><path d="M${x + 2},${y + 36} l-6,10 h12z" fill="#b9c4c8" stroke="#6c7a80"/><circle cx="${x + 3}" cy="${y + 7}" r="1.6" fill="#111"/>`;
+    case 'caranguejo': return `<ellipse cx="${x + 2}" cy="${y + 14}" rx="13" ry="10" fill="#b5653a" stroke="#6d371c"/><path d="M${x - 11},${y + 10} l-8,-6 M${x - 11},${y + 16} l-9,2 M${x + 15},${y + 10} l8,-6 M${x + 15},${y + 16} l9,2" stroke="#6d371c" stroke-width="2"/>`;
+    case 'milho': return `<circle cx="${x}" cy="${y + 6}" r="5" fill="#f2c94c" stroke="#b08a1e"/><circle cx="${x + 6}" cy="${y + 15}" r="5" fill="#f2c94c" stroke="#b08a1e"/><circle cx="${x}" cy="${y + 24}" r="5" fill="#f2c94c" stroke="#b08a1e"/>`;
+    case 'coracao': return `<path d="M${x - 8},${y + 4} c4,-6 18,-6 20,4 c2,12 -8,20 -10,22 c-4,-4 -14,-12 -10,-26z" fill="#8c1f2a" stroke="#4d0f16"/>`;
+    default: return '';
+  }
+}
+function hookSVG(model, x, y) {
+  if (model === 'circular') return `<path d="M${x},${y} v18 c0,22 26,22 26,4 c0,-10 -10,-12 -14,-6" class="r-metal" fill="none" stroke-width="2.6" stroke-linecap="round"/><circle cx="${x}" cy="${y}" r="3" class="r-metal" fill="none"/>`;
+  if (model === 'maruseigo') return `<path d="M${x},${y} v12 c0,20 22,20 22,2 v-6" class="r-metal" fill="none" stroke-width="2.6" stroke-linecap="round"/><path d="M${x + 22},${y + 8} l-4,4" class="r-metal" stroke-width="2"/><circle cx="${x}" cy="${y}" r="3" class="r-metal" fill="none"/>`;
+  if (model === 'haste') return `<path d="M${x},${y} v32 c0,18 20,18 20,2 v-6" class="r-metal" fill="none" stroke-width="2.6" stroke-linecap="round"/><path d="M${x + 20},${y + 28} l-4,4" class="r-metal" stroke-width="2"/><circle cx="${x}" cy="${y}" r="3" class="r-metal" fill="none"/>`;
+  return `<path d="M${x},${y} v20 c0,20 24,20 24,2 v-6" class="r-metal" fill="none" stroke-width="2.6" stroke-linecap="round"/><path d="M${x + 24},${y + 16} l-4,4" class="r-metal" stroke-width="2"/><circle cx="${x}" cy="${y}" r="3" class="r-metal" fill="none"/>`;
+}
+
+function rigPartes(rigId, spec, isca, variante) {
+  const vara = spec.vara, reel = spec.reel;
+  const varaSub = fmtN(vara.comp[0]) + '–' + fmtN(vara.comp[1]) + ' m · ' + vara.lb[0] + '–' + vara.lb[1] + ' lb · ' + (vara.acao === 'rapida' ? 'ação rápida' : 'ação moderada');
+  const parts = [{ k: 'vara', t: 'Vara e ' + (variante === 'molinete' ? 'molinete' : 'carretilha'), s: varaSub + ' · ' + reel.txt }];
+  const linha = { k: 'linha', t: 'Linha principal', s: spec.linha.txt, tipo: spec.linha.tipo };
+  const lider = spec.lider.tipo === 'aco' ? { k: 'aco', t: 'Empate de aço', s: spec.lider.txt } : { k: 'lider', t: 'Líder', s: spec.lider.txt };
+  const no = (id) => { const n = NOS.find(x => x.id === id); return { k: 'no', t: 'Nó ' + n.nome, s: n.uso, no: id }; };
+  const ch = spec.chumbada;
+  const chumb = ch ? { k: ch.tipo === 'chata' ? 'chata' : ch.tipo === 'chumbinho' ? 'chumbinho' : 'oliva', t: ch.tipo === 'chumbinho' ? 'Chumbinho' : 'Chumbada ' + (ch.tipo === 'chata' ? 'chata' : 'oliva'), s: ch.txtAjustado || ch.txt } : null;
+  const anz = spec.anzol ? { k: 'anzol', t: 'Anzol', s: spec.anzol.txt, modelo: spec.anzol.modelo } : null;
+  const iscaP = { k: 'isca', t: 'Isca', s: isca.nome, isca };
+  const out = [];
+  switch (rigId) {
+    case 'art-lider': out.push(parts[0], linha, no(spec.nos[0]), lider, no(spec.nos[1] || 'loop'), iscaP); break;
+    case 'art-aco': out.push(parts[0], linha, no('fg'), lider, iscaP); break;
+    case 'fundo-corrida': case 'fundo-pesado':
+      out.push(parts[0], linha, chumb, { k: 'micanga', t: 'Miçanga', s: 'Protege o nó do girador' }, { k: 'girador', t: 'Girador com rolamento', s: 'Evita torção da linha' }, lider, no('palomar'), anz, iscaP); break;
+    case 'fruta': out.push(parts[0], linha, Object.assign({}, chumb, { s: chumb.s + ' · tire na fruta batida' }), { k: 'girador', t: 'Girador', s: 'Separa linha e líder' }, lider, no('palomar'), anz, iscaP); break;
+    case 'boia': out.push(parts[0], linha, { k: 'boia', t: 'Boia', s: 'Isca a um palmo do fundo' }, chumb, { k: 'girador', t: 'Girador pequeno', s: 'nº 8–10' }, lider, no('palomar'), anz, iscaP); break;
+    case 'piranha': out.push(parts[0], linha, chumb, { k: 'girador', t: 'Girador', s: 'Antes do empate' }, lider, anz, iscaP); break;
+    case 'viva': out.push(parts[0], linha, no('fg'), lider, chumb && Object.assign({}, chumb, { s: chumb.s }), { k: 'girador', t: 'Girador', s: 'Deixa a isca viva girar' }, anz, iscaP); break;
+    case 'viva-aco': out.push(parts[0], linha, chumb, { k: 'girador', t: 'Girador', s: 'Antes do empate' }, lider, anz, iscaP); break;
+    default: out.push(parts[0], linha, iscaP);
+  }
+  return out.filter(Boolean);
+}
+
+function rigSVG(rigId, spec, isca, variante, corIsca) {
+  const parts = rigPartes(rigId, spec, isca, variante);
+  const H = { vara: 64, linha: 56, no: 22, lider: 48, aco: 44, oliva: 40, chata: 30, chumbinho: 18, micanga: 14, girador: 30, boia: 58, anzol: 50, isca: 66 };
+  const cx = 52, lx = 118;
+  let y = 8;
+  const g = [], labels = [];
+  const lineCls = (k) => ['lider', 'no', 'anzol', 'boia', 'chumbinho', 'girador'].includes(k) ? 'r-l2' : (k === 'aco' ? 'r-metal' : 'r-l1');
+  parts.forEach((p, i) => {
+    const lines = wrapTxt(p.s, 34).slice(0, 3);
+    const H0 = H[p.k] || 40;
+    const h = Math.max(H0, 24 + lines.length * 13);
+    const off = p.k === 'vara' || p.k === 'isca' ? 0 : Math.round((h - H0) / 2);
+    const mid = y + h / 2;
+    // trechos de linha que preenchem o espaço extra
+    if (off > 0) {
+      const c = lineCls(p.k);
+      g.push(`<path d="M${cx},${y} V${y + off} M${cx},${y + off + H0} V${y + h}" class="${c}" stroke-width="2.2"/>`);
+    }
+    const Y = y + off, ym = Y + H0 / 2;
+    switch (p.k) {
+      case 'vara': g.push(`<path d="M4,${Y} L${cx},${Y + H0 - 10}" class="r-rod" stroke-width="5" stroke-linecap="round"/><circle cx="${cx}" cy="${Y + H0 - 8}" r="4" class="r-metal" fill="none" stroke-width="2"/><path d="M${cx},${Y + H0 - 4} V${y + h}" class="r-l1" stroke-width="2.2"/>`); break;
+      case 'linha': g.push(`<path d="M${cx},${Y} V${Y + H0}" class="${p.tipo === 'multi' ? 'r-l1' : 'r-l2'}" stroke-width="2.2"/>`); break;
+      case 'no': g.push(`<path d="M${cx},${Y} V${Y + H0}" class="r-l2" stroke-width="2.2"/><rect x="${cx - 5}" y="${Y + 6}" width="10" height="10" rx="3" class="r-knot"/>`); break;
+      case 'lider': g.push(`<path d="M${cx},${Y} V${Y + H0}" class="r-l2" stroke-width="2.4"/>`); break;
+      case 'aco': g.push(`<path d="M${cx},${Y} V${Y + H0 - 10}" class="r-metal" stroke-width="2"/><path d="M${cx},${Y + H0 - 10} q-5,4 0,10 q5,-4 0,-10" class="r-metal" fill="none" stroke-width="1.6"/>`); break;
+      case 'oliva': g.push(`<path d="M${cx},${Y} V${Y + H0}" class="r-l1" stroke-width="2.2"/><ellipse cx="${cx}" cy="${ym}" rx="8" ry="15" class="r-lead"/>`); break;
+      case 'chata': g.push(`<path d="M${cx},${Y} V${Y + H0}" class="r-l1" stroke-width="2.2"/><rect x="${cx - 12}" y="${ym - 8}" width="24" height="16" rx="5" class="r-lead"/>`); break;
+      case 'chumbinho': g.push(`<path d="M${cx},${Y} V${Y + H0}" class="r-l2" stroke-width="2"/><circle cx="${cx}" cy="${ym}" r="5" class="r-lead"/>`); break;
+      case 'micanga': g.push(`<path d="M${cx},${Y} V${Y + H0}" class="r-l1" stroke-width="2.2"/><circle cx="${cx}" cy="${ym}" r="4.5" class="r-bead"/>`); break;
+      case 'girador': g.push(`<circle cx="${cx}" cy="${Y + 5}" r="4" class="r-metal" fill="none" stroke-width="2"/><rect x="${cx - 4}" y="${Y + 10}" width="8" height="10" rx="3" class="r-metalf"/><circle cx="${cx}" cy="${Y + 25}" r="4" class="r-metal" fill="none" stroke-width="2"/>`); break;
+      case 'boia': g.push(`<path d="M${cx},${Y} V${Y + H0}" class="r-l2" stroke-width="2"/><path d="M${cx},${Y + 2} v8" class="r-ink" stroke-width="2"/><path d="M${cx - 11},${Y + 26} c0,-14 22,-14 22,0z" class="r-float"/><path d="M${cx - 11},${Y + 26} c0,18 22,18 22,0z" class="r-floatb"/>`); break;
+      case 'anzol': g.push(`<path d="M${cx},${Y} V${Y + 6}" class="r-l2" stroke-width="2.2"/>` + hookSVG(p.modelo, cx, Y + 8)); break;
+      case 'isca': g.push(`<path d="M${cx},${Y} V${Y + 6}" class="${rigId.startsWith('art') ? 'r-metal' : 'r-l2'}" stroke-width="2"/>` + (p.isca.tipo === 'artificial' ? lureSVG(p.isca.art, cx, Y + 4, corIsca) : naturalSVG(p.isca.ic, cx + (p.isca.ic === 'tuvira' ? -4 : 6), Y + 2))); break;
+    }
+    const ty = mid - (lines.length * 13) / 2 + 2;
+    labels.push(`<path d="M${cx + 16},${f1(mid)} H${lx - 6}" class="r-lead-line"/>` +
+      `<text x="${lx}" y="${f1(ty)}" class="r-t">${esc(p.t)}</text>` +
+      lines.map((l, j) => `<text x="${lx}" y="${f1(ty + 14 + j * 13)}" class="r-s">${esc(l)}</text>`).join(''));
+    y += h;
+  });
+  const total = y + 10;
+  return `<svg viewBox="0 0 360 ${total}" class="rig" role="img" aria-label="Diagrama da montagem">${g.join('')}${labels.join('')}</svg>`;
+}
+
+/* ---------- Nós (3 passos cada) ---------- */
+function knotStep(id, step) {
+  const ringBack = `<path d="M4,55 H26" class="k-metal" stroke-width="4" stroke-linecap="round"/><circle cx="36" cy="55" r="9" class="k-metal" fill="none" stroke-width="3.5"/>`;
+  const ringFront = `<path d="M36,46 A9,9 0 0 1 36,64" class="k-metal" fill="none" stroke-width="3.5"/>`;
+  const ln = (d, c) => `<path d="${d}" class="${c || 'k-a'}" fill="none"/>`;
+  const dbl = (d) => `<path d="${d}" class="k-dbl-o" fill="none"/><path d="${d}" class="k-dbl-i" fill="none"/>`;
+  const dot = (x, y, c) => `<circle cx="${x}" cy="${y}" r="3" class="${c || 'k-dot'}"/>`;
+  const coil = (x1, x2, y, n, ry, c) => { let s = ''; for (let i = 0; i < n; i++) { const x = x1 + (x2 - x1) * (n === 1 ? 0 : i / (n - 1)); s += `<ellipse cx="${f1(x)}" cy="${y}" rx="3" ry="${ry}" transform="rotate(14 ${f1(x)} ${y})" class="${c || 'k-a'}" fill="none"/>`; } return s; };
+  const arrow = (d) => `<path d="${d}" class="k-arrow" fill="none" marker-end="url(#kh)"/>`;
+  const blob = (x1, x2, y, c) => `<rect x="${x1}" y="${y - 6}" width="${x2 - x1}" height="12" rx="5" class="${c || 'k-blob'}"/>`;
+  let s = '';
+  const K = id + step;
+  switch (K) {
+    case 'palomar1': s = ringBack + ln('M250,50 L24,50 C12,50 12,60 24,60 L250,60') + ringFront + arrow('M150,36 L70,36'); break;
+    case 'palomar2': s = ringBack + dbl('M250,54 L150,54 C118,54 108,24 132,22 C156,20 158,58 126,62 L46,58') + ringFront + dbl('M30,56 C20,58 14,74 26,90 C38,104 66,100 72,86') + arrow('M80,96 C120,104 30,110 14,80'); break;
+    case 'palomar3': s = ringBack + ringFront + blob(46, 66, 55) + ln('M66,55 L250,55') + ln('M60,60 L74,70', 'k-b') + dot(74, 70); break;
+    case 'clinch1': s = ringBack + ln('M250,58 L30,58') + ringFront + ln('M30,52 C40,46 58,46 70,52', 'k-b') + coil(74, 150, 56, 7, 9, 'k-b') + ln('M152,50 C160,40 170,36 182,34', 'k-b') + dot(182, 34); break;
+    case 'clinch2': s = ringBack + ln('M250,58 L30,58') + ringFront + ln('M30,52 C40,46 58,46 70,52', 'k-b') + coil(74, 150, 56, 7, 9, 'k-b') + ln('M152,50 C160,22 70,20 50,54', 'k-b') + dot(50, 54) + arrow('M54,66 C80,90 140,90 160,70'); break;
+    case 'clinch3': s = ringBack + ringFront + coil(48, 76, 55, 6, 7, 'k-b') + ln('M78,55 L250,55') + ln('M48,49 L56,40', 'k-b') + dot(56, 40); break;
+    case 'uni1': s = ringBack + ln('M250,60 L22,60 C12,60 12,50 22,50 L160,50 C200,50 205,18 175,16 C142,14 132,40 128,58', 'k-b') + ln('M250,60 L40,60') + ringFront + dot(128, 58); break;
+    case 'uni2': s = ringBack + ln('M250,60 L22,60 C12,60 12,50 22,50 L160,50 C200,50 205,18 175,16 C150,14 152,40 150,52', 'k-b') + ln('M250,60 L40,60') + coil(84, 148, 55, 6, 11, 'k-b') + ringFront + ln('M82,56 L66,62', 'k-b') + dot(66, 62); break;
+    case 'uni3': s = ringBack + ringFront + coil(46, 72, 55, 6, 7, 'k-b') + ln('M74,55 L250,55') + ln('M46,49 L40,38', 'k-b') + dot(40, 38); break;
+    case 'fg1': {
+      let z = 'M0,50 L84,50'; for (let i = 0; i < 12; i++) { const x = 84 + i * 10; z += ` L${x + 5},${i % 2 ? 46 : 64} L${x + 10},${i % 2 ? 64 : 46}`; }
+      let over = ''; for (let i = 0; i < 12; i += 2) over += `<path d="M${84 + i * 10 + 2},56 h6" class="k-c" />`;
+      s = ln('M60,56 L258,56', 'k-c') + ln(z) + over + arrow('M120,90 L200,90') + dot(258, 56, 'k-dot2'); break;
+    }
+    case 'fg2': {
+      let z = 'M0,50 L84,50'; for (let i = 0; i < 12; i++) { const x = 84 + i * 10; z += ` L${x + 5},${i % 2 ? 50 : 62} L${x + 10},${i % 2 ? 62 : 50}`; }
+      s = ln('M60,56 L258,56', 'k-c') + ln(z) + `<ellipse cx="216" cy="56" rx="5" ry="10" class="k-a" fill="none"/><ellipse cx="228" cy="56" rx="5" ry="10" class="k-a" fill="none"/>` + ln('M232,50 L246,36') + dot(246, 36); break;
+    }
+    case 'fg3': s = ln('M0,55 L96,55') + `<path d="M96,51 L196,53 L196,57 L96,59 Z" class="k-blob"/>` + ln('M196,55 L258,55', 'k-c') + ln('M92,52 L84,44') + dot(84, 44); break;
+    case 'albright1': s = ln('M250,44 L92,44 C68,44 68,66 92,66 L250,66', 'k-c') + ln('M0,55 L196,55 C206,55 210,46 202,40') + dot(202, 40) + arrow('M190,26 L110,26'); break;
+    case 'albright2': s = ln('M250,44 L92,44 C68,44 68,66 92,66 L250,66', 'k-c') + ln('M0,55 L196,55') + coil(108, 192, 55, 11, 15) + ln('M106,56 C90,56 74,58 60,66') + dot(60, 66); break;
+    case 'albright3': s = ln('M0,55 L94,55') + `<path d="M94,51 L156,50 L156,60 L94,59 Z" class="k-blob"/>` + ln('M156,55 L258,55', 'k-c') + ln('M152,61 L160,70', 'k-c') + dot(160, 70, 'k-dot2') + ln('M96,52 L88,44') + dot(88, 44); break;
+    case 'loop1': s = ringBack + ln('M250,55 L160,55 C138,55 128,30 146,28 C164,26 168,58 150,62 L30,58') + ringFront + ln('M30,52 C46,40 110,44 142,48', 'k-b') + dot(142, 48) + arrow('M100,24 L150,24'); break;
+    case 'loop2': s = ringBack + ln('M250,55 L160,55 C138,55 128,30 146,28 C164,26 168,58 150,62 L30,58') + ringFront + ln('M30,52 C46,40 110,44 158,50', 'k-b') + coil(166, 204, 55, 4, 9, 'k-b') + ln('M206,48 L214,40', 'k-b') + dot(214, 40); break;
+    case 'loop3': s = ringBack + ringFront + ln('M44,51 C58,38 86,40 98,51') + ln('M44,59 C58,72 86,70 98,59') + blob(98, 120, 55) + ln('M120,55 L250,55') + ln('M114,49 L122,40', 'k-b') + dot(122, 40); break;
+  }
+  return `<svg viewBox="0 0 260 112" class="knot" role="img" aria-label="Passo ${step}"><defs><marker id="kh" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-arrowhead"/></marker></defs>${s}</svg>`;
+}
+
+/* ===== Interface ===== */
+(function () {
+  const $ = (s, el) => (el || document).querySelector(s);
+  const KEY_ST = 'caderneta.condicoes.v1', KEY_INV = 'caderneta.inventario.v1';
+  const lsGet = (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* sem armazenamento */ } };
+
+  const DEFAULT = { esp: 'pintado', agua: 'verde', nivel: 'baixando', temp: 'quente', clima: 'nublado', hora: 'entardecer', local: 'barco', variante: 'carretilha' };
+  let st = Object.assign({}, DEFAULT, lsGet(KEY_ST) || {});
+  if (!ESPECIES.some(e => e.id === st.esp)) st.esp = DEFAULT.esp;
+  let view = 'pescar', peixeAberto = null, filtro = 'todos', catForm = 'vara';
+
+  /* ---------- Toast ---------- */
+  let toastT;
+  function toast(msg) {
+    let t = $('#toast');
+    if (!t) { t = document.createElement('div'); t.id = 'toast'; t.className = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+    t.textContent = msg; t.hidden = false;
+    clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2800);
+  }
+
+  /* ---------- Inventário: conta (db) quando disponível, senão este aparelho ---------- */
+  const Store = {
+    items: lsGet(KEY_INV) || [], mode: 'local', ref: null, timer: null,
+    saveLocal() { lsSet(KEY_INV, this.items); },
+    async init() {
+      try {
+        if (!window.claude || typeof window.claude.use !== 'function') return;
+        const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+        if (!db || !user) return;
+        const id = await user.id();
+        if (!id) return;
+        this.ref = db.collection('data/users/' + id).doc('inventario');
+        const snap = await this.ref.get();
+        if (snap.exists) {
+          const d = snap.data();
+          if (d && Array.isArray(d.itens)) { this.items = d.itens.map(x => Object.assign({}, x)); this.saveLocal(); }
+        } else if (this.items.length) {
+          await this.ref.set({ itens: this.items, atualizado: Date.now() });
+        }
+        this.mode = 'conta';
+        onInv();
+      } catch (e) { this.ref = null; this.mode = 'local'; onInv(); }
+    },
+    set(items) {
+      this.items = items; this.saveLocal(); onInv();
+      clearTimeout(this.timer);
+      if (this.ref) this.timer = setTimeout(() => this.push(), 500);
+    },
+    async push() {
+      try { await this.ref.set({ itens: this.items, atualizado: Date.now() }); }
+      catch (e) { this.ref = null; this.mode = 'local'; onInv(); toast('Não deu para salvar na sua conta. O equipamento fica salvo neste aparelho.'); }
+    }
+  };
+  function onInv() {
+    if (view === 'equip') renderEquip();
+    renderMatch();
+  }
+
+  /* ---------- Piracema ---------- */
+  function piracema() {
+    const now = new Date(), y = now.getFullYear();
+    const leap = (yy) => (yy % 4 === 0 && yy % 100 !== 0) || yy % 400 === 0;
+    const fimEsteAno = new Date(y, 1, leap(y) ? 29 : 28, 23, 59);
+    const inicio = new Date(y, 10, 5);
+    if (now <= fimEsteAno || now >= inicio) return { on: true, txt: 'Piracema em MS: pesca proibida nos rios até 28/02' };
+    const dias = Math.ceil((inicio - now) / 86400000);
+    return { on: false, dias, txt: 'Piracema em MS começa em ' + dias + (dias === 1 ? ' dia' : ' dias') + ' (5/11)' };
+  }
+
+  /* ---------- Abas ---------- */
+  const ICONS = {
+    pescar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v11a5 5 0 1 1-6-4.9"/><path d="M6 8.5 4.5 10"/></svg>',
+    peixes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M2 12c3-5 9-6 14-3l5-3v12l-5-3c-5 3-11 2-14-3z"/><circle cx="7.5" cy="11" r=".8" fill="currentColor"/></svg>',
+    montagens: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v6"/><ellipse cx="12" cy="10.5" rx="2" ry="2.8"/><path d="M12 13.5v4a3 3 0 1 0 3-3"/></svg>',
+    nos: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 15c4 0 6-9 10-9a4 4 0 0 1 0 8c-4 0-3-6 0-6"/><path d="M13 14c3 0 5 2 8 2"/></svg>',
+    equip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V5h6v3M3 13h18"/></svg>'
+  };
+  const TABS = [['pescar', 'Pescar agora'], ['peixes', 'Peixes'], ['montagens', 'Montagens'], ['nos', 'Nós'], ['equip', 'Meu equipamento']];
+  function renderTabs() {
+    $('#tabs').innerHTML = TABS.map(([id, nome]) => `<button role="tab" id="tab-${id}" aria-selected="${view === id}" aria-controls="v-${id}" data-tab="${id}">${ICONS[id]}<span>${nome}</span></button>`).join('');
+  }
+  function go(id, opts) {
+    view = id;
+    TABS.forEach(([t]) => { $('#v-' + t).hidden = t !== id; });
+    renderTabs();
+    if (id === 'pescar') renderPescar();
+    if (id === 'peixes') renderPeixes();
+    if (id === 'montagens') renderMontagens();
+    if (id === 'nos') renderNos();
+    if (id === 'equip') renderEquip();
+    if (location.hash !== '#' + id) { try { history.replaceState(null, '', '#' + id); } catch (e) { /* ignorado */ } }
+    if (opts && opts.scroll) { const el = document.getElementById(opts.scroll); if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    else window.scrollTo(0, 0);
+  }
+
+  /* ---------- Pescar agora ---------- */
+  function chipGroup(key, titulo, lista, extra) {
+    return `<fieldset class="group"><legend class="eyebrow">${titulo}</legend><div class="chips">` +
+      lista.map(o => `<button type="button" class="chip" data-k="${key}" data-v="${o.id}" aria-pressed="${st[key] === o.id}">${o.sw ? `<i class="sw" style="background:${o.sw}"></i>` : ''}${o.nome}${o.dica && extra ? ` <small>${o.dica}</small>` : ''}</button>`).join('') +
+      `</div></fieldset>`;
+  }
+  function renderControls() {
+    $('#controls').innerHTML =
+      `<div class="group"><span class="eyebrow">Peixe-alvo</span><div class="species-scroll" id="sp-scroll">` +
+      ESPECIES.map(e => `<button type="button" class="sp-chip" data-k="esp" data-v="${e.id}" aria-pressed="${st.esp === e.id}">${fishSVG(e, { label: false })}<b>${e.nome}</b></button>`).join('') +
+      `</div></div>` +
+      chipGroup('agua', 'Cor da água', AGUAS) +
+      chipGroup('nivel', 'Nível do rio', NIVEIS, true) +
+      chipGroup('temp', 'Temperatura', TEMPS, true) +
+      chipGroup('clima', 'Tempo', CLIMAS) +
+      chipGroup('hora', 'Horário', HORAS) +
+      chipGroup('local', 'De onde', LOCAIS) +
+      chipGroup('variante', 'Equipamento', VARIANTES);
+    const sel = $('#sp-scroll [aria-pressed="true"]'), sc = $('#sp-scroll');
+    if (sel && sc) sc.scrollLeft = Math.max(0, sel.offsetLeft - sc.offsetLeft - sc.clientWidth / 2 + sel.clientWidth / 2);
+  }
+  function setCond(k, v) {
+    st[k] = v; lsSet(KEY_ST, st);
+    document.querySelectorAll(`#controls [data-k="${k}"]`).forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
+    renderResult();
+  }
+
+  let lastRec = null;
+  function descSpec(spec) {
+    const v = spec.vara;
+    return fmtN(v.comp[0]) + '–' + fmtN(v.comp[1]) + ' m · ' + v.lb[0] + '–' + v.lb[1] + ' lb · ação ' + (v.acao === 'rapida' ? 'rápida' : 'moderada');
+  }
+  function specTable(spec, variante) {
+    const rows = [
+      ['Vara', descSpec(spec)],
+      [variante === 'molinete' ? 'Molinete' : 'Carretilha', spec.reel.txt],
+      ['Linha', spec.linha.txt],
+      [spec.lider.tipo === 'aco' ? 'Empate' : 'Líder', spec.lider.txt]
+    ];
+    if (spec.anzol) rows.push(['Anzol', spec.anzol.txt]);
+    if (spec.chumbada) rows.push(['Chumbada', spec.chumbada.txtAjustado || spec.chumbada.txt]);
+    rows.push(['Nós', spec.nos.map(n => `<button class="linkbtn" data-no="${n}">${NOS.find(x => x.id === n).nome}</button>`).join(' + ')]);
+    return `<table class="spec"><tbody>${rows.map(r => `<tr><th scope="row">${r[0]}</th><td>${r[1]}</td></tr>`).join('')}</tbody></table>`;
+  }
+  const LEGENDA = `<div class="legend" aria-label="Legenda das linhas"><span><i style="background:var(--l1)"></i>Multifilamento</span><span><i style="background:var(--l2)"></i>Mono, fluorcarbono ou líder</span><span><i style="background:var(--metal)"></i>Aço e metal</span></div>`;
+
+  function renderResult() {
+    const r = recomenda(st), sp = r.sp;
+    lastRec = r;
+    const pira = piracema();
+    const corIsca = r.cores ? CORES_ISCA[r.cores.lista[0]].sw : null;
+    const cls = { 'Ótima': 'b-otima', 'Boa': 'b-boa', 'Média': 'b-media', 'Baixa': 'b-baixa' }[r.rotulo];
+    const top = r.top;
+    const html = [];
+    if (pira.on) html.push(`<div class="panel" style="border-color:var(--bad);background:var(--bad-2)"><b>Período de piracema.</b> Em MS, de 5/11 a 28/02, toda pesca em rios é proibida, inclusive pesque e solte.</div>`);
+    html.push(`<section class="panel hero" aria-labelledby="r-nome">
+      <div class="art">${fishSVG(sp)}</div>
+      <div class="sec">
+        <div><div class="eyebrow">${sp.grupo === 'couro' ? 'Peixe de couro' : 'Peixe de escama'}${sp.origem === 'exotica' ? ' · exótico em MS' : ''}</div>
+        <h2 id="r-nome">${sp.nome}</h2><div class="sci">${sp.sci}</div></div>
+        <div><span class="tag rule">${sp.regra}</span></div>
+        <div class="meter"><div class="v"><span class="eyebrow">Índice de atividade</span><b>${r.rotulo}</b></div>
+          <div class="bar ${cls}" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${r.score}" aria-label="Índice de atividade"><i style="width:${r.score}%"></i></div>
+          <ul class="fatores">${r.fatores.map(f => `<li class="${f.v < 0 ? 'neg' : ''}">${f.t}</li>`).join('')}</ul>
+        </div>
+      </div></section>`);
+    html.push(`<section class="panel sec"><div class="eyebrow">Onde procurar hoje</div><p style="margin:0;font-size:17px">${r.onde}</p></section>`);
+
+    // Isca
+    const alts = r.alts.map((b, i) => `<div class="alt"><span class="n">${i + 2}</span><b>${b.nome} <span class="badge ${b.tipo === 'natural' ? 'nat' : ''}">${b.tipo}</span></b><span class="muted">${b.como}</span></div>`).join('');
+    const sw = r.cores ? `<div class="sec" style="gap:6px"><div class="eyebrow">Cores para iscas artificiais</div><div class="swatches">${r.cores.lista.map(c => `<span class="swatch"><i style="background:${CORES_ISCA[c].sw}"></i>${CORES_ISCA[c].nome}</span>`).join('')}</div><p class="muted" style="margin:0;font-size:14px">${r.cores.pq}</p></div>` : '';
+    html.push(`<div class="cols">
+      <section class="panel sec bait"><div class="eyebrow">Isca principal</div>
+        <div class="bait-main"><h3>${top.nome}</h3><span class="badge ${top.tipo === 'natural' ? 'nat' : ''}">${top.tipo === 'natural' ? 'isca natural' : 'isca artificial'}</span><p style="margin:6px 0 0">${top.como}</p></div>
+        ${sw}
+        ${alts ? `<div class="eyebrow">Alternativas</div><div class="alts">${alts}</div>` : ''}
+      </section>
+      <section class="panel sec"><div class="eyebrow">Ajustes do dia</div>
+        ${r.notas.length ? `<ul class="notes">${r.notas.map(n => `<li>${n}</li>`).join('')}</ul>` : '<p class="muted" style="margin:0">Condição padrão: siga a montagem abaixo.</p>'}
+        <div class="eyebrow" style="margin-top:6px">Dicas para ${sp.nome.toLowerCase()}</div>
+        <ul class="notes">${sp.dicas.map(d => `<li>${d}</li>`).join('')}</ul>
+      </section></div>`);
+
+    // Montagem
+    html.push(`<section class="panel sec" aria-labelledby="r-mont"><div class="row" style="justify-content:space-between"><h2 id="r-mont">Montagem com ${st.variante}</h2><span class="tag">${r.perfil.nome}</span></div>
+      <div class="rigbox"><div class="rig-wrap">${rigSVG(r.rigId, r.spec, top, st.variante, corIsca)}</div>
+      <div class="sec">${specTable(r.spec, st.variante)}${LEGENDA}</div></div></section>`);
+    html.push(`<section class="panel sec" id="match" aria-label="Com o seu equipamento"></section>`);
+    $('#result').innerHTML = html.join('');
+    renderMatch();
+  }
+
+  function descItem(i) {
+    switch (i.cat) {
+      case 'vara': return `${i.tipo === 'molinete' ? 'molinete' : 'carretilha'} · ${i.comp ? fmtN(i.comp) + ' m · ' : ''}${i.lbMin || '?'}–${i.lbMax || '?'} lb${i.acao ? ' · ' + ({ rapida: 'rápida', moderada: 'moderada', lenta: 'lenta' }[i.acao]) : ''}`;
+      case 'carretilha': return `${i.perfil === 'redonda' ? 'redonda' : 'perfil baixo'} · tamanho ${i.tam || '?'}`;
+      case 'molinete': return `tamanho ${i.tam || '?'}`;
+      case 'linha': return `${{ multi: 'multifilamento', mono: 'monofilamento', fluor: 'fluorcarbono' }[i.tipo]} · ${i.unid === 'mm' ? fmtN(i.res) + ' mm (≈' + lbOf(i) + ' lb)' : i.res + ' lb'}`;
+      case 'empate': return `aço · ${i.lb || '?'} lb`;
+      case 'anzol': return `${{ circular: 'circular', maruseigo: 'maruseigo / chinu', offset: 'offset / wide gap', haste: 'haste longa', jcomum: 'comum' }[i.modelo] || ''} · ${i.min || '?'}${i.max ? ' a ' + i.max : ''}`;
+      case 'chumbada': return `${i.tipo} · ${i.gMin || '?'}${i.gMax ? '–' + i.gMax : ''} g`;
+      case 'isca': return `${ART_TIPOS[i.art] || ''} · ${CORES_ISCA[i.cor] ? CORES_ISCA[i.cor].nome : ''}${i.cm ? ' · ' + fmtN(i.cm) + ' cm' : ''}`;
+      default: return '';
+    }
+  }
+
+  function renderMatch() {
+    const box = $('#match');
+    if (!box || !lastRec) return;
+    const inv = Store.items;
+    if (!inv.length) {
+      box.innerHTML = `<div class="eyebrow">Com o seu equipamento</div><div class="empty"><h3>Compare com o que você tem</h3><p class="muted" style="margin:0;max-width:46ch">Cadastre suas varas, carretilhas, linhas e iscas. O site mostra o melhor conjunto que você já tem para esta pescaria e o que falta comprar.</p><button class="btn" data-go="equip">Cadastrar meu equipamento</button></div>`;
+      return;
+    }
+    const m = cruza(lastRec, inv);
+    const sym = { ok: '✓', perto: '~', falta: '✕', info: 'i' };
+    box.innerHTML = `<div class="eyebrow">Com o seu equipamento</div>
+      <div class="match-head"><b>${m.pct}%</b><span class="muted">do conjunto indicado você já tem${m.pct >= 85 ? '. Pode ir pescar.' : m.pct >= 55 ? '. Dá para pescar com ajustes.' : '. Faltam peças importantes.'}</span></div>
+      <ul class="comps">${m.comps.map(c => `<li class="comp"><span class="st ${c.status}" aria-label="${{ ok: 'tem', perto: 'serve com ajuste', falta: 'falta', info: 'informação' }[c.status]}">${sym[c.status]}</span>
+        <div><b>${c.nome}:</b> ${c.tem ? esc(c.tem.nome || '') + ` <span class="muted">(${esc(descItem(c.tem))})</span>` : (c.status === 'info' ? esc(c.precisa) : '<span class="muted">não encontrado no seu equipamento</span>')}</div>
+        <div class="need">Indicado: ${esc(c.precisa)}</div>
+        ${c.nota || (c.buy && c.status !== 'ok') ? `<div>${c.nota ? `<span style="font-size:14px">${esc(c.nota)}</span>` : ''}${c.buy && c.status !== 'ok' ? `<div class="buy"><a href="${ML_URL(c.buy)}" target="_blank" rel="noopener">Ver no Mercado Livre</a><a href="${AMZ_URL(c.buy)}" target="_blank" rel="noopener">Ver na Amazon</a></div>` : ''}</div>` : ''}
+      </li>`).join('')}</ul>`;
+  }
+
+  function renderPescar() {
+    renderControls();
+    renderResult();
+  }
+
+  /* ---------- Peixes ---------- */
+  function renderPeixes() {
+    const box = $('#v-peixes');
+    if (peixeAberto) { box.innerHTML = detalhePeixe(ESPECIES.find(e => e.id === peixeAberto)); return; }
+    const F = [['todos', 'Todos'], ['couro', 'Couro'], ['escama', 'Escama'], ['exotica', 'Exóticos em MS']];
+    const lista = ESPECIES.filter(e => filtro === 'todos' || (filtro === 'exotica' ? e.origem === 'exotica' : e.grupo === filtro));
+    box.innerHTML = `<div class="sec" style="margin-bottom:14px"><h2>Peixes do Pantanal e de MS</h2><p class="muted" style="margin:0">${ESPECIES.length} espécies com hábitos, iscas, equipamento e regras de captura.</p></div>
+      <div class="chips filters">${F.map(([id, n]) => `<button class="chip" data-filtro="${id}" aria-pressed="${filtro === id}">${n}</button>`).join('')}</div>
+      <div class="grid">${lista.map(e => `<button class="card" data-peixe="${e.id}"><div class="art">${fishSVG(e, { label: false })}</div><h3>${e.nome}</h3><div class="sci">${e.sci}</div><p>${e.resumo}</p></button>`).join('')}</div>`;
+  }
+  function perfilResumo(pk) {
+    if (!pk) return '';
+    const p = PERFIS[pk];
+    return `<div class="sec" style="gap:6px"><b>${p.nome}</b>${['carretilha', 'molinete'].map(v => `<details${v === 'carretilha' ? ' open' : ''}><summary>Com ${v}</summary>${specTable(Object.assign({}, p[v], { chumbada: ajustaChumbada(p[v].chumbada, { nivel: 'baixando' }) }), v)}</details>`).join('')}</div>`;
+  }
+  function detalhePeixe(sp) {
+    const maxH = 3;
+    const bars = HORAS.map(h => `<div><i style="height:${Math.max(4, sp.h[h.id] / maxH * 100)}%" title="${h.nome}: ${['nenhuma', 'baixa', 'média', 'alta'][sp.h[h.id]]}"></i><span>${h.nome.split(' ')[0].slice(0, 5)}</span></div>`).join('');
+    return `<div class="detail">
+      <div><button class="btn ghost small" data-voltar>← Todos os peixes</button></div>
+      <section class="panel hero">
+        <div class="sec" style="gap:10px">
+          <figure class="photo" id="foto-${sp.id}" style="margin:0"><img src="fotos/${sp.id}.jpg" alt="Foto de ${sp.nome}" loading="lazy" onerror="this.closest('figure').hidden=true"><figcaption id="cred-${sp.id}"></figcaption></figure>
+          <div class="art" style="background:var(--sunk);border-radius:10px;padding:10px">${fishSVG(sp)}</div>
+        </div>
+        <div class="sec">
+          <div class="eyebrow">${sp.grupo === 'couro' ? 'Peixe de couro' : 'Peixe de escama'} · ${sp.origem === 'exotica' ? 'exótico em MS' : 'nativo'}</div>
+          <h2>${sp.nome}</h2>
+          <div class="sci">${sp.sci}${sp.outros ? ' · também chamado de ' + sp.outros : ''}</div>
+          <div><span class="tag rule">${sp.regra}</span></div>
+          <p style="margin:0;font-size:17px">${sp.resumo}</p>
+          <p class="muted" style="margin:0">${sp.porte}</p>
+          <div class="row"><a class="btn small" href="${FOTOS_URL(sp.sci)}" target="_blank" rel="noopener">Ver fotos reais</a><a class="btn ghost small" href="${INAT_URL(sp.sci)}" target="_blank" rel="noopener">Registros no iNaturalist</a><button class="btn ghost small" data-montar="${sp.id}">Montar para hoje</button></div>
+        </div>
+      </section>
+      <div class="cols">
+        <section class="panel sec"><div class="eyebrow">Onde vive</div><p style="margin:0">${sp.habitat}</p><div class="eyebrow">O que come</div><p style="margin:0">${sp.come}</p>
+          <div class="eyebrow">Atividade por horário</div><div class="hbars" role="img" aria-label="Atividade por horário">${bars}</div></section>
+        <section class="panel sec"><div class="eyebrow">Onde procurar conforme o nível do rio</div>
+          <table class="nivtab"><tbody>${NIVEIS.map(n => `<tr><th scope="row">${n.nome}</th><td>${sp.onde[n.id]}</td></tr>`).join('')}</tbody></table></section>
+      </div>
+      <div class="cols">
+        <section class="panel sec"><div class="eyebrow">Iscas</div><div class="alts">${sp.iscas.map((b, i) => `<div class="alt"><span class="n">${i + 1}</span><b>${b.nome} <span class="badge ${b.tipo === 'natural' ? 'nat' : ''}">${b.tipo}</span></b><span class="muted">${b.como}</span></div>`).join('')}</div></section>
+        <section class="panel sec"><div class="eyebrow">Equipamento</div>${perfilResumo(sp.perfilNat)}${sp.perfilArt && sp.perfilArt !== sp.perfilNat ? perfilResumo(sp.perfilArt) : ''}</section>
+      </div>
+      <section class="panel sec"><div class="eyebrow">Dicas</div><ul class="notes">${sp.dicas.map(d => `<li>${d}</li>`).join('')}</ul></section>
+    </div>`;
+  }
+
+  /* ---------- Montagens ---------- */
+  function renderMontagens() {
+    $('#v-montagens').innerHTML = `<div class="sec" style="margin-bottom:14px"><h2>Montagens</h2><p class="muted" style="margin:0;max-width:70ch">As oito montagens que cobrem as espécies deste guia, da ponta da vara até a isca. Medidas para carretilha; a versão com molinete aparece em Pescar agora.</p>${LEGENDA}</div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr))">${MONTAGENS.map(m => {
+        const spec = Object.assign({}, PERFIS[m.perfil].carretilha);
+        spec.chumbada = ajustaChumbada(spec.chumbada, { nivel: 'baixando' });
+        return `<section class="panel sec" id="m-${m.id}"><h3 style="font-size:24px">${m.nome}</h3><p style="margin:0">${m.quando}</p>
+          <div class="rig-wrap">${rigSVG(m.id, spec, m.isca, 'carretilha', '#d8a531')}</div>
+          <p style="margin:0"><b>Ajuste:</b> ${m.ajuste}</p>
+          <div class="chips">${m.especies.map(id => { const e = ESPECIES.find(x => x.id === id); return `<button class="chip" data-peixe="${id}">${e.nome}</button>`; }).join('')}</div></section>`;
+      }).join('')}</div>`;
+  }
+
+  /* ---------- Nós ---------- */
+  function renderNos() {
+    $('#v-nos').innerHTML = `<div class="sec" style="margin-bottom:14px"><h2>Nós</h2><p class="muted" style="margin:0;max-width:70ch">Seis nós resolvem quase todas as situações. Molhe sempre antes de apertar e corte a sobra rente.</p>
+      <div class="legend"><span><i style="background:var(--l1)"></i>Linha principal</span><span><i style="background:var(--l1b)"></i>Ponta (sobra) da linha</span><span><i style="background:var(--l2)"></i>Líder</span><span><i style="background:var(--accent)"></i>Próximo movimento</span></div></div>
+      <div class="knots">${NOS.map(n => `<section class="panel knot-card" id="no-${n.id}"><div class="row" style="justify-content:space-between"><h3 style="font-size:26px">${n.nome}</h3><a href="${YT_URL('nó ' + n.nome + ' pesca')}" target="_blank" rel="noopener">Ver em vídeo</a></div>
+        <div class="row" style="gap:6px"><span class="tag">${n.uso}</span><span class="tag">Resistência: ${n.forca}</span><span class="tag">${n.linhas}</span></div>
+        <div class="steps">${n.passos.map((p, i) => `<div class="step">${knotStep(n.id, i + 1)}<p>${p}</p></div>`).join('')}</div></section>`).join('')}</div>`;
+  }
+
+  /* ---------- Meu equipamento ---------- */
+  const CATS = [
+    { id: 'vara', nome: 'Varas', um: 'Vara', f: [['nome', 'Nome ou modelo', 'text', 'Ex.: Lumis Ibiza 1,80 m'], ['tipo', 'Para', 'sel', { carretilha: 'Carretilha', molinete: 'Molinete' }], ['comp', 'Comprimento (m)', 'num', '1,80'], ['lbMin', 'Libragem mín. (lb)', 'num', '12'], ['lbMax', 'Libragem máx. (lb)', 'num', '25'], ['acao', 'Ação', 'sel', { rapida: 'Rápida', moderada: 'Moderada', lenta: 'Lenta' }]] },
+    { id: 'carretilha', nome: 'Carretilhas', um: 'Carretilha', f: [['nome', 'Nome ou modelo', 'text', 'Ex.: Abu Garcia Black Max'], ['perfil', 'Tipo', 'sel', { perfil: 'Perfil baixo', redonda: 'Redonda' }], ['tam', 'Tamanho', 'num', '150']] },
+    { id: 'molinete', nome: 'Molinetes', um: 'Molinete', f: [['nome', 'Nome ou modelo', 'text', 'Ex.: Shimano FX 3000'], ['tam', 'Tamanho', 'num', '3000']] },
+    { id: 'linha', nome: 'Linhas', um: 'Linha', f: [['nome', 'Nome ou marca', 'text', 'Ex.: Maruri Max Force 8X'], ['tipo', 'Tipo', 'sel', { multi: 'Multifilamento', mono: 'Monofilamento', fluor: 'Fluorcarbono' }], ['res', 'Resistência', 'num', '30'], ['unid', 'Unidade', 'sel', { lb: 'lb', mm: 'mm (diâmetro)' }]] },
+    { id: 'empate', nome: 'Empates de aço', um: 'Empate', f: [['nome', 'Descrição', 'text', 'Ex.: Cabo flexível 25 cm'], ['lb', 'Resistência (lb)', 'num', '40']] },
+    { id: 'anzol', nome: 'Anzóis', um: 'Anzol', f: [['nome', 'Descrição', 'text', 'Ex.: Circular Marine'], ['modelo', 'Modelo', 'sel', { circular: 'Circular', maruseigo: 'Maruseigo / chinu', offset: 'Offset / wide gap', haste: 'Haste longa', jcomum: 'Comum (J)' }], ['min', 'Menor tamanho', 'text', '2/0'], ['max', 'Maior tamanho', 'text', '6/0']] },
+    { id: 'chumbada', nome: 'Chumbadas', um: 'Chumbada', f: [['nome', 'Descrição', 'text', 'Ex.: Oliva sortida'], ['tipo', 'Tipo', 'sel', { oliva: 'Oliva', pera: 'Pera / gota', chata: 'Chata', chumbinho: 'Chumbinho' }], ['gMin', 'Peso mín. (g)', 'num', '10'], ['gMax', 'Peso máx. (g)', 'num', '40']] },
+    { id: 'isca', nome: 'Iscas artificiais', um: 'Isca', f: [['nome', 'Nome ou modelo', 'text', 'Ex.: Marine Sports Inna 90'], ['art', 'Tipo', 'sel', ART_TIPOS], ['cor', 'Cor', 'sel', Object.fromEntries(Object.entries(CORES_ISCA).map(([k, v]) => [k, v.nome]))], ['cm', 'Tamanho (cm)', 'num', '9']] }
+  ];
+  function renderEquip() {
+    const inv = Store.items, cat = CATS.find(c => c.id === catForm);
+    const salvo = Store.mode === 'conta' ? '<span class="save-state cloud">Salvo na sua conta</span>' : '<span class="save-state">Salvo neste aparelho</span>';
+    const temEx = inv.some(i => i.exemplo);
+    const lista = inv.length ? CATS.filter(c => inv.some(i => i.cat === c.id)).map(c => `<div class="cat"><h3>${c.nome}</h3>${inv.filter(i => i.cat === c.id).map(i => `<div class="item"><div><b>${esc(i.nome || c.um)}</b>${i.exemplo ? '<span class="ex">exemplo</span>' : ''}<div class="d">${esc(descItem(i))}</div></div><button class="x" data-del="${i.id}" aria-label="Remover ${esc(i.nome || c.um)}">Remover</button></div>`).join('')}</div>`).join('')
+      : `<div class="empty"><h3>Seu equipamento aparece aqui</h3><p class="muted" style="margin:0;max-width:44ch">Cadastre cada vara, carretilha, molinete, linha, anzol, chumbada e isca. Com isso, a aba Pescar agora mostra o melhor conjunto que você já tem e o que falta.</p><button class="btn ghost" data-exemplo>Carregar kit de exemplo</button></div>`;
+    const cov = inv.length ? cobertura(inv) : [];
+    $('#v-equip').innerHTML = `<div class="row" style="justify-content:space-between;margin-bottom:14px"><div class="sec"><h2>Meu equipamento</h2><p class="muted" style="margin:0">${inv.length} ${inv.length === 1 ? 'item cadastrado' : 'itens cadastrados'}</p></div>${salvo}</div>
+      <div class="inv">
+        <div class="sec" style="gap:16px">
+          <section class="panel items" aria-label="Itens cadastrados">${lista}${temEx ? `<div><button class="btn danger small" data-limpa-ex>Remover itens de exemplo</button></div>` : ''}</section>
+          ${cov.length ? `<section class="panel sec"><h3>O que dá para pescar com o que você tem</h3><p class="muted" style="margin:0;font-size:14px">Aderência ao conjunto indicado para cada espécie, em condição boa de pesca. Toque para montar.</p><div class="cov">${cov.map(c => `<button class="cov-row" data-montar="${c.sp.id}"><b>${c.sp.nome}</b><span class="bar"><i class="${c.pct < 55 ? 'low' : c.pct < 85 ? 'mid' : ''}" style="width:${c.pct}%"></i></span><span class="mono">${c.pct}%</span></button>`).join('')}</div></section>` : ''}
+        </div>
+        <div class="sec" style="gap:16px">
+          <form class="panel form" id="f-add" novalidate><h3>Adicionar item</h3>
+            <div class="chips" role="group" aria-label="Categoria">${CATS.map(c => `<button type="button" class="chip" data-cat="${c.id}" aria-pressed="${c.id === catForm}">${c.um}</button>`).join('')}</div>
+            <div class="fields">${cat.f.map(([k, label, tipo, x]) => `<div class="field"${k === 'nome' ? ' style="grid-column:1/-1"' : ''}><label for="f-${cat.id}-${k}">${label}</label>${tipo === 'sel' ? `<select id="f-${cat.id}-${k}" name="${k}">${Object.entries(x).map(([v, n]) => `<option value="${v}">${n}</option>`).join('')}</select>` : `<input id="f-${cat.id}-${k}" name="${k}" ${tipo === 'num' ? 'inputmode="decimal"' : ''} placeholder="${x}" autocomplete="off">`}</div>`).join('')}</div>
+            <div><button class="btn" type="submit">Adicionar ${cat.um.toLowerCase()}</button></div>
+          </form>
+          <section class="panel sec"><h3>Levar para outro aparelho</h3>
+            <p class="muted" style="margin:0;font-size:14px">${Store.mode === 'conta' ? 'Seu equipamento já fica salvo na sua conta e aparece em qualquer aparelho em que você abrir o site com ela.' : 'Sem login, o equipamento fica só neste aparelho. Copie o código e cole no outro celular ou computador.'}</p>
+            <div class="row"><button class="btn ghost small" data-export>Copiar código</button></div>
+            <div class="field"><label for="imp">Colar código de outro aparelho</label><textarea id="imp" rows="3" placeholder="Cole aqui o código copiado"></textarea></div>
+            <div><button class="btn ghost small" data-import>Importar</button></div>
+          </section>
+        </div>
+      </div>`;
+  }
+  const num = (v) => { if (v === undefined || v === null || String(v).trim() === '') return ''; const n = parseFloat(String(v).replace(',', '.')); return isNaN(n) ? '' : n; };
+  function addItem(form) {
+    const cat = CATS.find(c => c.id === catForm), it = { id: Math.random().toString(36).slice(2, 9), cat: cat.id };
+    cat.f.forEach(([k, , tipo]) => { const v = form.elements[k].value; it[k] = tipo === 'num' ? num(v) : v.trim(); });
+    if (cat.id === 'vara' && it.lbMin !== '' && it.lbMax === '') it.lbMax = it.lbMin;
+    if (cat.id === 'chumbada' && it.gMax === '') it.gMax = it.gMin;
+    const obrig = { vara: ['lbMin'], carretilha: ['tam'], molinete: ['tam'], linha: ['res'], empate: [], anzol: ['min'], chumbada: ['gMin'], isca: [] }[cat.id];
+    const faltando = obrig.filter(k => it[k] === '' || it[k] === undefined);
+    if (faltando.length) {
+      const f = cat.f.find(x => x[0] === faltando[0]);
+      toast('Preencha o campo "' + f[1] + '" para cruzar com as recomendações.');
+      form.elements[faltando[0]].focus();
+      return;
+    }
+    if (cat.id === 'anzol' && hookNum(it.min) === null) { toast('Use o formato do anzol: 2/0, 1/0, 1, 2, 4…'); form.elements.min.focus(); return; }
+    if (!it.nome) it.nome = cat.um;
+    Store.set(Store.items.concat([it]));
+    toast(cat.um + ' adicionada ao seu equipamento.'.replace('adicionada', ['Anzol', 'Molinete', 'Empate'].includes(cat.um) ? 'adicionado' : 'adicionada'));
+  }
+  async function exportar() {
+    let code;
+    try { code = btoa(unescape(encodeURIComponent(JSON.stringify(Store.items)))); } catch (e) { code = ''; }
+    try { await navigator.clipboard.writeText(code); toast('Código copiado. Cole no outro aparelho.'); }
+    catch (e) { const t = $('#imp'); t.value = code; t.select(); toast('Selecione e copie o código que apareceu na caixa.'); }
+  }
+  function importar() {
+    const raw = $('#imp').value.trim();
+    if (!raw) { toast('Cole o código antes de importar.'); return; }
+    try {
+      const arr = JSON.parse(decodeURIComponent(escape(atob(raw))));
+      if (!Array.isArray(arr)) throw new Error('formato');
+      const ok = arr.filter(i => i && typeof i === 'object' && CATS.some(c => c.id === i.cat)).map(i => Object.assign({}, i, { id: Math.random().toString(36).slice(2, 9) }));
+      Store.set(Store.items.concat(ok));
+      toast(ok.length + ' itens importados.');
+    } catch (e) { toast('Código inválido. Copie de novo no outro aparelho.'); }
+  }
+
+  /* ---------- Eventos ---------- */
+  document.addEventListener('click', (ev) => {
+    const b = ev.target.closest('button, a');
+    if (!b) return;
+    const d = b.dataset;
+    if (d.tab) { if (d.tab === 'peixes') peixeAberto = null; go(d.tab); return; }
+    if (d.k) { setCond(d.k, d.v); return; }
+    if (d.no) { go('nos', { scroll: 'no-' + d.no }); return; }
+    if (d.go) { go(d.go); return; }
+    if (d.filtro) { filtro = d.filtro; renderPeixes(); return; }
+    if (d.peixe) { peixeAberto = d.peixe; go('peixes'); loadCredito(d.peixe); return; }
+    if ('voltar' in d) { peixeAberto = null; renderPeixes(); return; }
+    if (d.montar) { st.esp = d.montar; lsSet(KEY_ST, st); go('pescar'); return; }
+    if (d.cat) { catForm = d.cat; renderEquip(); return; }
+    if (d.del) { Store.set(Store.items.filter(i => i.id !== d.del)); toast('Item removido.'); return; }
+    if ('exemplo' in d) { Store.set(Store.items.concat(kitExemplo())); toast('Kit de exemplo carregado. Troque pelos seus itens quando quiser.'); return; }
+    if ('limpaEx' in d) { Store.set(Store.items.filter(i => !i.exemplo)); toast('Itens de exemplo removidos.'); return; }
+    if ('export' in d) { exportar(); return; }
+    if ('import' in d) { importar(); return; }
+  });
+  document.addEventListener('submit', (ev) => { if (ev.target.id === 'f-add') { ev.preventDefault(); addItem(ev.target); } });
+  window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (TABS.some(t => t[0] === h) && h !== view) go(h); });
+
+  /* créditos das fotos (arquivo opcional publicado junto do site) */
+  let creditos = null;
+  function loadCredito(id) {
+    const put = () => { const el = document.getElementById('cred-' + id); if (el && creditos && creditos[id]) el.textContent = creditos[id]; };
+    if (creditos) { setTimeout(put, 0); return; }
+    if (typeof fetch !== 'function') return;
+    fetch('fotos/creditos.json').then(r => r.ok ? r.json() : {}).then(j => { creditos = j || {}; put(); }).catch(() => { creditos = {}; });
+  }
+
+  /* ---------- Início ---------- */
+  const p = piracema();
+  $('#pira').textContent = p.txt;
+  $('#pira').classList.toggle('on', p.on);
+  const h0 = location.hash.slice(1);
+  go(TABS.some(t => t[0] === h0) ? h0 : 'pescar');
+  Store.init();
+})();
+
+</script>
+</body></html>
