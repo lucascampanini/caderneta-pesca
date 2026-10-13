@@ -12,10 +12,11 @@ Site publicado: https://lucascampanini.github.io/caderneta-pesca/
 - `src/app.js`, `src/styles.css`, `src/body.html`: interface
 - `build.py`: junta tudo em `docs/index.html` (GitHub Pages) e `dist/index.html` (versão Claude, sem as mídias)
 - `docs/fotos/`: recorte de cada peixe (`<id>.webp`, `<id>-card.webp`), foto original (`<id>.jpg`) e `creditos.json`
-- `docs/nos/`: animação 3D de cada nó (`<id>.mp4`), capa (`<id>.jpg`) e capítulos (`<id>.timeline.json`)
 - `docs/montagem/`: peças 3D das montagens (`*.webp`) e `manifest.json` com o ponto onde a linha prende
 
-O `build.py` lê os três manifestos e injeta no `docs/index.html`. Se uma pasta faltar, o site volta para os desenhos.
+O `build.py` lê os manifestos de fotos e peças e injeta no `docs/index.html`. Se uma pasta faltar, o site volta para os desenhos.
+
+Os nós usam vídeos de referência do YouTube (Animated Knots e Sunline), com os passos escritos em português a partir dos quadros de cada vídeo. Os tempos de cada passo ficam em `NOS[].video.tempos`, no `src/data.js`.
 
 ## Gerar o site
 
@@ -31,7 +32,7 @@ Precisam de GPU NVIDIA, Blender 4.5 e Python com numpy, numba, Pillow e OpenCV.
 - `cutout.py`: recorta o peixe com SAM2 (`D:/AI/sam2`), usando a caixa e os pontos de `prompts.json`
 - `export_fotos.py`: gera os WebP recortados, a foto original reduzida e o `creditos.json`
 
-**Nós** (simulação de linha + Blender):
+**Nós em 3D** (experimento, fora do site; os nós do site usam os vídeos de referência):
 - `knots_def.py` e `knots_more.py`: caminho de cada nó, frouxo e apertado, na ordem em que se faz
 - `knotsim.py` e `solver_nb.py`: transição frouxo → apertado com colisão da linha com ela mesma e com o anzol
 - `render_knot.py`: monta a cena no Blender e renderiza o MP4 com os capítulos

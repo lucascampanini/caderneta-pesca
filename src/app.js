@@ -300,96 +300,127 @@
   }
 
   /* ---------- Nós ---------- */
-  /* ---------- Nós: animações 3D com capítulos (quando publicadas), senão os desenhos ---------- */
-  const NOS_VIDEO = window.NOS_VIDEO || {};
+  /* ---------- Nós: vídeo de referência com os passos sincronizados (quando há internet), senão os desenhos ---------- */
+  const NOS_YT = !!window.NOS_YT;
   const ICO = {
     play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>',
     pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg>',
     prev: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
   };
-  function knotPlayer(n, tl) {
-    const marks = tl.steps.map(st => `<i style="left:${(st.t0 / tl.duration * 100).toFixed(2)}%"></i>`).join('');
-    return `<div class="kp" data-kp="${n.id}" data-dur="${tl.duration}">
-        <div class="kp-stage"><video src="nos/${n.id}.mp4" poster="nos/${n.id}.jpg" muted playsinline preload="metadata" aria-label="Animação do nó ${n.nome}"></video>
-          <button class="kp-big" data-kp-act="play" aria-label="Reproduzir a animação">${ICO.play}</button>
+  function knotPlayer(n) {
+    const T = n.video.tempos, t0 = T[0][0], t1 = T[T.length - 1][1], span = t1 - t0;
+    const marks = T.map(t => `<i style="left:${((t[0] - t0) / span * 100).toFixed(2)}%"></i>`).join('');
+    return `<div class="kp" data-kp="${n.id}">
+        <div class="kp-stage"><img class="kp-thumb" src="https://i.ytimg.com/vi/${n.video.yt}/hqdefault.jpg" alt="" loading="lazy"><div class="kp-yt"></div>
+          <button class="kp-big" data-kp-act="play" aria-label="Reproduzir o vídeo do nó ${n.nome}">${ICO.play}</button>
           <div class="kp-cap" aria-live="polite"></div></div>
         <div class="kp-bar">
           <button class="kp-btn" data-kp-act="prev" aria-label="Passo anterior">${ICO.prev}</button>
           <button class="kp-btn kp-pp" data-kp-act="play" aria-label="Reproduzir">${ICO.play}</button>
           <button class="kp-btn" data-kp-act="next" aria-label="Próximo passo">${ICO.next}</button>
-          <div class="kp-track"><div class="kp-marks">${marks}</div><input type="range" min="0" max="${tl.duration}" step="0.01" value="0" aria-label="Arraste para avançar ou voltar a animação"></div>
+          <div class="kp-track"><div class="kp-marks">${marks}</div><input type="range" min="${t0}" max="${t1}" step="0.1" value="${t0}" aria-label="Arraste para avançar ou voltar"></div>
           <button class="kp-btn kp-speed" data-kp-act="speed" aria-label="Velocidade">1×</button>
         </div>
-        <ol class="kp-steps">${tl.steps.map((st, i) => `<li><button data-kp-step="${i}"><b>${i + 1}</b><span>${st.txt}</span></button></li>`).join('')}</ol>
+        <ol class="kp-steps">${n.passos.map((txt, i) => `<li><button data-kp-step="${i}"><b>${i + 1}</b><span>${txt}</span></button></li>`).join('')}</ol>
+        <p class="kp-src">Vídeo: <a href="https://www.youtube.com/watch?v=${n.video.yt}" target="_blank" rel="noopener">${n.video.fonte} no YouTube</a>. Passos em português da Caderneta.</p>
       </div>`;
   }
   function renderNos() {
-    const temVideo = NOS.some(n => NOS_VIDEO[n.id]);
-    $('#v-nos').innerHTML = `<div class="sec" style="margin-bottom:14px"><h2>Nós</h2><p class="muted" style="margin:0;max-width:70ch">Seis nós resolvem quase todas as situações. ${temVideo ? 'Toque num passo para ver só aquele movimento, ou arraste a barra para ir e voltar no seu ritmo.' : ''} Molhe sempre antes de apertar e corte a sobra rente.</p>
-      <div class="legend"><span><i style="background:var(--l1)"></i>Linha principal</span><span><i style="background:var(--l1b)"></i>Ponta (sobra) da linha</span><span><i style="background:var(--l2)"></i>Líder</span>${temVideo ? '' : '<span><i style="background:var(--accent)"></i>Próximo movimento</span>'}</div></div>
-      <div class="knots">${NOS.map(n => `<section class="panel knot-card" id="no-${n.id}"><div class="row" style="justify-content:space-between"><h3 style="font-size:26px">${n.nome}</h3><a href="${YT_URL('nó ' + n.nome + ' pesca')}" target="_blank" rel="noopener">Ver no YouTube</a></div>
+    $('#v-nos').innerHTML = `<div class="sec" style="margin-bottom:14px"><h2>Nós</h2><p class="muted" style="margin:0;max-width:70ch">Seis nós resolvem quase todas as situações. ${NOS_YT ? 'Toque num passo para ver só aquele movimento no vídeo, ou use a barra e a velocidade ½× para acompanhar no seu ritmo.' : ''} Molhe sempre antes de apertar e corte a sobra rente.</p>
+      ${NOS_YT ? '' : '<div class="legend"><span><i style="background:var(--l1)"></i>Linha principal</span><span><i style="background:var(--l1b)"></i>Ponta (sobra) da linha</span><span><i style="background:var(--l2)"></i>Líder</span><span><i style="background:var(--accent)"></i>Próximo movimento</span></div>'}</div>
+      <div class="knots">${NOS.map(n => `<section class="panel knot-card" id="no-${n.id}"><div class="row" style="justify-content:space-between"><h3 style="font-size:26px">${n.nome}</h3><a href="${YT_URL('nó ' + n.nome + ' pesca')}" target="_blank" rel="noopener">Mais vídeos</a></div>
         <div class="row" style="gap:6px"><span class="tag">${n.uso}</span><span class="tag">Resistência: ${n.forca}</span><span class="tag">${n.linhas}</span></div>
-        ${NOS_VIDEO[n.id] ? knotPlayer(n, NOS_VIDEO[n.id]) : `<div class="steps">${n.passos.map((p, i) => `<div class="step">${knotStep(n.id, i + 1)}<p>${p}</p></div>`).join('')}</div>`}</section>`).join('')}</div>`;
-    document.querySelectorAll('#v-nos .kp').forEach(initKnotPlayer);
+        ${NOS_YT && n.video ? knotPlayer(n) : `<div class="steps">${n.passos.slice(0, 3).map((p, i) => `<div class="step">${knotStep(n.id, i + 1)}<p>${p}</p></div>`).join('')}</div>`}</section>`).join('')}</div>`;
+    if (NOS_YT) document.querySelectorAll('#v-nos .kp').forEach(initKnotPlayer);
   }
-  let kpObserver = null;
+  let ytApi = null;
+  function loadYT() {
+    if (ytApi) return ytApi;
+    ytApi = new Promise(res => {
+      if (window.YT && window.YT.Player) return res(window.YT);
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => { if (prev) prev(); res(window.YT); };
+      const sc = document.createElement('script'); sc.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(sc);
+    });
+    return ytApi;
+  }
+  const kpPlayers = new Set();
   function initKnotPlayer(root) {
-    const id = root.dataset.kp, tl = NOS_VIDEO[id], v = $('video', root), rng = $('input[type=range]', root);
-    const steps = [...root.querySelectorAll('[data-kp-step]')], cap = $('.kp-cap', root), pp = $('.kp-pp', root), big = $('.kp-big', root);
-    let stopAt = null, raf = 0, cur = -1;
-    const stepAt = (t) => { let k = -1; tl.steps.forEach((st, i) => { if (t >= st.t0 - 0.05) k = i; }); return k; };
-    function paint() {
-      const t = v.currentTime;
+    const n = NOS.find(x => x.id === root.dataset.kp), T = n.video.tempos;
+    const t0 = T[0][0], t1 = T[T.length - 1][1];
+    const rng = $('input[type=range]', root), steps = [...root.querySelectorAll('[data-kp-step]')];
+    const cap = $('.kp-cap', root), pp = $('.kp-pp', root), big = $('.kp-big', root), host = $('.kp-yt', root);
+    let player = null, ready = null, stopAt = null, timer = 0, cur = -1, rate = 1, playing = false;
+    const stepAt = (t) => { let k = -1; T.forEach((st, i) => { if (t >= st[0] - 0.2) k = i; }); return k; };
+    function paint(t) {
       rng.value = t;
-      rng.style.setProperty('--p', (t / tl.duration * 100).toFixed(2) + '%');
+      rng.style.setProperty('--p', Math.max(0, Math.min(100, (t - t0) / (t1 - t0) * 100)).toFixed(2) + '%');
       const k = stepAt(t);
       if (k !== cur) {
         cur = k;
         steps.forEach((b, i) => { b.classList.toggle('on', i === k); b.classList.toggle('done', i < k); });
-        cap.textContent = k >= 0 ? (k + 1) + '. ' + tl.steps[k].txt : '';
+        cap.textContent = k >= 0 ? (k + 1) + '. ' + n.passos[k] : '';
         cap.classList.toggle('show', k >= 0);
       }
-      if (stopAt !== null && t >= stopAt) { v.pause(); stopAt = null; }
     }
-    function loop() { paint(); if (!v.paused) raf = requestAnimationFrame(loop); }
     function sync() {
-      const playing = !v.paused && !v.ended;
       pp.innerHTML = playing ? ICO.pause : ICO.play;
       pp.setAttribute('aria-label', playing ? 'Pausar' : 'Reproduzir');
-      root.classList.toggle('playing', playing);
-      big.hidden = playing || v.currentTime > 0.05;
+      big.hidden = !!player;
     }
-    v.addEventListener('play', () => { document.querySelectorAll('#v-nos video').forEach(o => { if (o !== v) o.pause(); }); sync(); cancelAnimationFrame(raf); loop(); });
-    v.addEventListener('pause', () => { sync(); paint(); });
-    v.addEventListener('ended', () => { sync(); paint(); });
-    v.addEventListener('seeked', paint);
-    v.addEventListener('loadedmetadata', paint);
-    rng.addEventListener('input', () => { stopAt = null; v.pause(); v.currentTime = +rng.value; paint(); });
-    const goStep = (i) => {
-      i = Math.max(0, Math.min(tl.steps.length - 1, i));
-      const st = tl.steps[i];
-      v.currentTime = Math.max(0, st.t0 - 0.15); stopAt = st.t1 + 0.35;
-      v.play().catch(() => {});
-    };
+    function tick() {
+      if (!player || !player.getCurrentTime) return;
+      const t = player.getCurrentTime();
+      paint(t);
+      if (stopAt !== null && t >= stopAt) { player.pauseVideo(); stopAt = null; }
+      else if (playing && t >= t1 + 0.4) { player.pauseVideo(); }
+    }
+    function ensure() {
+      if (ready) return ready;
+      ready = loadYT().then(YT => new Promise(res => {
+        root.classList.add('loaded');
+        player = new YT.Player(host, {
+          videoId: n.video.yt, host: 'https://www.youtube-nocookie.com',
+          playerVars: { start: Math.floor(t0), controls: 0, rel: 0, modestbranding: 1, playsinline: 1, disablekb: 1, iv_load_policy: 3, fs: 0, mute: 1 },
+          events: {
+            onReady: () => { player.mute(); player.setPlaybackRate(rate); kpPlayers.add(player); res(player); },
+            onStateChange: (e) => {
+              playing = e.data === 1;
+              if (playing) { kpPlayers.forEach(o => { if (o !== player && o.pauseVideo) o.pauseVideo(); }); clearInterval(timer); timer = setInterval(tick, 120); }
+              else { clearInterval(timer); tick(); }
+              sync();
+            }
+          }
+        });
+        sync();
+      }));
+      return ready;
+    }
+    const seek = (t) => { player.seekTo(t, true); paint(t); };
+    function goStep(i) {
+      i = Math.max(0, Math.min(T.length - 1, i));
+      ensure().then(() => { seek(Math.max(0, T[i][0] - 0.2)); stopAt = T[i][1] - 0.3; player.playVideo(); });
+    }
     root.addEventListener('click', (ev) => {
       const sb = ev.target.closest('[data-kp-step]');
       if (sb) { goStep(+sb.dataset.kpStep); return; }
       const b = ev.target.closest('[data-kp-act]');
       if (!b) return;
       const act = b.dataset.kpAct;
-      if (act === 'play') {
-        if (v.paused) { stopAt = null; if (v.ended || v.currentTime >= tl.duration - 0.05) v.currentTime = 0; v.play().catch(() => {}); }
-        else v.pause();
-      } else if (act === 'next') goStep(cur + 1);
-      else if (act === 'prev') goStep(v.currentTime - (tl.steps[Math.max(cur, 0)].t0) > 0.6 ? cur : cur - 1);
-      else if (act === 'speed') { v.playbackRate = v.playbackRate === 1 ? 0.5 : 1; b.textContent = v.playbackRate === 1 ? '1×' : '½×'; }
+      if (act === 'play') ensure().then(() => {
+        if (playing) { player.pauseVideo(); return; }
+        stopAt = null;
+        const t = player.getCurrentTime();
+        if (t < t0 - 0.5 || t >= t1) seek(t0);
+        player.playVideo();
+      });
+      else if (act === 'next') goStep(cur + 1);
+      else if (act === 'prev') goStep(cur < 0 ? 0 : cur - 1);
+      else if (act === 'speed') { rate = rate === 1 ? 0.5 : 1; b.textContent = rate === 1 ? '1×' : '½×'; if (player && player.setPlaybackRate) player.setPlaybackRate(rate); }
     });
-    if ('IntersectionObserver' in window) {
-      kpObserver = kpObserver || new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) e.target.pause(); }), { threshold: 0.15 });
-      kpObserver.observe(v);
-    }
-    sync(); paint();
+    rng.addEventListener('input', () => { stopAt = null; ensure().then(() => { player.pauseVideo(); seek(+rng.value); }); });
+    paint(t0); sync();
   }
 
   /* ---------- Meu equipamento ---------- */

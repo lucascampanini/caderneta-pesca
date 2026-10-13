@@ -12,15 +12,9 @@ site = pathlib.Path('docs'); site.mkdir(exist_ok=True)
 # fotos recortadas (docs/fotos) só existem na versão do GitHub Pages
 cred = site / 'fotos' / 'creditos.json'
 fotos = cred.read_text(encoding='utf-8').strip() if cred.exists() else '{}'
-import json
-nos = {}
-for f in sorted((site / 'nos').glob('*.timeline.json')) if (site / 'nos').exists() else []:
-    t = json.loads(f.read_text(encoding='utf-8'))
-    if (site / 'nos' / (t['name'] + '.mp4')).exists():
-        nos[t['name']] = {'duration': t['duration'], 'steps': t['steps']}
 rig = site / 'montagem' / 'manifest.json'
 sprites = rig.read_text(encoding='utf-8').strip() if rig.exists() else 'null'
-page_site = page.replace('<script>\n', '<script>\nwindow.FOTOS = ' + fotos + ';\nwindow.NOS_VIDEO = ' + json.dumps(nos, ensure_ascii=False) + ';\nwindow.RIG_SPRITES = ' + sprites + ';\n', 1)
+page_site = page.replace('<script>\n', '<script>\nwindow.FOTOS = ' + fotos + ';\nwindow.NOS_YT = true;\nwindow.RIG_SPRITES = ' + sprites + ';\n', 1)
 full = ('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
         '<meta name="description" content="Isca, montagem e equipamento para cada peixe do Pantanal, conforme a condição do rio.">'
         '<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>'

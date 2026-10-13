@@ -340,7 +340,7 @@ const ESPECIES = [
   },
   {
     id: 'cachara', nome: 'Cachara', outros: 'surubim-cachara', sci: 'Pseudoplatystoma reticulatum',
-    grupo: 'couro', origem: 'nativa', regra: '1 exemplar dentro da medida mínima e máxima da Cartilha do Pescador (alterada em 2020)',
+    grupo: 'couro', origem: 'nativa', regra: 'Leve 1 exemplar entre 80 e 120 cm (cota de nativa)',
     porte: 'Até 1 m. Comuns de 3 a 12 kg.',
     resumo: 'Parente do pintado, com listras verticais. Mais agressivo em isca artificial no entardecer.',
     habitat: 'Fundo do canal e pauleira de dia. No fim da tarde e à noite caça em praias, bocas de baía e beira de barranco raso.',
@@ -372,7 +372,7 @@ const ESPECIES = [
   },
   {
     id: 'jau', nome: 'Jaú', outros: 'pacamão', sci: 'Zungaro jahu',
-    grupo: 'couro', origem: 'nativa', regra: '1 exemplar dentro da medida da Cartilha do Pescador (alterada em 2020)',
+    grupo: 'couro', origem: 'nativa', regra: 'Leve 1 exemplar entre 95 e 130 cm (cota de nativa)',
     porte: 'O maior bagre da bacia; pode passar de 100 kg.',
     resumo: 'Gigante de poço fundo e pé de cachoeira. Briga entocando na pedra.',
     habitat: 'Poços fundos, pés de cachoeira, pedreiras e trechos de correnteza forte.',
@@ -455,7 +455,7 @@ const ESPECIES = [
   },
   {
     id: 'jurupensem', nome: 'Jurupensém', outros: 'bico-de-pato', sci: 'Sorubim lima',
-    grupo: 'couro', origem: 'nativa', regra: 'Cota de nativa (confira a medida na Cartilha)',
+    grupo: 'couro', origem: 'nativa', regra: 'Mínimo 35 cm (cota de nativa)',
     porte: 'Até 70 cm e cerca de 3 kg.',
     resumo: 'Bico de pato longo e faixa escura do focinho à cauda. Anda em cardume em remansos.',
     habitat: 'Remansos, baías e praias à noite.',
@@ -477,7 +477,7 @@ const ESPECIES = [
   },
   {
     id: 'palmito', nome: 'Palmito', outros: 'mandubé, fidalgo', sci: 'Ageneiosus inermis',
-    grupo: 'couro', origem: 'nativa', regra: 'Cota de nativa (confira a medida na Cartilha)',
+    grupo: 'couro', origem: 'nativa', regra: 'Mínimo 35 cm (cota de nativa)',
     porte: 'Até 50 cm e cerca de 2,5 kg.',
     resumo: 'Bagre prateado de boca grande e quase sem barbilhões. Carne muito saborosa.',
     habitat: 'Remansos e beiras do rio, baías.',
@@ -496,6 +496,74 @@ const ESPECIES = [
       tail: 'forked', tl: 60, th: 36, barbels: null, eye: { x: 30, y: 4, r: 5 }, mouth: 'big',
       dorsal: { x: 0.25, w: 0.1, h: 30 }, adipose: { x: 0.74, w: 0.07, h: 6 }, anal: { x: 0.6, w: 0.22, h: 14 }, pelvic: { x: 0.45, h: 14 }, pectoral: true,
       pattern: [], lateral: true }
+  },
+  {
+    id: 'armado', nome: 'Armado', outros: 'armau, abotoado, botoado', sci: 'Pterodoras granulosus',
+    grupo: 'couro', origem: 'nativa', regra: 'Mínimo 35 cm (cota de nativa)',
+    porte: 'Até cerca de 70 cm e 5 kg. Comuns de 1 a 3 kg.',
+    resumo: 'Bagre de placas ósseas com espinhos na lateral. Briga no fundo e aparece muito na pesca de barranco.',
+    habitat: 'Canais e remansos de rio grande, fundo de areia ou lodo, bocas de baía.',
+    come: 'Onívoro: caramujos, frutos, sementes, crustáceos e restos.',
+    h: H(3, 1, 0, 2, 3), t: { frio: 1, ameno: 3, quente: 3 },
+    c: { sol: -1, nublado: 1, chuva: 1, pre: 2, pos: -1 }, n: { subindo: 1, cheio: 1, baixando: 2, seco: 1 }, a: { clara: 0, verde: 1, barrenta: 1 },
+    perfilNat: 'fundo-medio', perfilArt: null,
+    iscas: [
+      { nome: 'Caramujo', tipo: 'natural', ic: 'caranguejo', col: 'fundo', p: 3, como: 'Sem a casca, bem preso no anzol.' },
+      { nome: 'Minhoca ou minhocuçu', tipo: 'natural', ic: 'minhoca', col: 'fundo', p: 2.6, como: 'Bem enfiada, cobrindo o anzol.' },
+      { nome: 'Coração de boi ou de galinha', tipo: 'natural', ic: 'coracao', col: 'fundo', p: 2.2, como: 'Em tiras ou inteiro (galinha).' },
+      { nome: 'Pedaço de peixe', tipo: 'natural', ic: 'posta', col: 'fundo', p: 1.8, como: 'Filé pequeno com pele.' }
+    ],
+    onde: { subindo: 'Bocas de corixo e beira de barranco.', cheio: 'Remansos do canal e bocas de baía.', baixando: 'Canal principal, logo abaixo das saídas de baía.', seco: 'Poços do canal, à noite.' },
+    dicas: ['Os espinhos das placas e das nadadeiras cortam: use alicate e pano para segurar.', 'Fisgue firme e tire do fundo logo, antes que ele entoque.'],
+    d: { L: 265, ht: 26, hb: 22, hp: 8, tm: 0.38, head: 'blunt', sy: 3, back: '#6b5a48', belly: '#cdbfa8', fin: '#6f5d48',
+      tail: 'forked', tl: 58, th: 36, barbels: { n: 3, len: 50 }, eye: { x: 52, y: 8, r: 3.5 }, mouth: 'wide',
+      dorsal: { x: 0.33, w: 0.12, h: 26 }, adipose: { x: 0.72, w: 0.1, h: 8 }, anal: { x: 0.73, w: 0.08, h: 13 }, pelvic: { x: 0.52, h: 13 }, pectoral: true,
+      pattern: [], lateral: true }
+  },
+  {
+    id: 'pati', nome: 'Pati', outros: '', sci: 'Luciopimelodus pati',
+    grupo: 'couro', origem: 'nativa', regra: 'Mínimo 65 cm (cota de nativa)',
+    porte: 'Até cerca de 70 cm e 5 kg.',
+    resumo: 'Bagre prateado de corpo alongado e barbilhões longos. Caça no canal à noite, em água barrenta.',
+    habitat: 'Canal principal de rio grande, fundo com correnteza moderada.',
+    come: 'Peixes pequenos, camarões e insetos.',
+    h: H(3, 1, 0, 2, 3), t: { frio: 1, ameno: 3, quente: 3 },
+    c: { sol: -1, nublado: 1, chuva: 1, pre: 2, pos: -1 }, n: { subindo: 2, cheio: 1, baixando: 2, seco: 0 }, a: { clara: -1, verde: 1, barrenta: 2 },
+    perfilNat: 'fundo-medio', perfilArt: null,
+    iscas: [
+      { nome: 'Lambari ou pedaço de peixe', tipo: 'natural', ic: 'peixe', col: 'fundo', p: 3, como: 'Lambari inteiro ou filé com pele.' },
+      { nome: 'Tuvira', tipo: 'natural', ic: 'tuvira', col: 'fundo', p: 2.4, como: 'Viva, anzol atrás da cabeça.' },
+      { nome: 'Minhocuçu', tipo: 'natural', ic: 'minhoca', col: 'fundo', p: 1.8, como: 'Inteiro, bem preso.' }
+    ],
+    onde: { subindo: 'Canal com água barrenta e correnteza.', cheio: 'Beira do canal e bocas de corixo.', baixando: 'Canal principal na saída das baías.', seco: 'Poços fundos do canal.' },
+    dicas: ['Pesca de fundo à noite, com chumbo que segure na correnteza.', 'A medida mínima é alta (65 cm): solte os menores com cuidado.'],
+    d: { L: 270, ht: 30, hb: 24, hp: 9, tm: 0.33, head: 'flat', sy: 5, back: '#8a8f96', belly: '#ebecee', fin: '#9aa0a6',
+      tail: 'forked', tl: 70, th: 46, barbels: { n: 2, len: 120, flat: true }, eye: { x: 36, y: 8, r: 4 }, mouth: 'wide',
+      dorsal: { x: 0.3, w: 0.12, h: 30 }, adipose: { x: 0.55, w: 0.33, h: 8 }, anal: { x: 0.68, w: 0.18, h: 14 }, pelvic: { x: 0.48, h: 14 }, pectoral: true,
+      pattern: [], lateral: true }
+  },
+  {
+    id: 'mandi', nome: 'Mandi-amarelo', outros: 'mandi, mandi-pintado', sci: 'Pimelodus maculatus',
+    grupo: 'couro', origem: 'nativa', regra: 'Mínimo 25 cm (cota de nativa)',
+    porte: 'Até cerca de 40 cm e 1 kg. Comuns de 20 a 30 cm.',
+    resumo: 'Bagre pequeno e muito comum na pesca de barranco. Os ferrões da dorsal e do peito dão ferroada dolorida.',
+    habitat: 'Fundo de rio, beira de barranco, remansos e represas.',
+    come: 'Onívoro: insetos, minhocas, pequenos peixes, sementes e restos.',
+    h: H(3, 2, 0, 3, 3), t: { frio: 1, ameno: 3, quente: 3 },
+    c: { sol: -1, nublado: 1, chuva: 1, pre: 2, pos: -1 }, n: { subindo: 2, cheio: 1, baixando: 2, seco: 1 }, a: { clara: 0, verde: 1, barrenta: 2 },
+    perfilNat: 'leve-escama', perfilArt: null,
+    iscas: [
+      { nome: 'Minhoca', tipo: 'natural', ic: 'minhoca', col: 'fundo', p: 3, como: 'Inteira ou em pedaços, cobrindo o anzol.' },
+      { nome: 'Coração de galinha', tipo: 'natural', ic: 'coracao', col: 'fundo', p: 2.6, como: 'Em pedaços, bem preso.' },
+      { nome: 'Massa', tipo: 'natural', ic: 'massa', col: 'fundo', p: 2, como: 'Massa firme com cheiro forte.' },
+      { nome: 'Pedaço de peixe', tipo: 'natural', ic: 'posta', col: 'fundo', p: 1.8, como: 'Tiras pequenas de lambari.' }
+    ],
+    onde: { subindo: 'Beira de barranco com água turvando.', cheio: 'Remansos e bocas de corixo.', baixando: 'Barrancos do canal no fim da tarde.', seco: 'Poços de beira e remansos à noite.' },
+    dicas: ['Segure por trás das nadadeiras peitorais, com o polegar na nuca, para não levar ferroada.', 'Chumbo só para tocar o fundo; ele belisca e engole rápido no fim da tarde.'],
+    d: { L: 265, ht: 26, hb: 22, hp: 8, tm: 0.38, head: 'blunt', sy: 3, back: '#9a8a4a', belly: '#efe2b0', fin: '#c9a640',
+      tail: 'forked', tl: 58, th: 36, barbels: { n: 3, len: 50 }, eye: { x: 52, y: 8, r: 3.5 }, mouth: 'wide',
+      dorsal: { x: 0.33, w: 0.12, h: 26 }, adipose: { x: 0.72, w: 0.1, h: 8 }, anal: { x: 0.73, w: 0.08, h: 13 }, pelvic: { x: 0.52, h: 13 }, pectoral: true,
+      pattern: [{ t: 'blotch', n: 9, c: '#3d3318', area: 0.5, row: true }], lateral: true }
   },
   {
     id: 'pacu', nome: 'Pacu', outros: 'pacu-caranha, caranha', sci: 'Piaractus mesopotamicus',
@@ -532,7 +600,7 @@ const ESPECIES = [
   },
   {
     id: 'pacupeva', nome: 'Pacu-peva', outros: 'pacu-manteiga', sci: 'Mylossoma duriventre',
-    grupo: 'escama', origem: 'nativa', regra: 'Cota de nativa (confira a medida na Cartilha)',
+    grupo: 'escama', origem: 'nativa', regra: 'Mínimo 20 cm (cota de nativa)',
     porte: 'Até cerca de 25 cm e 1 kg.',
     resumo: 'Pacu pequeno e arredondado, de cardume. Diversão com equipamento leve.',
     habitat: 'Baías, remansos e beiras com vegetação.',
@@ -553,10 +621,10 @@ const ESPECIES = [
       pattern: [{ t: 'belly', c: '#e6b866' }], scales: true, lateral: true }
   },
   {
-    id: 'piavucu', nome: 'Piavuçu', outros: 'piau, piau-açu', sci: 'Leporinus macrocephalus',
-    grupo: 'escama', origem: 'nativa', regra: 'Cota de nativa (confira a medida na Cartilha)',
+    id: 'piavucu', nome: 'Piauçu', outros: 'piavuçu, piavussu, piau-açu', sci: 'Megaleporinus macrocephalus',
+    grupo: 'escama', origem: 'nativa', regra: 'Mínimo 38 cm (cota de nativa)',
     porte: 'Até 60 cm e cerca de 3 kg.',
-    resumo: 'Tira a isca com delicadeza sem se fisgar. Pede atenção e fisgada rápida.',
+    resumo: 'O peixe mais pescado do Pantanal de MS. Tira a isca com delicadeza sem se fisgar: pede atenção e fisgada rápida.',
     habitat: 'Barrancos, canais, baías com vegetação e pés de cachoeira.',
     come: 'Caranguejo, caramujo, frutas, sementes e plantas.',
     h: H(1, 3, 2, 3, 1), t: { frio: 1, ameno: 3, quente: 3 },
@@ -574,6 +642,51 @@ const ESPECIES = [
       tail: 'forked', tl: 56, th: 34, barbels: null, eye: { x: 26, y: 7, r: 5 }, mouth: 'small',
       dorsal: { x: 0.36, w: 0.13, h: 30 }, adipose: { x: 0.76, w: 0.06, h: 7 }, anal: { x: 0.74, w: 0.08, h: 14 }, pelvic: { x: 0.52, h: 14 }, pectoral: true,
       pattern: [{ t: 'spots3', c: '#222a1e' }], scales: true, lateral: true }
+  },
+  {
+    id: 'trespintas', nome: 'Piau-três-pintas', outros: 'piau, aracu', sci: 'Leporinus friderici',
+    grupo: 'escama', origem: 'nativa', regra: 'Mínimo 25 cm (cota de nativa)',
+    porte: 'Até cerca de 40 cm e 1,5 kg. Comuns de 25 a 35 cm.',
+    resumo: 'Piau das três manchas escuras na lateral. Belisca a isca e pede fisgada curta e rápida.',
+    habitat: 'Remansos, pés de corredeira, beira de barranco com pedra e lagoas.',
+    come: 'Onívoro: sementes, frutas, insetos, algas e pequenos crustáceos.',
+    h: H(0, 3, 2, 3, 0), t: { frio: 1, ameno: 3, quente: 3 },
+    c: { sol: 0, nublado: 1, chuva: 0, pre: 2, pos: -1 }, n: { subindo: 0, cheio: 1, baixando: 2, seco: 2 }, a: { clara: 2, verde: 1, barrenta: -1 },
+    perfilNat: 'leve-escama', perfilArt: null,
+    iscas: [
+      { nome: 'Massa com ceva', tipo: 'natural', ic: 'massa', col: 'fundo', p: 3, como: 'Massa firme, com ceva de milho no ponto.' },
+      { nome: 'Milho verde', tipo: 'natural', ic: 'milho', col: 'fundo', p: 2.6, como: 'Dois ou três grãos, anzol pequeno.' },
+      { nome: 'Minhoca', tipo: 'natural', ic: 'minhoca', col: 'fundo', p: 2.2, como: 'Pedaço pequeno, cobrindo a ponta do anzol.' },
+      { nome: 'Caranguejo', tipo: 'natural', ic: 'caranguejo', col: 'fundo', p: 1.8, como: 'Pedacinhos.' }
+    ],
+    onde: { subindo: 'Remansos laterais com água mais limpa.', cheio: 'Beira de baía e pés de corredeira.', baixando: 'Pés de corredeira e barrancos com pedra.', seco: 'Remansos e poços de água clara.' },
+    dicas: ['Anzol pequeno (chinu ou maruseigo 2 a 4) e linha fina: ele desconfia.', 'Cevar o ponto com milho segura o cardume.'],
+    d: { L: 260, ht: 34, hb: 28, hp: 10, tm: 0.38, head: 'pointed', sy: 3, back: '#7a6a3c', belly: '#efe6c8', fin: '#c9a24a',
+      tail: 'forked', tl: 56, th: 34, barbels: null, eye: { x: 26, y: 7, r: 5 }, mouth: 'small',
+      dorsal: { x: 0.36, w: 0.13, h: 30 }, adipose: { x: 0.76, w: 0.06, h: 7 }, anal: { x: 0.74, w: 0.08, h: 14 }, pelvic: { x: 0.52, h: 14 }, pectoral: true,
+      pattern: [{ t: 'spots3', c: '#222a1e' }], scales: true, lateral: true }
+  },
+  {
+    id: 'piapara', nome: 'Piapara', outros: 'piau', sci: 'Megaleporinus obtusidens',
+    grupo: 'escama', origem: 'nativa', regra: 'Mínimo 25 cm na regra dos piaus (confira no Imasul)',
+    porte: 'Até cerca de 70 cm e 5 kg. Comuns de 1 a 3 kg.',
+    resumo: 'Piau grande e desconfiado, muito pescado na bacia do Paraná em MS. Briga forte em linha fina.',
+    habitat: 'Rios grandes e represas: corredeiras, remansos com fundo de areia ou pedra.',
+    come: 'Sementes, grãos, frutas, algas e pequenos invertebrados.',
+    h: H(1, 3, 2, 3, 1), t: { frio: 1, ameno: 3, quente: 3 },
+    c: { sol: 0, nublado: 1, chuva: 0, pre: 2, pos: -1 }, n: { subindo: 1, cheio: 1, baixando: 2, seco: 1 }, a: { clara: 1, verde: 2, barrenta: -1 },
+    perfilNat: 'medio-escama', perfilArt: null,
+    iscas: [
+      { nome: 'Milho verde', tipo: 'natural', ic: 'milho', col: 'fundo', p: 3, como: 'Três ou quatro grãos, com ceva de milho no ponto.' },
+      { nome: 'Massa com ceva', tipo: 'natural', ic: 'massa', col: 'fundo', p: 2.6, como: 'Massa firme que aguente a correnteza.' },
+      { nome: 'Minhoca', tipo: 'natural', ic: 'minhoca', col: 'fundo', p: 1.8, como: 'Inteira, bem presa.' }
+    ],
+    onde: { subindo: 'Remansos laterais.', cheio: 'Beiras de canal e bocas de baía.', baixando: 'Corredeiras e remansos de fundo de areia.', seco: 'Poços de corredeira cevados.' },
+    dicas: ['Ceve o ponto por um ou dois dias antes, se puder.', 'Linha fina e fisgada no primeiro peso firme; freio leve, que ele dá arrancadas.'],
+    d: { L: 260, ht: 34, hb: 28, hp: 10, tm: 0.38, head: 'pointed', sy: 3, back: '#7d8b78', belly: '#f0efe6', fin: '#d8b04a',
+      tail: 'forked', tl: 56, th: 34, barbels: null, eye: { x: 26, y: 7, r: 5 }, mouth: 'small',
+      dorsal: { x: 0.36, w: 0.13, h: 30 }, adipose: { x: 0.76, w: 0.06, h: 7 }, anal: { x: 0.74, w: 0.08, h: 14 }, pelvic: { x: 0.52, h: 14 }, pectoral: true,
+      pattern: [], scales: true, lateral: true }
   },
   {
     id: 'piraputanga', nome: 'Piraputanga', outros: '', sci: 'Brycon hilarii',
@@ -604,7 +717,7 @@ const ESPECIES = [
   },
   {
     id: 'dourado', nome: 'Dourado', outros: 'rei do rio', sci: 'Salminus brasiliensis',
-    grupo: 'escama', origem: 'nativa', regra: 'Captura proibida em MS (moratória). Só pesque e solte',
+    grupo: 'escama', origem: 'nativa', regra: 'Captura proibida em MS até 31/03/2027 (Lei 6.390/2025). Só pesque e solte',
     porte: 'Até 1 m e 20 kg. Comuns de 2 a 8 kg.',
     resumo: 'Predador de correnteza que salta muito depois de fisgado.',
     habitat: 'Corredeiras, saídas de corixo, pontas de pedra, encontros de água e remansos atrás de estruturas.',
@@ -684,7 +797,7 @@ const ESPECIES = [
   },
   {
     id: 'curimbata', nome: 'Curimbatá', outros: 'curimba, papa-terra', sci: 'Prochilodus lineatus',
-    grupo: 'escama', origem: 'nativa', regra: 'Cota de nativa (confira a medida na Cartilha)',
+    grupo: 'escama', origem: 'nativa', regra: 'Mínimo 38 cm (cota de nativa)',
     porte: 'Até 40 cm e cerca de 5 kg.',
     resumo: 'Come lodo e detritos do fundo. Quase não ataca isca artificial.',
     habitat: 'Águas calmas, em grandes cardumes; barrancos e remansos.',
@@ -802,25 +915,32 @@ const ESPECIES = [
 ];
 
 /* ---------- Nós ---------- */
+/* Nós: passos escritos a partir dos vídeos de referência (tempos em segundos de cada passo no vídeo) */
 const NOS = [
-  { id: 'palomar', nome: 'Palomar', uso: 'Isca, anzol ou girador', forca: 'Muito alta', linhas: 'Multi, mono e fluorcarbono',
-    passos: ['Dobre 15 cm de linha e passe a dobra pelo olho do anzol.', 'Dê um nó simples com a linha dupla, sem apertar. A alça fica pendurada.', 'Passe a alça por cima do anzol ou da isca, molhe e aperte puxando as duas pontas. Corte a sobra.'] },
-  { id: 'clinch', nome: 'Clinch melhorado', uso: 'Isca e anzol com mono', forca: 'Alta', linhas: 'Mono e fluorcarbono',
-    passos: ['Passe a ponta pelo olho e enrole 5 a 7 voltas na linha principal (menos voltas em linha grossa).', 'Volte a ponta pela primeira alça, junto ao olho, e depois pela alça grande que se formou.', 'Molhe, aperte devagar e deslize as voltas até o olho.'] },
-  { id: 'uni', nome: 'Uni (Grinner)', uso: 'Isca, anzol e união de linhas (uni-uni)', forca: 'Alta', linhas: 'Todas',
-    passos: ['Passe a ponta pelo olho e deite-a paralela à linha principal, formando uma alça por cima.', 'Enrole a ponta 5 a 6 vezes por dentro da alça, abraçando as duas linhas.', 'Molhe, aperte pela ponta e deslize o nó até o olho.'] },
-  { id: 'fg', nome: 'FG', uso: 'União do multifilamento com o líder', forca: 'A mais alta entre as uniões', linhas: 'Multi + fluor ou mono',
-    passos: ['Com o multi bem esticado, cruze o líder e enrole o multi em volta dele, alternando por cima e por baixo, 15 a 20 cruzamentos.', 'Trave com 2 meio-nós no líder e aperte forte, molhado.', 'Corte a ponta do líder e finalize com meio-nós só no multi. O nó fica fino e passa liso nos passadores.'] },
-  { id: 'albright', nome: 'Albright', uso: 'União de linhas de diâmetros diferentes', forca: 'Alta', linhas: 'Multi + líder, mono + mono',
-    passos: ['Dobre a ponta do líder formando uma alça e passe o multi por dentro dela.', 'Enrole o multi 10 a 12 vezes sobre ele mesmo e as duas pernas da alça, em direção à curva.', 'Saia pela mesma alça por onde entrou, molhe e aperte as quatro pontas.'] },
-  { id: 'loop', nome: 'Laço (Rapala)', uso: 'Iscas de superfície e meia-água', forca: 'Alta', linhas: 'Mono e fluorcarbono',
-    passos: ['Faça um nó simples frouxo na linha, passe a ponta pelo olho da isca e volte por dentro do nó simples.', 'Enrole a ponta 3 a 4 vezes na linha principal.', 'Volte a ponta pelo nó simples e depois pela alça formada. Aperte: fica um laço que deixa a isca nadar solta.'] }
+  { id: "palomar", nome: "Palomar", uso: "Isca, anzol ou girador", forca: "Muito alta", linhas: "Multi, mono e fluorcarbono",
+    passos: ["Dobre uns 15 cm de linha e passe a dobra pelo olho do anzol.", "Com a linha dupla, dê um nó simples frouxo. O anzol fica pendurado no meio do nó.", "Passe a alça por cima do anzol inteiro.", "Molhe e puxe juntas a linha principal e a sobra até o nó assentar no olho.", "Corte a sobra rente."],
+    video: { yt: "9qyFlP3NwLE", fonte: "Animated Knots", tempos: [[10.5, 14.8], [14.8, 19.2], [19.2, 21.6], [21.6, 30.2], [30.2, 33.2]] } },
+  { id: "clinch", nome: "Clinch melhorado", uso: "Isca e anzol com mono", forca: "Alta", linhas: "Mono e fluorcarbono",
+    passos: ["Passe a ponta pelo olho do anzol, deixando uns 15 cm de sobra.", "Enrole a ponta 5 a 7 voltas em volta da linha principal (menos voltas em linha grossa).", "Passe a ponta pela primeira alça, a que ficou junto ao olho.", "Agora passe a ponta pela alça grande que acabou de se formar. É isso que faz o clinch ser \"melhorado\".", "Molhe, puxe a linha principal para as voltas descerem até o olho e corte a sobra."],
+    video: { yt: "laNu2Fz_YTc", fonte: "Animated Knots", tempos: [[9.5, 12.6], [12.6, 16.6], [16.6, 20.2], [20.2, 22.6], [22.6, 27.6]] } },
+  { id: "uni", nome: "Uni (Grinner)", uso: "Isca, anzol e união de linhas (uni-uni)", forca: "Alta", linhas: "Todas",
+    passos: ["Passe a ponta pelo olho e traga-a de volta, deitada ao lado da linha principal.", "Volte a ponta por cima das duas linhas, formando uma alça.", "Enrole a ponta 5 a 6 vezes por dentro da alça, abraçando as duas linhas.", "Molhe e puxe a ponta para fechar as voltas.", "Puxe a linha principal para deslizar o nó até o olho e corte a sobra."],
+    video: { yt: "T88i1HxPhaw", fonte: "Animated Knots", tempos: [[9.5, 13.6], [13.6, 16.0], [16.0, 22.2], [22.2, 24.6], [24.6, 30.2]] } },
+  { id: "fg", nome: "FG", uso: "União do multifilamento com o líder", forca: "A mais alta entre as uniões", linhas: "Multi + fluor ou mono",
+    passos: ["Com o multi bem esticado (preso na carretilha ou no dente), cruze o líder por cima dele.", "Enrole o multi no líder alternando por baixo e por cima, bem justo: 15 a 20 cruzamentos.", "Trave com meio-nós do multi em volta do líder e aperte forte, molhado.", "Corte a ponta do líder rente.", "Finalize com meio-nós só no multi e corte a sobra."],
+    video: { yt: "XJ78PH0gonQ", fonte: "Sunline", tempos: [[2.0, 4.6], [4.6, 20.6], [20.6, 30.0], [30.0, 33.2], [33.2, 37.4]] } },
+  { id: "albright", nome: "Albright", uso: "União de linhas de diâmetros diferentes", forca: "Alta", linhas: "Multi + líder, mono + mono",
+    passos: ["Dobre a ponta do líder (a linha mais grossa) formando uma alça e passe o multi por dentro dela.", "Enrole o multi 10 a 12 vezes sobre ele mesmo e as duas pernas da alça, seguindo em direção à curva.", "Saia com o multi pela mesma alça, do mesmo lado por onde entrou.", "Molhe, aperte puxando as quatro pontas e corte as sobras."],
+    video: { yt: "vyoayxB6D7M", fonte: "Animated Knots", tempos: [[9.2, 12.8], [12.8, 23.6], [23.6, 26.0], [26.0, 32.6]] } },
+  { id: "loop", nome: "Laço (Rapala)", uso: "Iscas de superfície e meia-água", forca: "Alta", linhas: "Mono e fluorcarbono",
+    passos: ["Faça um nó simples frouxo a uns 15 cm da ponta.", "Passe a ponta pelo olho da isca e volte por dentro do nó simples.", "Enrole a ponta 3 vezes na linha principal.", "Volte a ponta por dentro do nó simples, entrando pelo lado de trás.", "Passe a ponta pela alça que acabou de se formar.", "Molhe e aperte puxando a linha, a ponta e a isca. Corte a sobra: fica um laço que deixa a isca nadar solta."],
+    video: { yt: "DEgCIZ6y8So", fonte: "Animated Knots", tempos: [[9.6, 12.8], [12.8, 17.0], [17.0, 22.4], [22.4, 25.4], [25.4, 27.4], [27.4, 33.0]] } }
 ];
 
 /* ---------- Montagens (para a aba Montagens) ---------- */
 const MONTAGENS = [
   { id: 'fundo-corrida', nome: 'Fundo com chumbada corrida', perfil: 'fundo-bagre', isca: { tipo: 'natural', ic: 'tuvira', nome: 'Tuvira viva' },
-    quando: 'Isca natural no fundo. O peixe puxa a linha pela chumbada sem sentir o peso.', especies: ['pintado', 'cachara', 'barbado', 'jurupoca', 'piavucu'],
+    quando: 'Isca natural no fundo. O peixe puxa a linha pela chumbada sem sentir o peso.', especies: ['pintado', 'cachara', 'barbado', 'jurupoca', 'piavucu', 'armado', 'pati', 'mandi'],
     ajuste: 'Correnteza forte: suba a chumbada ou troque por chata. Remanso: use o mínimo que toque o fundo.' },
   { id: 'fundo-pesado', nome: 'Fundo pesado', perfil: 'fundo-jau', isca: { tipo: 'natural', ic: 'posta', nome: 'Posta de peixe' },
     quando: 'Poços fundos e correnteza forte, peixe acima de 30 kg.', especies: ['jau'],
@@ -835,7 +955,7 @@ const MONTAGENS = [
     quando: 'Pacu sob frutíferas (fruta batida, sem chumbo) ou caranguejo no fundo da galhada (com chumbo).', especies: ['pacu', 'pacupeva'],
     ajuste: 'Fruta batida: tire a chumbada e bata a isca na água. Caranguejo: oliva leve no fundo.' },
   { id: 'boia', nome: 'Boia e linha fina', perfil: 'leve-escama', isca: { tipo: 'natural', ic: 'massa', nome: 'Massa' },
-    quando: 'Peixe de escama que belisca a isca: piraputanga, piau, tilápia, curimbatá.', especies: ['piraputanga', 'tilapia', 'curimbata', 'pacupeva'],
+    quando: 'Peixe de escama que belisca a isca: piraputanga, piau, tilápia, curimbatá.', especies: ['piraputanga', 'tilapia', 'curimbata', 'pacupeva', 'trespintas', 'piapara'],
     ajuste: 'Regule a profundidade da boia para a isca ficar a um palmo do fundo.' },
   { id: 'piranha', nome: 'Empate curto e anzol de haste longa', perfil: 'piranha', isca: { tipo: 'natural', ic: 'posta', nome: 'Pedaço de peixe' },
     quando: 'Piranha e traíra na isca natural.', especies: ['piranha', 'traira'],

@@ -88,5 +88,30 @@
     "txt": "Foto: Bjørn Christian Tørrissen, CC BY-SA 3.0, Wikimedia Commons",
     "link": "https://commons.wikimedia.org/wiki/File:Oreochromis-niloticus-Nairobi.JPG",
     "fonte": "Wikimedia Commons"
+  },
+  "trespintas": {
+    "txt": "Foto: Gerry van Tonder, CC BY 4.0, iNaturalist",
+    "link": "https://www.inaturalist.org/observations/38324240",
+    "fonte": "iNaturalist"
+  },
+  "armado": {
+    "txt": "Foto: Rocío Esmeralda Pose, CC BY 4.0, iNaturalist",
+    "link": "https://www.inaturalist.org/observations/220248256",
+    "fonte": "iNaturalist"
+  },
+  "pati": {
+    "txt": "Foto: demianlescano, CC0, iNaturalist",
+    "link": "https://www.inaturalist.org/observations/255736424",
+    "fonte": "iNaturalist"
+  },
+  "mandi": {
+    "txt": "Foto: demianlescano, CC0, iNaturalist",
+    "link": "https://www.inaturalist.org/observations/167082134",
+    "fonte": "iNaturalist"
+  },
+  "piapara": {
+    "txt": "Foto: Sebastián Lovera, CC0, iNaturalist",
+    "link": "https://www.inaturalist.org/observations/214116708",
+    "fonte": "iNaturalist"
   }
 }
