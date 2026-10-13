@@ -627,7 +627,7 @@ Regras:
     } catch (e) {
       console.warn(e);
       const m = String(e && e.message);
-      fotoIA = { status: 'erro', msg: /foto/.test(m) ? 'Não consegui abrir essa imagem. Tente uma foto JPG ou PNG.' : /429|quota|RESOURCE/.test(m) ? 'A cota gratuita de leitura de fotos acabou por hoje. Tente amanhã ou cadastre pelo formulário abaixo.' : 'Não consegui ler as fotos agora. Confira a internet e tente de novo.' };
+      fotoIA = { status: 'erro', msg: /foto/.test(m) ? 'Não consegui abrir essa imagem. Tente uma foto JPG ou PNG.' : /429|quota|RESOURCE/.test(m) ? 'O limite gratuito de leituras foi atingido. Espere um minuto e tente de novo (se continuar, o limite do dia acabou: tente amanhã ou cadastre pelo formulário abaixo).' : 'Não consegui ler as fotos agora. Confira a internet e tente de novo.' };
     }
     if (view === 'equip') renderEquip();
   }

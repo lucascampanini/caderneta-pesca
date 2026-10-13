@@ -107,14 +107,23 @@ const Conta = (() => {
       const partes = [instrucao].concat(fotos.map(f => ({ inlineData: { mimeType: f.mimeType, data: f.data } })));
       let ultimo;
       for (const m of MODELOS_IA) {
-        try {
-          const mod = ia.AI.getGenerativeModel(ia.ai, { model: m, generationConfig: { responseMimeType: 'application/json', temperature: 0.2 } });
-          const r = await mod.generateContent(partes);
-          return JSON.parse(r.response.text());
-        } catch (e) {
-          ultimo = e;
-          // modelo aposentado, sobrecarregado ou resposta quebrada: tenta o próximo
-          if (!/\[(404|429|500|503)|JSON|Unexpected/.test(String(e && e.message))) break;
+        for (let tentativa = 0; tentativa < 2; tentativa++) {
+          try {
+            // sem "raciocínio" a leitura cai de ~60 s para ~12 s, e identificar peças não precisa dele
+            const mod = ia.AI.getGenerativeModel(ia.ai, { model: m, generationConfig: { responseMimeType: 'application/json', temperature: 0.2, thinkingConfig: { thinkingBudget: 0 } } });
+            const r = await mod.generateContent(partes);
+            return JSON.parse(r.response.text());
+          } catch (e) {
+            ultimo = e;
+            const msg = String(e && e.message);
+            // pico de demanda: espera um pouco e tenta o mesmo modelo de novo
+            if (tentativa === 0 && /\[(500|503)/.test(msg)) { await new Promise(r => setTimeout(r, 2500)); continue; }
+            // cota da conta gratuita acabou: trocar de modelo não resolve
+            if (/\[429/.test(msg)) throw e;
+            // modelo aposentado, configuração não aceita ou resposta quebrada: tenta o próximo
+            if (/\[(400|404|500|503)|JSON|Unexpected/.test(msg)) break;
+            throw e;
+          }
         }
       }
       throw ultimo;
