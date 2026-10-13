@@ -479,7 +479,7 @@
   }
 
   /* ---------- Mochila (meu equipamento) ---------- */
-  let catAprovado = [], busca = '', prefill = null, pendentesAdmin = null, minhasSug = null, carregandoSug = false;
+  let catAprovado = [], busca = '', prefill = null, pendentesAdmin = null, minhasSug = null, carregandoSug = false, fotoIA = null;
   const catTodos = () => CATALOGO_BASE.concat(catAprovado);
   const umDe = (c) => (CATS.find(x => x.id === c) || {}).um || 'Item';
   const nomeItem = (i) => i.nome || [i.marca, i.produto].filter(Boolean).join(' ') || umDe(i.cat);
@@ -500,7 +500,7 @@
     const inv = Store.items, cat = CATS.find(c => c.id === catForm), logado = !!Conta.usuario();
     const salvo = Store.mode === 'conta' ? '<span class="save-state cloud">Salvo na sua conta</span>' : Store.mode === 'offline' ? '<span class="save-state">Sem conexão: cópia deste aparelho</span>' : '<span class="save-state">Salvo neste aparelho</span>';
     const temEx = inv.some(i => i.exemplo);
-    const lista = inv.length ? CATS.filter(c => inv.some(i => i.cat === c.id)).map(c => `<div class="cat"><h3>${c.nome}</h3>${inv.filter(i => i.cat === c.id).map(i => `<div class="item"><div><b>${esc(nomeItem(i))}</b>${i.exemplo ? '<span class="ex">exemplo</span>' : ''}<div class="d">${esc(descItem(i))}</div></div><button class="x" data-del="${i.id}" aria-label="Remover ${esc(nomeItem(i))}">Remover</button></div>`).join('')}</div>`).join('')
+    const lista = inv.length ? CATS.filter(c => inv.some(i => i.cat === c.id)).map(c => `<div class="cat"><h3>${c.nome}</h3>${inv.filter(i => i.cat === c.id).map(i => `<div class="item"><div><b>${esc(nomeItem(i))}${i.qtd > 1 ? ' ×' + i.qtd : ''}</b>${i.exemplo ? '<span class="ex">exemplo</span>' : ''}${i.conferir ? '<span class="ex conf">conferir</span>' : ''}<div class="d">${esc(descItem(i))}</div></div><button class="x" data-del="${i.id}" aria-label="Remover ${esc(nomeItem(i))}">Remover</button></div>`).join('')}</div>`).join('')
       : `<div class="empty"><h3>Sua mochila aparece aqui</h3><p class="muted" style="margin:0;max-width:44ch">Cadastre o que você tem: varas, carretilhas, molinetes, linhas, anzóis, iscas e acessórios. Com isso, a aba Pescar agora mostra o melhor conjunto que você já tem e o que falta.</p><button class="btn ghost" data-exemplo>Carregar kit de exemplo</button></div>`;
     const cov = inv.length ? cobertura(inv) : [];
     const pf = prefill && prefill.cat === cat.id ? prefill : null;
@@ -513,6 +513,7 @@
           ${cov.length ? `<section class="panel sec"><h3>O que dá para pescar com o que você tem</h3><p class="muted" style="margin:0;font-size:14px">Aderência ao conjunto indicado para cada espécie, em condição boa de pesca. Toque para montar.</p><div class="cov">${cov.map(c => `<button class="cov-row" data-montar="${c.sp.id}"><b>${c.sp.nome}</b><span class="bar"><i class="${c.pct < 55 ? 'low' : c.pct < 85 ? 'mid' : ''}" style="width:${c.pct}%"></i></span><span class="mono">${c.pct}%</span></button>`).join('')}</div></section>` : ''}
         </div>
         <div class="sec" style="gap:16px">
+          ${Conta.disponivel() ? fotoHTML(logado) : ''}
           <section class="panel sec busca-cat"><h3>Buscar no catálogo</h3>
             <div class="field"><label for="busca-cat">Marca e modelo</label><input id="busca-cat" type="search" value="${esc(busca)}" placeholder="Ex.: FX 2500, Black Max, Skitter Walk" autocomplete="off"></div>
             <div id="busca-res" class="busca-res">${busca ? (resultados.length ? resultados.map(c => `<button class="res" data-cata="${esc(c.id)}"><b>${esc(c.marca + ' ' + c.produto)}</b><span>${esc(umDe(c.cat))}${c.fonte === 'aprovado' ? ' · enviado por pescador' : ''}</span></button>`).join('') : '<p class="muted" style="margin:0;font-size:14px">Não achei no catálogo. Cadastre abaixo e, se quiser, envie para o catálogo.</p>') : ''}</div>
@@ -536,6 +537,110 @@
       </div>`;
     if (logado && minhasSug === null && !carregandoSug) carregaSugestoes();
   }
+  /* ---------- Foto das traias: a IA lista os itens e a pessoa confere antes de salvar ---------- */
+  const CERTEZA = { alta: 'reconhecido', media: 'provável', baixa: 'confira' };
+  function fotoHTML(logado) {
+    const f = fotoIA;
+    let corpo = '';
+    if (!logado) corpo = `<div class="row"><button class="btn ghost small" data-entrar>Entrar com Google para usar</button></div>`;
+    else if (f && f.status === 'lendo') corpo = `<div class="ia-lendo"><span class="spin" aria-hidden="true"></span><span>Olhando ${f.n > 1 ? 'as ' + f.n + ' fotos' : 'a foto'}… leva uns segundos.</span></div>`;
+    else if (f && f.status === 'erro') corpo = `<p class="muted" style="margin:0;font-size:14px">${esc(f.msg)}</p>`;
+    else if (f && f.status === 'ok') {
+      corpo = !f.itens.length ? '<p class="muted" style="margin:0;font-size:14px">Não reconheci equipamento de pesca nessa foto. Tente com as peças espalhadas numa mesa, com boa luz.</p>'
+        : `<div class="ia-lista">${f.itens.map((it, n) => `<label class="ia-item"><input type="checkbox" data-ia-i="${n}"${it.certeza === 'baixa' ? '' : ' checked'}>
+            <span><b>${esc(nomeItem(it))}${it.qtd > 1 ? ' ×' + it.qtd : ''}</b> <span class="ia-cert ${it.certeza}">${CERTEZA[it.certeza] || ''}</span>
+            <span class="d">${esc(umDe(it.cat))} · ${esc(descItem(it))}</span>${it.obs ? `<span class="d">${esc(it.obs)}</span>` : ''}${it.conferir ? `<span class="d warn">Falta ${esc(it.falta)}: confira na etiqueta.</span>` : ''}</span></label>`).join('')}</div>
+          <div class="row"><button class="btn" data-ia-add>Adicionar marcados à mochila</button><button class="btn ghost small" data-ia-limpa>Descartar</button></div>`;
+      if (f.aviso) corpo = `<p class="muted" style="margin:0;font-size:13.5px">${esc(f.aviso)}</p>` + corpo;
+    }
+    return `<section class="panel sec foto-ia"><h3>Fotografar minhas traias</h3>
+      <p class="muted" style="margin:0;font-size:14px">Espalhe as coisas numa mesa (ou abra a caixa de iscas) e tire até 4 fotos. A IA lista o que reconhecer e você confere antes de salvar. Foto da etiqueta ajuda a acertar libragem e tamanho.</p>
+      ${logado && !(f && f.status === 'lendo') ? `<div class="row"><label class="btn" for="foto-ia-in">${f && f.status === 'ok' ? 'Mandar outras fotos' : 'Tirar ou escolher fotos'}</label><input id="foto-ia-in" type="file" accept="image/*" multiple hidden></div>` : ''}
+      ${corpo}</section>`;
+  }
+  // descreve as categorias e campos do formulário para a IA responder no mesmo formato
+  function esquemaIA() {
+    return CATS.map(c => '- ' + c.id + ' (' + c.um + '): ' + c.f.map(([k, label, tipo, x]) =>
+      k + (tipo === 'sel' ? ' ∈ {' + Object.keys(x).join('|') + '}' : tipo === 'num' ? ' (número)' : '') + ' = ' + label).join('; ')).join('\n');
+  }
+  function instrucaoIA() {
+    return `Você ajuda um pescador do Pantanal (Brasil) a montar o inventário do equipamento de pesca a partir de fotos.
+Liste cada equipamento visível nas fotos. Responda só JSON, neste formato:
+{"itens":[{"cat":"","marca":"","produto":"","campos":{},"qtd":1,"certeza":"alta|media|baixa","obs":""}],"aviso":""}
+
+Categorias e campos (use exatamente estas chaves; em campos com ∈ use só um dos valores listados):
+${esquemaIA()}
+
+Regras:
+- Não invente. Marca e modelo só quando dá para ler na peça ou na embalagem, ou quando o desenho é inconfundível (aí certeza "media"). Sem isso, deixe "" e descreva em "obs" (ex.: "molinete preto e dourado, sem marca legível").
+- Números (libragem, tamanho, drag, peso, resistência) só se estiverem escritos e legíveis. Não estime pela aparência.
+- Itens iguais viram um só, com "qtd". Iscas artificiais diferentes (cor ou modelo) são itens separados.
+- Anzol em "min"/"max" no formato 2/0, 1/0, 1, 2, 4. Comprimento de vara em metros.
+- Vara: "tipo" é "carretilha" se os passadores são pequenos e alinhados em cima, "molinete" se o primeiro passador é grande e embaixo.
+- Isca natural, comida, roupa comum e objetos que não são de pesca ficam de fora. Se nada for de pesca, devolva "itens": [].
+- "obs" e "aviso" em português do Brasil, curtos. Use "aviso" para dica de nova foto (ex.: "fotografe a etiqueta da vara para ler a libragem").`;
+  }
+  // normaliza a resposta da IA para o formato dos itens da mochila
+  function itemDaIA(r) {
+    const cat = CATS.find(c => c.id === r.cat) || CATS.find(c => c.id === 'outro');
+    const it = { id: Math.random().toString(36).slice(2, 9), cat: cat.id };
+    const campos = Object.assign({}, r.campos || {}, { marca: r.marca, produto: r.produto });
+    cat.f.forEach(([k, , tipo, x]) => {
+      let v = campos[k];
+      if (v === undefined || v === null || v === '') return;
+      if (tipo === 'num') v = num(v);
+      else if (tipo === 'sel') v = Object.prototype.hasOwnProperty.call(x, String(v)) ? String(v) : '';
+      else v = String(v).trim().slice(0, 80);
+      if (v !== '') it[k] = v;
+    });
+    if (cat.id === 'outro' && !it.produto) it.produto = String(r.obs || r.produto || 'Item').slice(0, 60);
+    if (cat.id === 'vara' && it.lbMin !== undefined && it.lbMax === undefined) it.lbMax = it.lbMin;
+    if (cat.id === 'anzol' && it.min && hookNum(it.min) === null) delete it.min;
+    const q = parseInt(r.qtd, 10); if (q > 1) it.qtd = Math.min(q, 99);
+    const falta = (cat.obrig || []).filter(k => it[k] === undefined);
+    if (falta.length) { it.conferir = true; it.falta = cat.f.find(f => f[0] === falta[0])[1].toLowerCase(); }
+    return Object.assign(it, { certeza: ['alta', 'media', 'baixa'].includes(r.certeza) ? r.certeza : 'media', obs: r.obs ? String(r.obs).slice(0, 140) : '' });
+  }
+  // reduz a foto (celular manda 12 MP) para no máximo 1600 px, em JPEG
+  function prepFoto(file) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file), img = new Image();
+      img.onload = () => {
+        const k = Math.min(1, 1600 / Math.max(img.width, img.height));
+        const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        res({ mimeType: 'image/jpeg', data: c.toDataURL('image/jpeg', 0.85).split(',')[1] });
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('foto')); };
+      img.src = url;
+    });
+  }
+  async function lerTraias(files) {
+    files = [...files].filter(f => /^image\//.test(f.type)).slice(0, 4);
+    if (!files.length) return;
+    fotoIA = { status: 'lendo', n: files.length }; renderEquip();
+    try {
+      const fotos = await Promise.all(files.map(prepFoto));
+      const r = await Conta.lerFotos(instrucaoIA(), fotos);
+      fotoIA = { status: 'ok', itens: (Array.isArray(r && r.itens) ? r.itens : []).slice(0, 60).map(itemDaIA), aviso: r && r.aviso ? String(r.aviso).slice(0, 200) : '' };
+    } catch (e) {
+      console.warn(e);
+      const m = String(e && e.message);
+      fotoIA = { status: 'erro', msg: /foto/.test(m) ? 'Não consegui abrir essa imagem. Tente uma foto JPG ou PNG.' : /429|quota|RESOURCE/.test(m) ? 'A cota gratuita de leitura de fotos acabou por hoje. Tente amanhã ou cadastre pelo formulário abaixo.' : 'Não consegui ler as fotos agora. Confira a internet e tente de novo.' };
+    }
+    if (view === 'equip') renderEquip();
+  }
+  function addDaIA() {
+    if (!fotoIA || fotoIA.status !== 'ok') return;
+    const marcados = [...document.querySelectorAll('[data-ia-i]')].filter(c => c.checked).map(c => fotoIA.itens[+c.dataset.iaI]);
+    if (!marcados.length) { toast('Marque os itens que quer adicionar.'); return; }
+    const novos = marcados.map(it => { const n = Object.assign({}, it); delete n.certeza; delete n.obs; delete n.falta; n.id = Math.random().toString(36).slice(2, 9); return n; });
+    Store.set(Store.items.concat(novos));
+    fotoIA = null;
+    toast(novos.length + (novos.length === 1 ? ' item adicionado' : ' itens adicionados') + ' à mochila.' + (novos.some(n => n.conferir) ? ' Os marcados "conferir" precisam de um dado da etiqueta.' : ''));
+  }
+
   const STATUS_SUG = { pendente: 'aguardando aprovação', aprovado: 'aprovado, já está no catálogo', recusado: 'não aprovado' };
   function sugestoesHTML() {
     if (!minhasSug || !minhasSug.length) return '';
@@ -637,6 +742,8 @@
     if ('limpaPf' in d) { prefill = null; renderEquip(); return; }
     if (d.aprovar) { moderar(d.aprovar, true); return; }
     if (d.recusar) { moderar(d.recusar, false); return; }
+    if ('iaAdd' in d) { addDaIA(); return; }
+    if ('iaLimpa' in d) { fotoIA = null; renderEquip(); return; }
     if ('recarregarAdm' in d) { pendentesAdmin = null; renderEquip(); carregaSugestoes(); return; }
   });
   document.addEventListener('input', (ev) => {
@@ -645,6 +752,7 @@
     const r = achaCatalogo(busca), box = $('#busca-res');
     if (box) box.innerHTML = busca ? (r.length ? r.map(c => `<button class="res" data-cata="${esc(c.id)}"><b>${esc(c.marca + ' ' + c.produto)}</b><span>${esc(umDe(c.cat))}${c.fonte === 'aprovado' ? ' · enviado por pescador' : ''}</span></button>`).join('') : '<p class="muted" style="margin:0;font-size:14px">Não achei no catálogo. Cadastre abaixo e, se quiser, envie para o catálogo.</p>') : '';
   });
+  document.addEventListener('change', (ev) => { if (ev.target.id === 'foto-ia-in' && ev.target.files.length) lerTraias(ev.target.files); });
   document.addEventListener('submit', (ev) => { if (ev.target.id === 'f-add') { ev.preventDefault(); addItem(ev.target); } });
   window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (TABS.some(t => t[0] === h) && h !== view) go(h); });
 

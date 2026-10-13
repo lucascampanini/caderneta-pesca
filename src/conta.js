@@ -2,9 +2,11 @@
    Só ativa quando window.FIREBASE_CONFIG existe (o build injeta na versão do GitHub Pages).
    Sem configuração, todas as funções respondem como "sem conta" e o site segue salvando no aparelho. */
 const Conta = (() => {
-  const VERSAO = '10.12.2', BASE = 'https://www.gstatic.com/firebasejs/' + VERSAO + '/';
+  const VERSAO = '12.6.0', BASE = 'https://www.gstatic.com/firebasejs/' + VERSAO + '/';
   const ADMIN_EMAIL = 'lucasmondinicn@gmail.com';
-  let fb = null, user = null, pronto = null, primeiraVez = true;
+  let fb = null, user = null, pronto = null, primeiraVez = true, appRef = null, ia = null;
+  // modelos de visão do Gemini (Firebase AI Logic, cota gratuita), em ordem de preferência
+  const MODELOS_IA = ['gemini-3.5-flash', 'gemini-3-flash-preview', 'gemini-3.8-flash'];
   const ouvintes = [];
   const cfg = () => (typeof window !== 'undefined' && window.FIREBASE_CONFIG) || null;
 
@@ -14,6 +16,7 @@ const Conta = (() => {
     pronto = Promise.all([import(BASE + 'firebase-app.js'), import(BASE + 'firebase-auth.js'), import(BASE + 'firebase-firestore.js')])
       .then(([app, auth, fs]) => {
         const a = app.initializeApp(cfg());
+        appRef = a;
         fb = { auth: auth.getAuth(a), A: auth, db: fs.getFirestore(a), F: fs };
         fb.auth.languageCode = 'pt-BR';
         return new Promise(res => {
@@ -93,6 +96,28 @@ const Conta = (() => {
       exigeUser();
       await fb.F.addDoc(fb.F.collection(fb.db, 'catalogo'), Object.assign({}, item, { aprovadoEm: fb.F.serverTimestamp(), sugeridoPor: sug.nome || '' }));
       await fb.F.updateDoc(doc('sugestoes', sug.id), { status: 'aprovado' });
+    },
+    /* IA de imagem: manda fotos (base64) com uma instrução e devolve o JSON que o modelo responder */
+    async lerFotos(instrucao, fotos) {
+      exigeUser();
+      if (!ia) {
+        const AI = await import(BASE + 'firebase-ai.js');
+        ia = { AI, ai: AI.getAI(appRef, { backend: new AI.GoogleAIBackend() }) };
+      }
+      const partes = [instrucao].concat(fotos.map(f => ({ inlineData: { mimeType: f.mimeType, data: f.data } })));
+      let ultimo;
+      for (const m of MODELOS_IA) {
+        try {
+          const mod = ia.AI.getGenerativeModel(ia.ai, { model: m, generationConfig: { responseMimeType: 'application/json', temperature: 0.2 } });
+          const r = await mod.generateContent(partes);
+          return JSON.parse(r.response.text());
+        } catch (e) {
+          ultimo = e;
+          // modelo aposentado, sobrecarregado ou resposta quebrada: tenta o próximo
+          if (!/\[(404|429|500|503)|JSON|Unexpected/.test(String(e && e.message))) break;
+        }
+      }
+      throw ultimo;
     },
     async recusar(sug) { exigeUser(); await fb.F.updateDoc(doc('sugestoes', sug.id), { status: 'recusado' }); }
   };
