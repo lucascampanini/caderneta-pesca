@@ -10,6 +10,19 @@
   if (!ESPECIES.some(e => e.id === st.esp)) st.esp = DEFAULT.esp;
   let view = 'pescar', peixeAberto = null, filtro = 'todos', catForm = 'vara';
 
+  /* ---------- Fotos reais (recortes) quando publicadas junto do site ---------- */
+  const FOTOS = window.FOTOS || {};
+  const temFoto = (sp) => !!FOTOS[sp.id];
+  function fishArt(sp, size) {
+    if (!temFoto(sp)) return fishSVG(sp, size === 'card' ? { label: false } : undefined);
+    const src = 'fotos/' + sp.id + (size === 'card' ? '-card' : '') + '.webp';
+    return `<img class="fish-cut" src="${src}" alt="${sp.nome} (${sp.sci})" loading="lazy" decoding="async">`;
+  }
+  function creditoHTML(sp) {
+    const c = FOTOS[sp.id];
+    return c ? `<a href="${c.link}" target="_blank" rel="noopener">${c.txt}</a>` : '';
+  }
+
   /* ---------- Toast ---------- */
   let toastT;
   function toast(msg) {
@@ -103,7 +116,7 @@
   function renderControls() {
     $('#controls').innerHTML =
       `<div class="group"><span class="eyebrow">Peixe-alvo</span><div class="species-scroll" id="sp-scroll">` +
-      ESPECIES.map(e => `<button type="button" class="sp-chip" data-k="esp" data-v="${e.id}" aria-pressed="${st.esp === e.id}">${fishSVG(e, { label: false })}<b>${e.nome}</b></button>`).join('') +
+      ESPECIES.map(e => `<button type="button" class="sp-chip" data-k="esp" data-v="${e.id}" aria-pressed="${st.esp === e.id}">${fishArt(e, 'card')}<b>${e.nome}</b></button>`).join('') +
       `</div></div>` +
       chipGroup('agua', 'Cor da água', AGUAS) +
       chipGroup('nivel', 'Nível do rio', NIVEIS, true) +
@@ -150,7 +163,7 @@
     const html = [];
     if (pira.on) html.push(`<div class="panel" style="border-color:var(--bad);background:var(--bad-2)"><b>Período de piracema.</b> Em MS, de 5/11 a 28/02, toda pesca em rios é proibida, inclusive pesque e solte.</div>`);
     html.push(`<section class="panel hero" aria-labelledby="r-nome">
-      <div class="art">${fishSVG(sp)}</div>
+      <div class="art stage">${fishArt(sp)}</div>
       <div class="sec">
         <div><div class="eyebrow">${sp.grupo === 'couro' ? 'Peixe de couro' : 'Peixe de escama'}${sp.origem === 'exotica' ? ' · exótico em MS' : ''}</div>
         <h2 id="r-nome">${sp.nome}</h2><div class="sci">${sp.sci}</div></div>
@@ -232,7 +245,7 @@
     const lista = ESPECIES.filter(e => filtro === 'todos' || (filtro === 'exotica' ? e.origem === 'exotica' : e.grupo === filtro));
     box.innerHTML = `<div class="sec" style="margin-bottom:14px"><h2>Peixes do Pantanal e de MS</h2><p class="muted" style="margin:0">${ESPECIES.length} espécies com hábitos, iscas, equipamento e regras de captura.</p></div>
       <div class="chips filters">${F.map(([id, n]) => `<button class="chip" data-filtro="${id}" aria-pressed="${filtro === id}">${n}</button>`).join('')}</div>
-      <div class="grid">${lista.map(e => `<button class="card" data-peixe="${e.id}"><div class="art">${fishSVG(e, { label: false })}</div><h3>${e.nome}</h3><div class="sci">${e.sci}</div><p>${e.resumo}</p></button>`).join('')}</div>`;
+      <div class="grid">${lista.map(e => `<button class="card" data-peixe="${e.id}"><div class="art stage">${fishArt(e, 'card')}</div><h3>${e.nome}</h3><div class="sci">${e.sci}</div><p>${e.resumo}</p></button>`).join('')}</div>`;
   }
   function perfilResumo(pk) {
     if (!pk) return '';
@@ -246,8 +259,8 @@
       <div><button class="btn ghost small" data-voltar>← Todos os peixes</button></div>
       <section class="panel hero">
         <div class="sec" style="gap:10px">
-          <figure class="photo" id="foto-${sp.id}" style="margin:0"><img src="fotos/${sp.id}.jpg" alt="Foto de ${sp.nome}" loading="lazy" onerror="this.closest('figure').hidden=true"><figcaption id="cred-${sp.id}"></figcaption></figure>
-          <div class="art" style="background:var(--sunk);border-radius:10px;padding:10px">${fishSVG(sp)}</div>
+          <figure class="stage big" style="margin:0">${fishArt(sp)}${temFoto(sp) ? `<figcaption>${creditoHTML(sp)}</figcaption>` : `<figcaption>Ilustração. Ainda não há foto deste peixe com licença livre; veja os registros no iNaturalist.</figcaption>`}</figure>
+          ${temFoto(sp) ? `<details class="orig"><summary>Ver a foto original</summary><figure class="photo" style="margin:0"><img src="fotos/${sp.id}.jpg" alt="Foto original de ${sp.nome}" loading="lazy"><figcaption>${creditoHTML(sp)}</figcaption></figure></details>` : ''}
         </div>
         <div class="sec">
           <div class="eyebrow">${sp.grupo === 'couro' ? 'Peixe de couro' : 'Peixe de escama'} · ${sp.origem === 'exotica' ? 'exótico em MS' : 'nativo'}</div>
@@ -287,12 +300,96 @@
   }
 
   /* ---------- Nós ---------- */
+  /* ---------- Nós: animações 3D com capítulos (quando publicadas), senão os desenhos ---------- */
+  const NOS_VIDEO = window.NOS_VIDEO || {};
+  const ICO = {
+    play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>',
+    pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg>',
+    prev: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+  };
+  function knotPlayer(n, tl) {
+    const marks = tl.steps.map(st => `<i style="left:${(st.t0 / tl.duration * 100).toFixed(2)}%"></i>`).join('');
+    return `<div class="kp" data-kp="${n.id}" data-dur="${tl.duration}">
+        <div class="kp-stage"><video src="nos/${n.id}.mp4" poster="nos/${n.id}.jpg" muted playsinline preload="metadata" aria-label="Animação do nó ${n.nome}"></video>
+          <button class="kp-big" data-kp-act="play" aria-label="Reproduzir a animação">${ICO.play}</button>
+          <div class="kp-cap" aria-live="polite"></div></div>
+        <div class="kp-bar">
+          <button class="kp-btn" data-kp-act="prev" aria-label="Passo anterior">${ICO.prev}</button>
+          <button class="kp-btn kp-pp" data-kp-act="play" aria-label="Reproduzir">${ICO.play}</button>
+          <button class="kp-btn" data-kp-act="next" aria-label="Próximo passo">${ICO.next}</button>
+          <div class="kp-track"><div class="kp-marks">${marks}</div><input type="range" min="0" max="${tl.duration}" step="0.01" value="0" aria-label="Arraste para avançar ou voltar a animação"></div>
+          <button class="kp-btn kp-speed" data-kp-act="speed" aria-label="Velocidade">1×</button>
+        </div>
+        <ol class="kp-steps">${tl.steps.map((st, i) => `<li><button data-kp-step="${i}"><b>${i + 1}</b><span>${st.txt}</span></button></li>`).join('')}</ol>
+      </div>`;
+  }
   function renderNos() {
-    $('#v-nos').innerHTML = `<div class="sec" style="margin-bottom:14px"><h2>Nós</h2><p class="muted" style="margin:0;max-width:70ch">Seis nós resolvem quase todas as situações. Molhe sempre antes de apertar e corte a sobra rente.</p>
-      <div class="legend"><span><i style="background:var(--l1)"></i>Linha principal</span><span><i style="background:var(--l1b)"></i>Ponta (sobra) da linha</span><span><i style="background:var(--l2)"></i>Líder</span><span><i style="background:var(--accent)"></i>Próximo movimento</span></div></div>
-      <div class="knots">${NOS.map(n => `<section class="panel knot-card" id="no-${n.id}"><div class="row" style="justify-content:space-between"><h3 style="font-size:26px">${n.nome}</h3><a href="${YT_URL('nó ' + n.nome + ' pesca')}" target="_blank" rel="noopener">Ver em vídeo</a></div>
+    const temVideo = NOS.some(n => NOS_VIDEO[n.id]);
+    $('#v-nos').innerHTML = `<div class="sec" style="margin-bottom:14px"><h2>Nós</h2><p class="muted" style="margin:0;max-width:70ch">Seis nós resolvem quase todas as situações. ${temVideo ? 'Toque num passo para ver só aquele movimento, ou arraste a barra para ir e voltar no seu ritmo.' : ''} Molhe sempre antes de apertar e corte a sobra rente.</p>
+      <div class="legend"><span><i style="background:var(--l1)"></i>Linha principal</span><span><i style="background:var(--l1b)"></i>Ponta (sobra) da linha</span><span><i style="background:var(--l2)"></i>Líder</span>${temVideo ? '' : '<span><i style="background:var(--accent)"></i>Próximo movimento</span>'}</div></div>
+      <div class="knots">${NOS.map(n => `<section class="panel knot-card" id="no-${n.id}"><div class="row" style="justify-content:space-between"><h3 style="font-size:26px">${n.nome}</h3><a href="${YT_URL('nó ' + n.nome + ' pesca')}" target="_blank" rel="noopener">Ver no YouTube</a></div>
         <div class="row" style="gap:6px"><span class="tag">${n.uso}</span><span class="tag">Resistência: ${n.forca}</span><span class="tag">${n.linhas}</span></div>
-        <div class="steps">${n.passos.map((p, i) => `<div class="step">${knotStep(n.id, i + 1)}<p>${p}</p></div>`).join('')}</div></section>`).join('')}</div>`;
+        ${NOS_VIDEO[n.id] ? knotPlayer(n, NOS_VIDEO[n.id]) : `<div class="steps">${n.passos.map((p, i) => `<div class="step">${knotStep(n.id, i + 1)}<p>${p}</p></div>`).join('')}</div>`}</section>`).join('')}</div>`;
+    document.querySelectorAll('#v-nos .kp').forEach(initKnotPlayer);
+  }
+  let kpObserver = null;
+  function initKnotPlayer(root) {
+    const id = root.dataset.kp, tl = NOS_VIDEO[id], v = $('video', root), rng = $('input[type=range]', root);
+    const steps = [...root.querySelectorAll('[data-kp-step]')], cap = $('.kp-cap', root), pp = $('.kp-pp', root), big = $('.kp-big', root);
+    let stopAt = null, raf = 0, cur = -1;
+    const stepAt = (t) => { let k = -1; tl.steps.forEach((st, i) => { if (t >= st.t0 - 0.05) k = i; }); return k; };
+    function paint() {
+      const t = v.currentTime;
+      rng.value = t;
+      rng.style.setProperty('--p', (t / tl.duration * 100).toFixed(2) + '%');
+      const k = stepAt(t);
+      if (k !== cur) {
+        cur = k;
+        steps.forEach((b, i) => { b.classList.toggle('on', i === k); b.classList.toggle('done', i < k); });
+        cap.textContent = k >= 0 ? (k + 1) + '. ' + tl.steps[k].txt : '';
+        cap.classList.toggle('show', k >= 0);
+      }
+      if (stopAt !== null && t >= stopAt) { v.pause(); stopAt = null; }
+    }
+    function loop() { paint(); if (!v.paused) raf = requestAnimationFrame(loop); }
+    function sync() {
+      const playing = !v.paused && !v.ended;
+      pp.innerHTML = playing ? ICO.pause : ICO.play;
+      pp.setAttribute('aria-label', playing ? 'Pausar' : 'Reproduzir');
+      root.classList.toggle('playing', playing);
+      big.hidden = playing || v.currentTime > 0.05;
+    }
+    v.addEventListener('play', () => { document.querySelectorAll('#v-nos video').forEach(o => { if (o !== v) o.pause(); }); sync(); cancelAnimationFrame(raf); loop(); });
+    v.addEventListener('pause', () => { sync(); paint(); });
+    v.addEventListener('ended', () => { sync(); paint(); });
+    v.addEventListener('seeked', paint);
+    v.addEventListener('loadedmetadata', paint);
+    rng.addEventListener('input', () => { stopAt = null; v.pause(); v.currentTime = +rng.value; paint(); });
+    const goStep = (i) => {
+      i = Math.max(0, Math.min(tl.steps.length - 1, i));
+      const st = tl.steps[i];
+      v.currentTime = Math.max(0, st.t0 - 0.15); stopAt = st.t1 + 0.35;
+      v.play().catch(() => {});
+    };
+    root.addEventListener('click', (ev) => {
+      const sb = ev.target.closest('[data-kp-step]');
+      if (sb) { goStep(+sb.dataset.kpStep); return; }
+      const b = ev.target.closest('[data-kp-act]');
+      if (!b) return;
+      const act = b.dataset.kpAct;
+      if (act === 'play') {
+        if (v.paused) { stopAt = null; if (v.ended || v.currentTime >= tl.duration - 0.05) v.currentTime = 0; v.play().catch(() => {}); }
+        else v.pause();
+      } else if (act === 'next') goStep(cur + 1);
+      else if (act === 'prev') goStep(v.currentTime - (tl.steps[Math.max(cur, 0)].t0) > 0.6 ? cur : cur - 1);
+      else if (act === 'speed') { v.playbackRate = v.playbackRate === 1 ? 0.5 : 1; b.textContent = v.playbackRate === 1 ? '1×' : '½×'; }
+    });
+    if ('IntersectionObserver' in window) {
+      kpObserver = kpObserver || new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) e.target.pause(); }), { threshold: 0.15 });
+      kpObserver.observe(v);
+    }
+    sync(); paint();
   }
 
   /* ---------- Meu equipamento ---------- */
@@ -381,7 +478,7 @@
     if (d.no) { go('nos', { scroll: 'no-' + d.no }); return; }
     if (d.go) { go(d.go); return; }
     if (d.filtro) { filtro = d.filtro; renderPeixes(); return; }
-    if (d.peixe) { peixeAberto = d.peixe; go('peixes'); loadCredito(d.peixe); return; }
+    if (d.peixe) { peixeAberto = d.peixe; go('peixes'); return; }
     if ('voltar' in d) { peixeAberto = null; renderPeixes(); return; }
     if (d.montar) { st.esp = d.montar; lsSet(KEY_ST, st); go('pescar'); return; }
     if (d.cat) { catForm = d.cat; renderEquip(); return; }
@@ -393,15 +490,6 @@
   });
   document.addEventListener('submit', (ev) => { if (ev.target.id === 'f-add') { ev.preventDefault(); addItem(ev.target); } });
   window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (TABS.some(t => t[0] === h) && h !== view) go(h); });
-
-  /* créditos das fotos (arquivo opcional publicado junto do site) */
-  let creditos = null;
-  function loadCredito(id) {
-    const put = () => { const el = document.getElementById('cred-' + id); if (el && creditos && creditos[id]) el.textContent = creditos[id]; };
-    if (creditos) { setTimeout(put, 0); return; }
-    if (typeof fetch !== 'function') return;
-    fetch('fotos/creditos.json').then(r => r.ok ? r.json() : {}).then(j => { creditos = j || {}; put(); }).catch(() => { creditos = {}; });
-  }
 
   /* ---------- Início ---------- */
   const p = piracema();

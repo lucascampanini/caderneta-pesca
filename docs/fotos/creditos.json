@@ -1,17 +1,92 @@
 {
-  "pintado": "Foto: Martín Acosta Albarracín, CC BY 4.0, Wikimedia Commons",
-  "cachara": "Foto: CHUCAO, CC BY-SA 3.0, Wikimedia Commons",
-  "barbado": "Foto: Gabriel Lelis Togni, CC BY 4.0, Wikimedia Commons",
-  "jurupensem": "Foto: Kambui, CC BY 2.0, Wikimedia Commons",
-  "palmito": "Foto: w_endo, CC0, Wikimedia Commons",
-  "pacu": "Foto: Pia Andrews, CC BY 2.0, Wikimedia Commons",
-  "pacupeva": "Foto: Sandra Raredon/Smithsonian Institution, Domínio público, Wikimedia Commons",
-  "piraputanga": "Foto: Nicola Crockford, CC BY 4.0, Wikimedia Commons",
-  "dourado": "Foto: melaniae.trapani, CC BY 2.0, Wikimedia Commons",
-  "traira": "Foto: Ictiologia Universidad Católica de Oriente, CC BY 2.0, Wikimedia Commons",
-  "piranha": "Foto: H. Zell, CC BY-SA 3.0, Wikimedia Commons",
-  "curimbata": "Foto: dariocrosa, CC0, Wikimedia Commons",
-  "cachorra": "Foto: Clinton & Charles Robertson, CC BY 2.0, Wikimedia Commons",
-  "tucunare": "Foto: Douglas, CC BY 4.0, Wikimedia Commons",
-  "tilapia": "Foto: Bjørn Christian Tørrissen, CC BY-SA 3.0, Wikimedia Commons"
+  "pintado": {
+    "txt": "Foto: Martín Acosta Albarracín, CC BY 4.0, Wikimedia Commons",
+    "link": "https://commons.wikimedia.org/wiki/File:Surub%C3%AD_(Pseudoplatystoma_corruscans),_It%C3%A1_Ibat%C3%A9.jpg",
+    "fonte": "Wikimedia Commons"
+  },
+  "cachara": {
+    "txt": "Foto: CHUCAO, CC BY-SA 3.0, Wikimedia Commons",
+    "link": "https://commons.wikimedia.org/wiki/File:Pseudoplatystoma_reticulatum.JPG",
+    "fonte": "Wikimedia Commons"
+  },
+  "jau": {
+    "txt": "Foto: demianlescano, CC0, iNaturalist",
+    "link": "https://www.inaturalist.org/observations/229799013",
+    "fonte": "iNaturalist"
+  },
+  "barbado": {
+    "txt": "Foto: Anders Hastings, CC BY 4.0, iNaturalist",
+    "link": "https://www.inaturalist.org/observations/261592282",
+    "fonte": "iNaturalist"
+  },
+  "jurupoca": {
+    "txt": "Foto: Whaldener Endo, CC0, iNaturalist",
+    "link": "https://www.inaturalist.org/observations/121036285",
+    "fonte": "iNaturalist"
+  },
+  "jurupensem": {
+    "txt": "Foto: Kambui, CC BY 2.0, Wikimedia Commons",
+    "link": "https://commons.wikimedia.org/wiki/File:Spatelwels_(Sorubim_lima)_(30145917290).jpg",
+    "fonte": "Wikimedia Commons"
+  },
+  "palmito": {
+    "txt": "Foto: Vincent A. Vos, CC BY 4.0, iNaturalist",
+    "link": "https://www.inaturalist.org/observations/72696560",
+    "fonte": "iNaturalist"
+  },
+  "pacu": {
+    "txt": "Foto: R. R. Ota et al., CC BY 4.0, Wikimedia Commons",
+    "link": "https://commons.wikimedia.org/wiki/File:Peixes_da_plan%C3%ADcie_de_inunda%C3%A7%C3%A3o_do_alto_rio_Paran%C3%A1_(3678425)_(cropped).png",
+    "fonte": "Wikimedia Commons"
+  },
+  "pacupeva": {
+    "txt": "Foto: Sol Quipildor, CC BY-SA 4.0, iNaturalist",
+    "link": "https://www.inaturalist.org/observations/38079991",
+    "fonte": "iNaturalist"
+  },
+  "piraputanga": {
+    "txt": "Foto: Nicola Crockford, CC BY 4.0, Wikimedia Commons",
+    "link": "https://commons.wikimedia.org/wiki/File:Brycon_hilarii_632830862.jpg",
+    "fonte": "Wikimedia Commons"
+  },
+  "dourado": {
+    "txt": "Foto: R Vasconcellos, CC BY 4.0, iNaturalist",
+    "link": "https://www.inaturalist.org/observations/218482313",
+    "fonte": "iNaturalist"
+  },
+  "traira": {
+    "txt": "Foto: Ictiologia Universidad Católica de Oriente, CC BY 2.0, Wikimedia Commons",
+    "link": "https://commons.wikimedia.org/wiki/File:Hoplias_malabaricus_(16521590825).jpg",
+    "fonte": "Wikimedia Commons"
+  },
+  "piranha": {
+    "txt": "Foto: H. Zell, CC BY-SA 3.0, Wikimedia Commons",
+    "link": "https://commons.wikimedia.org/wiki/File:Pygocentrus_nattereri_-_Karlsruhe_Zoo_01.jpg",
+    "fonte": "Wikimedia Commons"
+  },
+  "curimbata": {
+    "txt": "Foto: dariocrosa, CC0, Wikimedia Commons",
+    "link": "https://commons.wikimedia.org/wiki/File:Prochilodus_lineatus_351939209_(cropped).jpg",
+    "fonte": "Wikimedia Commons"
+  },
+  "cachorra": {
+    "txt": "Foto: Clinton & Charles Robertson, CC BY 2.0, Wikimedia Commons",
+    "link": "https://commons.wikimedia.org/wiki/File:Rhaphiodon_vulpinus.jpg",
+    "fonte": "Wikimedia Commons"
+  },
+  "tucunare": {
+    "txt": "Foto: Douglas, CC BY 4.0, Wikimedia Commons",
+    "link": "https://commons.wikimedia.org/wiki/File:Cichla_piquiti_29769333.jpg",
+    "fonte": "Wikimedia Commons"
+  },
+  "corvina": {
+    "txt": "Foto: Whaldener Endo, CC0, iNaturalist",
+    "link": "https://www.inaturalist.org/observations/121362876",
+    "fonte": "iNaturalist"
+  },
+  "tilapia": {
+    "txt": "Foto: Bjørn Christian Tørrissen, CC BY-SA 3.0, Wikimedia Commons",
+    "link": "https://commons.wikimedia.org/wiki/File:Oreochromis-niloticus-Nairobi.JPG",
+    "fonte": "Wikimedia Commons"
+  }
 }

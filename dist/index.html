@@ -9,6 +9,7 @@
   --gold: #a86f08; --gold-2: #f6e8c6;
   --ok: #2c7a4b; --ok-2: #ddf0e3; --warn: #9a610f; --warn-2: #f8ebd2; --bad: #b0412c; --bad-2: #f6dfd9;
   --l1: #c99a06; --l1b: #8f5e00; --l2: #2b7fa3; --metal: #6c7a80; --lead: #5c6367; --rod: #3b2f2a; --bead: #c7312b; --float: #e5532d; --floatb: #f7f6f1;
+  --stage-a: #fbfaf5; --stage-b: #d9dfd2; --stage-shadow: rgba(30, 40, 30, .28);
   --f-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
   --f-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
@@ -21,6 +22,7 @@
     --gold: #e6b13c; --gold-2: #392c10;
     --ok: #63c48a; --ok-2: #173324; --warn: #e6a948; --warn-2: #3a2a10; --bad: #ec7d66; --bad-2: #3d1d16;
     --l1: #efc12c; --l1b: #ff9f43; --l2: #5bb8de; --metal: #a6b3b8; --lead: #8f979b; --rod: #c4a68f; --bead: #ff6b5e; --float: #ff7a52; --floatb: #e9e8e1;
+    --stage-a: #2a3a32; --stage-b: #111915; --stage-shadow: rgba(0, 0, 0, .55);
     color-scheme: dark;
   }
 }
@@ -30,6 +32,7 @@
   --gold: #e6b13c; --gold-2: #392c10;
   --ok: #63c48a; --ok-2: #173324; --warn: #e6a948; --warn-2: #3a2a10; --bad: #ec7d66; --bad-2: #3d1d16;
   --l1: #efc12c; --l1b: #ff9f43; --l2: #5bb8de; --metal: #a6b3b8; --lead: #8f979b; --rod: #c4a68f; --bead: #ff6b5e; --float: #ff7a52; --floatb: #e9e8e1;
+    --stage-a: #2a3a32; --stage-b: #111915; --stage-shadow: rgba(0, 0, 0, .55);
   color-scheme: dark;
 }
 
@@ -69,8 +72,9 @@ h1, h2, h3 { font-family: var(--f-display); font-weight: 800; letter-spacing: .0
 
 /* Blocos */
 .panel { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r); padding: 16px; min-width: 0; }
-.sec { display: grid; gap: 10px; }
+.sec { display: grid; gap: 10px; align-content: start; }
 .sec + .sec { margin-top: 18px; }
+.cols > .sec + .sec, .cols > .panel + .panel { margin-top: 0; }
 .sec h2 { font-size: 24px; }
 .sec h3 { font-size: 19px; }
 .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
@@ -89,6 +93,7 @@ h1, h2, h3 { font-family: var(--f-display); font-weight: 800; letter-spacing: .0
 .species-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; }
 .sp-chip { flex: none; width: 104px; scroll-snap-align: start; border: 1.5px solid var(--rule); background: var(--sunk); border-radius: 10px; padding: 6px 6px 8px; cursor: pointer; display: grid; gap: 2px; text-align: center; }
 .sp-chip svg { width: 100%; height: 40px; }
+.sp-chip .fish-cut { width: 100%; height: 40px; object-fit: contain; filter: drop-shadow(0 2px 2px var(--stage-shadow)); }
 .sp-chip b { font-size: 13px; }
 .sp-chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-2); box-shadow: inset 0 0 0 1px var(--accent); }
 
@@ -243,6 +248,61 @@ svg.rig { width: 100%; min-width: 300px; height: auto; display: block; }
 @media (min-width: 900px) { .toast { bottom: 24px; } }
 @media (prefers-reduced-motion: no-preference) { .meter .bar i, .cov-row .bar i { transition: width .35s ease; } }
 
+/* Palco das fotos recortadas: fundo de estúdio, sombra de contato */
+.stage { background: radial-gradient(120% 90% at 50% 38%, var(--stage-a), var(--stage-b)); border-radius: 10px; position: relative; overflow: hidden; }
+.stage .fish-cut { display: block; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 8px var(--stage-shadow)) drop-shadow(0 2px 2px var(--stage-shadow)); }
+.card .art.stage { padding: 10px 14px; }
+.hero .art.stage { padding: 18px; aspect-ratio: 16 / 9; display: grid; place-items: center; }
+.stage.big { padding: 22px 22px 0; display: grid; }
+.stage.big .fish-cut, .stage.big svg { aspect-ratio: 16 / 9; }
+.stage figcaption { font-size: 11.5px; color: var(--muted); padding: 10px 0 10px; text-align: right; }
+.stage figcaption a { color: inherit; }
+.orig summary { cursor: pointer; font-size: 13.5px; color: var(--muted); padding: 2px 0; }
+.orig[open] summary { margin-bottom: 8px; }
+.photo figcaption a { color: inherit; }
+
+/* Player dos nós: vídeo 3D, barra com capítulos e lista de passos */
+.kp { display: grid; gap: 10px; }
+@media (min-width: 900px) { .kp { grid-template-columns: minmax(0, 1.7fr) minmax(260px, 1fr); grid-template-rows: auto 1fr; } .kp-stage, .kp-bar { grid-column: 1; } .kp-steps { grid-column: 2; grid-row: 1 / span 2; align-self: start; } }
+.kp-stage { position: relative; border-radius: 10px; overflow: hidden; background: #0d1210; aspect-ratio: 16 / 9; }
+.kp-stage video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.kp-big { position: absolute; inset: 0; margin: auto; width: 68px; height: 68px; border-radius: 50%; border: 0; background: rgba(255, 255, 255, .92); color: #14201a; cursor: pointer; display: grid; place-items: center; box-shadow: 0 6px 24px rgba(0, 0, 0, .45); }
+.kp-big svg { width: 30px; height: 30px; margin-left: 3px; }
+.kp-cap { position: absolute; left: 12px; right: 12px; bottom: 10px; color: #fff; font-size: 14.5px; line-height: 1.35; padding: 7px 11px; border-radius: 8px; background: rgba(10, 14, 12, .72); backdrop-filter: blur(4px); opacity: 0; transform: translateY(6px); transition: opacity .2s, transform .2s; pointer-events: none; }
+.kp-cap.show { opacity: 1; transform: none; }
+.kp-bar { display: flex; align-items: center; gap: 6px; }
+.kp-btn { flex: none; width: 38px; height: 38px; border-radius: 9px; border: 1.5px solid var(--rule); background: var(--sunk); color: var(--ink); display: grid; place-items: center; cursor: pointer; font: 700 13px var(--f-mono); }
+.kp-btn svg { width: 20px; height: 20px; }
+.kp-btn:hover { border-color: var(--accent); }
+.kp-pp { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.kp-track { position: relative; flex: 1; min-width: 0; height: 38px; display: grid; align-items: center; }
+.kp-track input { width: 100%; margin: 0; appearance: none; -webkit-appearance: none; background: transparent; height: 38px; cursor: pointer; position: relative; z-index: 1; }
+.kp-track input::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--accent) var(--p, 0%), var(--rule) var(--p, 0%)); }
+.kp-track input::-moz-range-track { height: 6px; border-radius: 3px; background: var(--rule); }
+.kp-track input::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--accent); }
+.kp-track input::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--surface); border: 3px solid var(--accent); margin-top: -6px; }
+.kp-track input::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--surface); border: 3px solid var(--accent); }
+.kp-marks { position: absolute; left: 9px; right: 9px; top: 50%; height: 0; z-index: 2; pointer-events: none; }
+.kp-marks i { position: absolute; top: -7px; width: 2px; height: 14px; border-radius: 1px; background: var(--muted); opacity: .7; }
+.kp-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.kp-steps button { width: 100%; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 8px; align-items: start; text-align: left; background: var(--sunk); border: 1.5px solid transparent; border-radius: 9px; padding: 8px 10px; cursor: pointer; color: var(--ink); font: inherit; font-size: 14px; line-height: 1.4; }
+.kp-steps button b { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); color: var(--muted); font: 700 13px var(--f-mono); border: 1.5px solid var(--rule); }
+.kp-steps button:hover { border-color: var(--rule); }
+.kp-steps button.done b { background: var(--accent-2); color: var(--accent); border-color: transparent; }
+.kp-steps button.on { border-color: var(--accent); background: var(--accent-2); }
+.kp-steps button.on b { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* Montagem com peças 3D */
+.rig3d .r3-multi { stroke: var(--l1); stroke-width: 2.6; fill: none; stroke-linecap: round; }
+.rig3d .r3-multi-hi { stroke: rgba(255, 255, 255, .35); stroke-width: .8; fill: none; stroke-dasharray: 2 2.4; }
+.rig3d .r3-mono { stroke: var(--l2); stroke-width: 2.2; fill: none; opacity: .9; stroke-linecap: round; }
+.rig3d .r3-mono-hi { stroke: rgba(255, 255, 255, .45); stroke-width: .7; fill: none; }
+.rig3d .r3-steel { stroke: var(--metal); stroke-width: 2.2; fill: none; stroke-linecap: round; }
+.rig3d .r3-steel-hi { stroke: rgba(255, 255, 255, .55); stroke-width: .7; fill: none; stroke-dasharray: 1.4 1.4; }
+.rig3d .r3-knot ellipse { fill: var(--l1); stroke: rgba(0, 0, 0, .35); stroke-width: .8; }
+.rig3d .r3-knot path { stroke: rgba(0, 0, 0, .35); stroke-width: .8; fill: none; }
+.rig3d image { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .35)); }
+
 </style>
 <div class="wrap">
   <header class="top">
@@ -264,7 +324,7 @@ svg.rig { width: 100%; min-width: 300px; height: auto; display: block; }
   </main>
   <footer class="foot">
     <p style="margin:0">Regras de pesca mudam todo ano: confira o <a href="https://www.imasul.ms.gov.br" target="_blank" rel="noopener">Imasul</a> antes de sair. O índice de atividade é uma estimativa a partir de horário, temperatura, tempo, nível e cor da água.</p>
-    <p style="margin:0">Fontes: Imasul, Embrapa Pantanal, UEMS e guias de pesca esportiva. Ilustrações esquemáticas; use "Ver fotos reais" em cada peixe para conferir a identificação.</p>
+    <p style="margin:0">Fontes: Imasul, Embrapa Pantanal, UEMS e guias de pesca esportiva. Fotos dos peixes: Wikimedia Commons e iNaturalist, com licença livre (autor e licença em cada peixe). Animações dos nós e peças das montagens: modelos 3D renderizados no Blender.</p>
   </footer>
 </div>
 
@@ -1723,7 +1783,86 @@ function rigPartes(rigId, spec, isca, variante) {
   return out.filter(Boolean);
 }
 
+/* Montagem com peças renderizadas em 3D (docs/montagem/*.webp), quando publicadas */
+function rigSprite(p, corIsca) {
+  const S = (typeof window !== 'undefined' && window.RIG_SPRITES) || null;
+  if (!S) return null;
+  let n = null;
+  switch (p.k) {
+    case 'vara': n = 'vara'; break;
+    case 'oliva': case 'chata': case 'chumbinho': case 'micanga': case 'boia': n = p.k; break;
+    case 'girador': n = /rolamento/i.test(p.t) ? 'girador_rol' : 'girador'; break;
+    case 'anzol': n = 'anzol_' + ({ circular: 'circular', maruseigo: 'maruseigo', haste: 'haste', offset: 'offset', garateia: 'garateia' }[p.modelo] || 'wide'); break;
+    case 'isca':
+      if (p.isca.tipo === 'artificial') {
+        const cor = Object.keys(CORES_ISCA).find(k => CORES_ISCA[k].sw === corIsca) || 'dourado';
+        n = 'isca_' + p.isca.art + '_' + cor;
+      } else n = 'nat_' + p.isca.ic;
+      break;
+  }
+  return n && S[n] ? Object.assign({ n }, S[n]) : null;
+}
+function rigSVG3D(rigId, spec, isca, variante, corIsca) {
+  const parts = rigPartes(rigId, spec, isca, variante);
+  const K = 64;                                    // svg units per model unit
+  const cx = 62, lx = 132;
+  const LINE = { linha: 44, lider: 40, no: 22, aco: 42 };
+  const lineCls = (k, p) => k === 'aco' ? 'r3-steel' : (['lider', 'no', 'anzol', 'boia', 'chumbinho', 'girador'].includes(k) ? 'r3-mono' : (k === 'linha' && p.tipo !== 'multi' ? 'r3-mono' : 'r3-multi'));
+  const seg = (y1, y2, cls) => y2 > y1 ? `<path d="M${cx},${f1(y1)} V${f1(y2)}" class="${cls}"/><path d="M${cx - 0.6},${f1(y1)} V${f1(y2)}" class="${cls}-hi"/>` : '';
+  let y = 6, lastCls = 'r3-multi';
+  const g = [], labels = [];
+  parts.forEach((p) => {
+    const lines = wrapTxt(p.s, 32).slice(0, 3);
+    const txtH = 26 + lines.length * 13;
+    const sp = rigSprite(p, corIsca);
+    let h, draw = '';
+    if (p.k === 'vara' && sp) {
+      const w = sp.w / sp.u * K * 0.9, hh = sp.h / sp.u * K * 0.9;
+      h = Math.max(hh - 6, txtH);
+      const x = cx - sp.ax / sp.w * w;
+      draw = `<image href="montagem/${sp.n}.webp" x="${f1(x)}" y="${f1(y + h - hh)}" width="${f1(w)}" height="${f1(hh)}"/>`;
+      lastCls = 'r3-multi';
+    } else if (LINE[p.k] && p.k !== 'aco') {
+      h = Math.max(LINE[p.k], txtH);
+      const cls = lineCls(p.k, p);
+      draw = seg(y, y + h, cls);
+      if (p.k === 'no') draw += `<g class="r3-knot"><ellipse cx="${cx}" cy="${f1(y + h / 2)}" rx="4.2" ry="7.5"/><path d="M${cx - 4},${f1(y + h / 2 - 4)} l8,3 M${cx - 4},${f1(y + h / 2)} l8,3 M${cx - 4},${f1(y + h / 2 + 4)} l8,-2"/></g>`;
+      lastCls = cls;
+    } else if (p.k === 'aco') {
+      h = Math.max(LINE.aco, txtH);
+      const cr = (typeof window !== 'undefined' && window.RIG_SPRITES && window.RIG_SPRITES.crimp) || null;
+      draw = seg(y, y + h, 'r3-steel');
+      if (cr) { const w = cr.w / cr.u * K, hh = cr.h / cr.u * K; [y + 3, y + h - hh - 3].forEach(yy => { draw += `<image href="montagem/crimp.webp" x="${f1(cx - w / 2)}" y="${f1(yy)}" width="${f1(w)}" height="${f1(hh)}"/>`; }); }
+      lastCls = 'r3-steel';
+    } else if (sp) {
+      const minH = { micanga: 13, girador: 30, girador_rol: 32, chumbinho: 14, oliva: 26 }[sp.n] || 0;
+      const z = Math.max(1, minH / (sp.h / sp.u * K));
+      const w = sp.w / sp.u * K * z, hh = sp.h / sp.u * K * z;
+      const terminal = p.k === 'anzol' || p.k === 'isca';
+      const gap = terminal ? 6 : 4;
+      h = Math.max(hh + gap * 2, txtH);
+      const top = y + (h - hh) / 2;
+      const x = cx - sp.ax / sp.w * w;
+      const attachY = top + sp.ay / sp.h * hh;
+      if (terminal) draw = seg(y, attachY, lastCls === 'r3-steel' ? 'r3-steel' : 'r3-mono');
+      else { const cls = p.k === 'oliva' || p.k === 'chata' || p.k === 'micanga' ? lastCls : 'r3-mono'; draw = seg(y, y + h, cls); lastCls = p.k === 'girador' ? 'r3-mono' : lastCls; }
+      draw += `<image href="montagem/${sp.n}.webp" x="${f1(x)}" y="${f1(top)}" width="${f1(w)}" height="${f1(hh)}"/>`;
+    } else {
+      h = Math.max(36, txtH);
+      draw = seg(y, y + h, lastCls);
+    }
+    g.push(draw);
+    const mid = y + h / 2, ty = mid - (lines.length * 13) / 2 + 2;
+    labels.push(`<path d="M${cx + 30},${f1(mid)} H${lx - 6}" class="r-lead-line"/>` +
+      `<text x="${lx}" y="${f1(ty)}" class="r-t">${esc(p.t)}</text>` +
+      lines.map((l, j) => `<text x="${lx}" y="${f1(ty + 14 + j * 13)}" class="r-s">${esc(l)}</text>`).join(''));
+    y += h;
+  });
+  return `<svg viewBox="0 0 370 ${f1(y + 8)}" class="rig rig3d" role="img" aria-label="Montagem: ${esc(parts.map(p => p.t).join(', '))}">${g.join('')}${labels.join('')}</svg>`;
+}
+
 function rigSVG(rigId, spec, isca, variante, corIsca) {
+  if (typeof window !== 'undefined' && window.RIG_SPRITES) return rigSVG3D(rigId, spec, isca, variante, corIsca);
   const parts = rigPartes(rigId, spec, isca, variante);
   const H = { vara: 64, linha: 56, no: 22, lider: 48, aco: 44, oliva: 40, chata: 30, chumbinho: 18, micanga: 14, girador: 30, boia: 58, anzol: 50, isca: 66 };
   const cx = 52, lx = 118;
@@ -1821,6 +1960,19 @@ function knotStep(id, step) {
   if (!ESPECIES.some(e => e.id === st.esp)) st.esp = DEFAULT.esp;
   let view = 'pescar', peixeAberto = null, filtro = 'todos', catForm = 'vara';
 
+  /* ---------- Fotos reais (recortes) quando publicadas junto do site ---------- */
+  const FOTOS = window.FOTOS || {};
+  const temFoto = (sp) => !!FOTOS[sp.id];
+  function fishArt(sp, size) {
+    if (!temFoto(sp)) return fishSVG(sp, size === 'card' ? { label: false } : undefined);
+    const src = 'fotos/' + sp.id + (size === 'card' ? '-card' : '') + '.webp';
+    return `<img class="fish-cut" src="${src}" alt="${sp.nome} (${sp.sci})" loading="lazy" decoding="async">`;
+  }
+  function creditoHTML(sp) {
+    const c = FOTOS[sp.id];
+    return c ? `<a href="${c.link}" target="_blank" rel="noopener">${c.txt}</a>` : '';
+  }
+
   /* ---------- Toast ---------- */
   let toastT;
   function toast(msg) {
@@ -1914,7 +2066,7 @@ function knotStep(id, step) {
   function renderControls() {
     $('#controls').innerHTML =
       `<div class="group"><span class="eyebrow">Peixe-alvo</span><div class="species-scroll" id="sp-scroll">` +
-      ESPECIES.map(e => `<button type="button" class="sp-chip" data-k="esp" data-v="${e.id}" aria-pressed="${st.esp === e.id}">${fishSVG(e, { label: false })}<b>${e.nome}</b></button>`).join('') +
+      ESPECIES.map(e => `<button type="button" class="sp-chip" data-k="esp" data-v="${e.id}" aria-pressed="${st.esp === e.id}">${fishArt(e, 'card')}<b>${e.nome}</b></button>`).join('') +
       `</div></div>` +
       chipGroup('agua', 'Cor da água', AGUAS) +
       chipGroup('nivel', 'Nível do rio', NIVEIS, true) +
@@ -1961,7 +2113,7 @@ function knotStep(id, step) {
     const html = [];
     if (pira.on) html.push(`<div class="panel" style="border-color:var(--bad);background:var(--bad-2)"><b>Período de piracema.</b> Em MS, de 5/11 a 28/02, toda pesca em rios é proibida, inclusive pesque e solte.</div>`);
     html.push(`<section class="panel hero" aria-labelledby="r-nome">
-      <div class="art">${fishSVG(sp)}</div>
+      <div class="art stage">${fishArt(sp)}</div>
       <div class="sec">
         <div><div class="eyebrow">${sp.grupo === 'couro' ? 'Peixe de couro' : 'Peixe de escama'}${sp.origem === 'exotica' ? ' · exótico em MS' : ''}</div>
         <h2 id="r-nome">${sp.nome}</h2><div class="sci">${sp.sci}</div></div>
@@ -2043,7 +2195,7 @@ function knotStep(id, step) {
     const lista = ESPECIES.filter(e => filtro === 'todos' || (filtro === 'exotica' ? e.origem === 'exotica' : e.grupo === filtro));
     box.innerHTML = `<div class="sec" style="margin-bottom:14px"><h2>Peixes do Pantanal e de MS</h2><p class="muted" style="margin:0">${ESPECIES.length} espécies com hábitos, iscas, equipamento e regras de captura.</p></div>
       <div class="chips filters">${F.map(([id, n]) => `<button class="chip" data-filtro="${id}" aria-pressed="${filtro === id}">${n}</button>`).join('')}</div>
-      <div class="grid">${lista.map(e => `<button class="card" data-peixe="${e.id}"><div class="art">${fishSVG(e, { label: false })}</div><h3>${e.nome}</h3><div class="sci">${e.sci}</div><p>${e.resumo}</p></button>`).join('')}</div>`;
+      <div class="grid">${lista.map(e => `<button class="card" data-peixe="${e.id}"><div class="art stage">${fishArt(e, 'card')}</div><h3>${e.nome}</h3><div class="sci">${e.sci}</div><p>${e.resumo}</p></button>`).join('')}</div>`;
   }
   function perfilResumo(pk) {
     if (!pk) return '';
@@ -2057,8 +2209,8 @@ function knotStep(id, step) {
       <div><button class="btn ghost small" data-voltar>← Todos os peixes</button></div>
       <section class="panel hero">
         <div class="sec" style="gap:10px">
-          <figure class="photo" id="foto-${sp.id}" style="margin:0"><img src="fotos/${sp.id}.jpg" alt="Foto de ${sp.nome}" loading="lazy" onerror="this.closest('figure').hidden=true"><figcaption id="cred-${sp.id}"></figcaption></figure>
-          <div class="art" style="background:var(--sunk);border-radius:10px;padding:10px">${fishSVG(sp)}</div>
+          <figure class="stage big" style="margin:0">${fishArt(sp)}${temFoto(sp) ? `<figcaption>${creditoHTML(sp)}</figcaption>` : `<figcaption>Ilustração. Ainda não há foto deste peixe com licença livre; veja os registros no iNaturalist.</figcaption>`}</figure>
+          ${temFoto(sp) ? `<details class="orig"><summary>Ver a foto original</summary><figure class="photo" style="margin:0"><img src="fotos/${sp.id}.jpg" alt="Foto original de ${sp.nome}" loading="lazy"><figcaption>${creditoHTML(sp)}</figcaption></figure></details>` : ''}
         </div>
         <div class="sec">
           <div class="eyebrow">${sp.grupo === 'couro' ? 'Peixe de couro' : 'Peixe de escama'} · ${sp.origem === 'exotica' ? 'exótico em MS' : 'nativo'}</div>
@@ -2098,12 +2250,96 @@ function knotStep(id, step) {
   }
 
   /* ---------- Nós ---------- */
+  /* ---------- Nós: animações 3D com capítulos (quando publicadas), senão os desenhos ---------- */
+  const NOS_VIDEO = window.NOS_VIDEO || {};
+  const ICO = {
+    play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>',
+    pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg>',
+    prev: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+  };
+  function knotPlayer(n, tl) {
+    const marks = tl.steps.map(st => `<i style="left:${(st.t0 / tl.duration * 100).toFixed(2)}%"></i>`).join('');
+    return `<div class="kp" data-kp="${n.id}" data-dur="${tl.duration}">
+        <div class="kp-stage"><video src="nos/${n.id}.mp4" poster="nos/${n.id}.jpg" muted playsinline preload="metadata" aria-label="Animação do nó ${n.nome}"></video>
+          <button class="kp-big" data-kp-act="play" aria-label="Reproduzir a animação">${ICO.play}</button>
+          <div class="kp-cap" aria-live="polite"></div></div>
+        <div class="kp-bar">
+          <button class="kp-btn" data-kp-act="prev" aria-label="Passo anterior">${ICO.prev}</button>
+          <button class="kp-btn kp-pp" data-kp-act="play" aria-label="Reproduzir">${ICO.play}</button>
+          <button class="kp-btn" data-kp-act="next" aria-label="Próximo passo">${ICO.next}</button>
+          <div class="kp-track"><div class="kp-marks">${marks}</div><input type="range" min="0" max="${tl.duration}" step="0.01" value="0" aria-label="Arraste para avançar ou voltar a animação"></div>
+          <button class="kp-btn kp-speed" data-kp-act="speed" aria-label="Velocidade">1×</button>
+        </div>
+        <ol class="kp-steps">${tl.steps.map((st, i) => `<li><button data-kp-step="${i}"><b>${i + 1}</b><span>${st.txt}</span></button></li>`).join('')}</ol>
+      </div>`;
+  }
   function renderNos() {
-    $('#v-nos').innerHTML = `<div class="sec" style="margin-bottom:14px"><h2>Nós</h2><p class="muted" style="margin:0;max-width:70ch">Seis nós resolvem quase todas as situações. Molhe sempre antes de apertar e corte a sobra rente.</p>
-      <div class="legend"><span><i style="background:var(--l1)"></i>Linha principal</span><span><i style="background:var(--l1b)"></i>Ponta (sobra) da linha</span><span><i style="background:var(--l2)"></i>Líder</span><span><i style="background:var(--accent)"></i>Próximo movimento</span></div></div>
-      <div class="knots">${NOS.map(n => `<section class="panel knot-card" id="no-${n.id}"><div class="row" style="justify-content:space-between"><h3 style="font-size:26px">${n.nome}</h3><a href="${YT_URL('nó ' + n.nome + ' pesca')}" target="_blank" rel="noopener">Ver em vídeo</a></div>
+    const temVideo = NOS.some(n => NOS_VIDEO[n.id]);
+    $('#v-nos').innerHTML = `<div class="sec" style="margin-bottom:14px"><h2>Nós</h2><p class="muted" style="margin:0;max-width:70ch">Seis nós resolvem quase todas as situações. ${temVideo ? 'Toque num passo para ver só aquele movimento, ou arraste a barra para ir e voltar no seu ritmo.' : ''} Molhe sempre antes de apertar e corte a sobra rente.</p>
+      <div class="legend"><span><i style="background:var(--l1)"></i>Linha principal</span><span><i style="background:var(--l1b)"></i>Ponta (sobra) da linha</span><span><i style="background:var(--l2)"></i>Líder</span>${temVideo ? '' : '<span><i style="background:var(--accent)"></i>Próximo movimento</span>'}</div></div>
+      <div class="knots">${NOS.map(n => `<section class="panel knot-card" id="no-${n.id}"><div class="row" style="justify-content:space-between"><h3 style="font-size:26px">${n.nome}</h3><a href="${YT_URL('nó ' + n.nome + ' pesca')}" target="_blank" rel="noopener">Ver no YouTube</a></div>
         <div class="row" style="gap:6px"><span class="tag">${n.uso}</span><span class="tag">Resistência: ${n.forca}</span><span class="tag">${n.linhas}</span></div>
-        <div class="steps">${n.passos.map((p, i) => `<div class="step">${knotStep(n.id, i + 1)}<p>${p}</p></div>`).join('')}</div></section>`).join('')}</div>`;
+        ${NOS_VIDEO[n.id] ? knotPlayer(n, NOS_VIDEO[n.id]) : `<div class="steps">${n.passos.map((p, i) => `<div class="step">${knotStep(n.id, i + 1)}<p>${p}</p></div>`).join('')}</div>`}</section>`).join('')}</div>`;
+    document.querySelectorAll('#v-nos .kp').forEach(initKnotPlayer);
+  }
+  let kpObserver = null;
+  function initKnotPlayer(root) {
+    const id = root.dataset.kp, tl = NOS_VIDEO[id], v = $('video', root), rng = $('input[type=range]', root);
+    const steps = [...root.querySelectorAll('[data-kp-step]')], cap = $('.kp-cap', root), pp = $('.kp-pp', root), big = $('.kp-big', root);
+    let stopAt = null, raf = 0, cur = -1;
+    const stepAt = (t) => { let k = -1; tl.steps.forEach((st, i) => { if (t >= st.t0 - 0.05) k = i; }); return k; };
+    function paint() {
+      const t = v.currentTime;
+      rng.value = t;
+      rng.style.setProperty('--p', (t / tl.duration * 100).toFixed(2) + '%');
+      const k = stepAt(t);
+      if (k !== cur) {
+        cur = k;
+        steps.forEach((b, i) => { b.classList.toggle('on', i === k); b.classList.toggle('done', i < k); });
+        cap.textContent = k >= 0 ? (k + 1) + '. ' + tl.steps[k].txt : '';
+        cap.classList.toggle('show', k >= 0);
+      }
+      if (stopAt !== null && t >= stopAt) { v.pause(); stopAt = null; }
+    }
+    function loop() { paint(); if (!v.paused) raf = requestAnimationFrame(loop); }
+    function sync() {
+      const playing = !v.paused && !v.ended;
+      pp.innerHTML = playing ? ICO.pause : ICO.play;
+      pp.setAttribute('aria-label', playing ? 'Pausar' : 'Reproduzir');
+      root.classList.toggle('playing', playing);
+      big.hidden = playing || v.currentTime > 0.05;
+    }
+    v.addEventListener('play', () => { document.querySelectorAll('#v-nos video').forEach(o => { if (o !== v) o.pause(); }); sync(); cancelAnimationFrame(raf); loop(); });
+    v.addEventListener('pause', () => { sync(); paint(); });
+    v.addEventListener('ended', () => { sync(); paint(); });
+    v.addEventListener('seeked', paint);
+    v.addEventListener('loadedmetadata', paint);
+    rng.addEventListener('input', () => { stopAt = null; v.pause(); v.currentTime = +rng.value; paint(); });
+    const goStep = (i) => {
+      i = Math.max(0, Math.min(tl.steps.length - 1, i));
+      const st = tl.steps[i];
+      v.currentTime = Math.max(0, st.t0 - 0.15); stopAt = st.t1 + 0.35;
+      v.play().catch(() => {});
+    };
+    root.addEventListener('click', (ev) => {
+      const sb = ev.target.closest('[data-kp-step]');
+      if (sb) { goStep(+sb.dataset.kpStep); return; }
+      const b = ev.target.closest('[data-kp-act]');
+      if (!b) return;
+      const act = b.dataset.kpAct;
+      if (act === 'play') {
+        if (v.paused) { stopAt = null; if (v.ended || v.currentTime >= tl.duration - 0.05) v.currentTime = 0; v.play().catch(() => {}); }
+        else v.pause();
+      } else if (act === 'next') goStep(cur + 1);
+      else if (act === 'prev') goStep(v.currentTime - (tl.steps[Math.max(cur, 0)].t0) > 0.6 ? cur : cur - 1);
+      else if (act === 'speed') { v.playbackRate = v.playbackRate === 1 ? 0.5 : 1; b.textContent = v.playbackRate === 1 ? '1×' : '½×'; }
+    });
+    if ('IntersectionObserver' in window) {
+      kpObserver = kpObserver || new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) e.target.pause(); }), { threshold: 0.15 });
+      kpObserver.observe(v);
+    }
+    sync(); paint();
   }
 
   /* ---------- Meu equipamento ---------- */
@@ -2192,7 +2428,7 @@ function knotStep(id, step) {
     if (d.no) { go('nos', { scroll: 'no-' + d.no }); return; }
     if (d.go) { go(d.go); return; }
     if (d.filtro) { filtro = d.filtro; renderPeixes(); return; }
-    if (d.peixe) { peixeAberto = d.peixe; go('peixes'); loadCredito(d.peixe); return; }
+    if (d.peixe) { peixeAberto = d.peixe; go('peixes'); return; }
     if ('voltar' in d) { peixeAberto = null; renderPeixes(); return; }
     if (d.montar) { st.esp = d.montar; lsSet(KEY_ST, st); go('pescar'); return; }
     if (d.cat) { catForm = d.cat; renderEquip(); return; }
@@ -2204,15 +2440,6 @@ function knotStep(id, step) {
   });
   document.addEventListener('submit', (ev) => { if (ev.target.id === 'f-add') { ev.preventDefault(); addItem(ev.target); } });
   window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (TABS.some(t => t[0] === h) && h !== view) go(h); });
-
-  /* créditos das fotos (arquivo opcional publicado junto do site) */
-  let creditos = null;
-  function loadCredito(id) {
-    const put = () => { const el = document.getElementById('cred-' + id); if (el && creditos && creditos[id]) el.textContent = creditos[id]; };
-    if (creditos) { setTimeout(put, 0); return; }
-    if (typeof fetch !== 'function') return;
-    fetch('fotos/creditos.json').then(r => r.ok ? r.json() : {}).then(j => { creditos = j || {}; put(); }).catch(() => { creditos = {}; });
-  }
 
   /* ---------- Início ---------- */
   const p = piracema();

@@ -306,7 +306,86 @@ function rigPartes(rigId, spec, isca, variante) {
   return out.filter(Boolean);
 }
 
+/* Montagem com peças renderizadas em 3D (docs/montagem/*.webp), quando publicadas */
+function rigSprite(p, corIsca) {
+  const S = (typeof window !== 'undefined' && window.RIG_SPRITES) || null;
+  if (!S) return null;
+  let n = null;
+  switch (p.k) {
+    case 'vara': n = 'vara'; break;
+    case 'oliva': case 'chata': case 'chumbinho': case 'micanga': case 'boia': n = p.k; break;
+    case 'girador': n = /rolamento/i.test(p.t) ? 'girador_rol' : 'girador'; break;
+    case 'anzol': n = 'anzol_' + ({ circular: 'circular', maruseigo: 'maruseigo', haste: 'haste', offset: 'offset', garateia: 'garateia' }[p.modelo] || 'wide'); break;
+    case 'isca':
+      if (p.isca.tipo === 'artificial') {
+        const cor = Object.keys(CORES_ISCA).find(k => CORES_ISCA[k].sw === corIsca) || 'dourado';
+        n = 'isca_' + p.isca.art + '_' + cor;
+      } else n = 'nat_' + p.isca.ic;
+      break;
+  }
+  return n && S[n] ? Object.assign({ n }, S[n]) : null;
+}
+function rigSVG3D(rigId, spec, isca, variante, corIsca) {
+  const parts = rigPartes(rigId, spec, isca, variante);
+  const K = 64;                                    // svg units per model unit
+  const cx = 62, lx = 132;
+  const LINE = { linha: 44, lider: 40, no: 22, aco: 42 };
+  const lineCls = (k, p) => k === 'aco' ? 'r3-steel' : (['lider', 'no', 'anzol', 'boia', 'chumbinho', 'girador'].includes(k) ? 'r3-mono' : (k === 'linha' && p.tipo !== 'multi' ? 'r3-mono' : 'r3-multi'));
+  const seg = (y1, y2, cls) => y2 > y1 ? `<path d="M${cx},${f1(y1)} V${f1(y2)}" class="${cls}"/><path d="M${cx - 0.6},${f1(y1)} V${f1(y2)}" class="${cls}-hi"/>` : '';
+  let y = 6, lastCls = 'r3-multi';
+  const g = [], labels = [];
+  parts.forEach((p) => {
+    const lines = wrapTxt(p.s, 32).slice(0, 3);
+    const txtH = 26 + lines.length * 13;
+    const sp = rigSprite(p, corIsca);
+    let h, draw = '';
+    if (p.k === 'vara' && sp) {
+      const w = sp.w / sp.u * K * 0.9, hh = sp.h / sp.u * K * 0.9;
+      h = Math.max(hh - 6, txtH);
+      const x = cx - sp.ax / sp.w * w;
+      draw = `<image href="montagem/${sp.n}.webp" x="${f1(x)}" y="${f1(y + h - hh)}" width="${f1(w)}" height="${f1(hh)}"/>`;
+      lastCls = 'r3-multi';
+    } else if (LINE[p.k] && p.k !== 'aco') {
+      h = Math.max(LINE[p.k], txtH);
+      const cls = lineCls(p.k, p);
+      draw = seg(y, y + h, cls);
+      if (p.k === 'no') draw += `<g class="r3-knot"><ellipse cx="${cx}" cy="${f1(y + h / 2)}" rx="4.2" ry="7.5"/><path d="M${cx - 4},${f1(y + h / 2 - 4)} l8,3 M${cx - 4},${f1(y + h / 2)} l8,3 M${cx - 4},${f1(y + h / 2 + 4)} l8,-2"/></g>`;
+      lastCls = cls;
+    } else if (p.k === 'aco') {
+      h = Math.max(LINE.aco, txtH);
+      const cr = (typeof window !== 'undefined' && window.RIG_SPRITES && window.RIG_SPRITES.crimp) || null;
+      draw = seg(y, y + h, 'r3-steel');
+      if (cr) { const w = cr.w / cr.u * K, hh = cr.h / cr.u * K; [y + 3, y + h - hh - 3].forEach(yy => { draw += `<image href="montagem/crimp.webp" x="${f1(cx - w / 2)}" y="${f1(yy)}" width="${f1(w)}" height="${f1(hh)}"/>`; }); }
+      lastCls = 'r3-steel';
+    } else if (sp) {
+      const minH = { micanga: 13, girador: 30, girador_rol: 32, chumbinho: 14, oliva: 26 }[sp.n] || 0;
+      const z = Math.max(1, minH / (sp.h / sp.u * K));
+      const w = sp.w / sp.u * K * z, hh = sp.h / sp.u * K * z;
+      const terminal = p.k === 'anzol' || p.k === 'isca';
+      const gap = terminal ? 6 : 4;
+      h = Math.max(hh + gap * 2, txtH);
+      const top = y + (h - hh) / 2;
+      const x = cx - sp.ax / sp.w * w;
+      const attachY = top + sp.ay / sp.h * hh;
+      if (terminal) draw = seg(y, attachY, lastCls === 'r3-steel' ? 'r3-steel' : 'r3-mono');
+      else { const cls = p.k === 'oliva' || p.k === 'chata' || p.k === 'micanga' ? lastCls : 'r3-mono'; draw = seg(y, y + h, cls); lastCls = p.k === 'girador' ? 'r3-mono' : lastCls; }
+      draw += `<image href="montagem/${sp.n}.webp" x="${f1(x)}" y="${f1(top)}" width="${f1(w)}" height="${f1(hh)}"/>`;
+    } else {
+      h = Math.max(36, txtH);
+      draw = seg(y, y + h, lastCls);
+    }
+    g.push(draw);
+    const mid = y + h / 2, ty = mid - (lines.length * 13) / 2 + 2;
+    labels.push(`<path d="M${cx + 30},${f1(mid)} H${lx - 6}" class="r-lead-line"/>` +
+      `<text x="${lx}" y="${f1(ty)}" class="r-t">${esc(p.t)}</text>` +
+      lines.map((l, j) => `<text x="${lx}" y="${f1(ty + 14 + j * 13)}" class="r-s">${esc(l)}</text>`).join(''));
+    y += h;
+  });
+  return `<svg viewBox="0 0 370 ${f1(y + 8)}" class="rig rig3d" role="img" aria-label="Montagem: ${esc(parts.map(p => p.t).join(', '))}">${g.join('')}${labels.join('')}</svg>`;
+}
+
 function rigSVG(rigId, spec, isca, variante, corIsca) {
+  if (typeof window !== 'undefined' && window.RIG_SPRITES) return rigSVG3D(rigId, spec, isca, variante, corIsca);
   const parts = rigPartes(rigId, spec, isca, variante);
   const H = { vara: 64, linha: 56, no: 22, lider: 48, aco: 44, oliva: 40, chata: 30, chumbinho: 18, micanga: 14, girador: 30, boia: 58, anzol: 50, isca: 66 };
   const cx = 52, lx = 118;

@@ -1,0 +1,32 @@
+{
+ "name": "albright",
+ "fps": 30,
+ "duration": 25.267,
+ "steps": [
+  {
+   "t0": 0.8,
+   "t1": 1.967,
+   "txt": "Dobre o líder em alça e passe o multi por dentro dela."
+  },
+  {
+   "t0": 2.867,
+   "t1": 16.933,
+   "txt": "Enrole o multi 10 a 12 vezes sobre ele e as duas pernas da alça, rumo à curva."
+  },
+  {
+   "t0": 17.833,
+   "t1": 19.067,
+   "txt": "Saia pela mesma alça por onde entrou."
+  },
+  {
+   "t0": 19.967,
+   "t1": 22.367,
+   "txt": "Molhe e aperte puxando as quatro pontas."
+  },
+  {
+   "t0": 22.967,
+   "t1": 23.867,
+   "txt": "Corte as sobras rente."
+  }
+ ]
+}
