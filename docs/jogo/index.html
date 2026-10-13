@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Pesca Pantaneira — jogo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8E%A3%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+<div id="app">
+  <div id="canvas-wrap"></div>
+  <div id="vignette"></div>
+
+  <!-- ======================= HUD ======================= -->
+  <div id="hud" class="hidden">
+    <div class="hud-corner hud-topleft">
+      <div class="hud-card">
+        <div id="hud-money" class="money-text">$0</div>
+        <div class="level-row">
+          <span id="hud-level" class="level-badge">Lv 1</span>
+          <div class="xp-bar"><div id="hud-xpfill" class="xp-fill"></div></div>
+        </div>
+        <div id="hud-xptext" class="xp-text">0 / 70 XP</div>
+      </div>
+    </div>
+
+    <div class="hud-corner hud-topright">
+      <div class="hud-card hud-clockcard">
+        <div class="clock-row">
+          <span id="hud-clock" class="clock-text">08:30</span>
+          <span id="hud-seg" class="seg-chip seg-day">Dia</span>
+          <span id="hud-weather" class="weather-chip">Limpo</span>
+        </div>
+        <div id="hud-loc" class="loc-text">Baía Pantaneira</div>
+      </div>
+      <div class="hud-buttons">
+        <button id="btn-map" class="hud-btn" title="Mapa (M)">Mapa</button>
+        <button id="btn-shop" class="hud-btn" title="Loja (B)">Loja</button>
+        <button id="btn-journal" class="hud-btn" title="Diário (J)">Diário</button>
+        <button id="btn-pause" class="hud-btn" title="Pausar (Esc)">Pausar</button>
+      </div>
+    </div>
+
+    <div class="hud-corner hud-bottomleft">
+      <div id="hud-rod" class="gear-chip"><span class="gear-label">Vara</span><span class="gear-name">Caniço de bambu</span></div>
+      <div id="hud-bait" class="gear-chip"><span class="gear-label">Isca</span><span class="gear-name">Minhoca</span></div>
+    </div>
+
+    <div class="hud-corner hud-bottomright">
+      <button id="hud-bag" class="bag-chip">Samburá: vazio</button>
+    </div>
+
+    <div id="hud-zone" class="zone-hint hidden"></div>
+    <div id="hud-prompt" class="prompt"></div>
+
+    <!-- power meter -->
+    <div id="power-wrap" class="power-wrap hidden">
+      <div class="power-track">
+        <div class="power-sweet"></div>
+        <div id="power-fill" class="power-fill"></div>
+      </div>
+      <div class="power-label">FORÇA</div>
+    </div>
+
+    <!-- reel fight overlay -->
+    <div id="reel-wrap" class="reel-wrap hidden">
+      <div class="fight-head">
+        <span id="fight-name" class="fight-name">Tem peixe no anzol...</span>
+        <span id="fight-stars" class="fight-stars"></span>
+      </div>
+      <div id="surge-banner" class="surge-banner hidden">ARRANCADA — SOLTE!</div>
+      <div class="bar-row">
+        <span class="bar-tag">TENSÃO</span>
+        <div class="bar tension-bar"><div id="tension-fill" class="bar-fill tension-fill"></div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-tag">CAPTURA</span>
+        <div class="bar progress-bar"><div id="progress-fill" class="bar-fill progress-fill"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="bite-indicator" class="bite-indicator hidden">!</div>
+  <div id="toasts"></div>
+
+  <!-- ======================= SCREENS ======================= -->
+  <div id="screen-menu" class="screen hidden">
+    <div class="menu-box">
+      <h1 class="game-title">PESCA PANTANEIRA</h1>
+      <p class="game-sub">um jogo da Caderneta Pantaneira</p>
+      <div class="menu-buttons">
+        <button id="menu-play" class="btn btn-primary btn-big">Jogar</button>
+        <button id="menu-howto" class="btn">Como jogar</button>
+        <button id="menu-settings" class="btn">Ajustes</button>
+        <button id="menu-reset" class="btn btn-danger-ghost">Apagar progresso</button>
+      </div>
+      <p id="menu-save-info" class="menu-save-info"></p>
+      <p class="menu-credits">Baseado no TIDELINE (BridgeMind, licença MIT) · Three.js</p>
+    </div>
+  </div>
+
+  <div id="screen-howto" class="screen hidden">
+    <div class="panel panel-mid">
+      <h2 class="panel-title">Como jogar</h2>
+      <ul class="howto-list">
+        <li><b>Mirar</b>: mova o mouse (ou o dedo) para escolher a direção do arremesso.</li>
+        <li><b>Arremessar</b>: segure o <kbd>clique</kbd> ou a <kbd>barra de espaço</kbd> para carregar a força e solte. Arremessos longos chegam à água funda, onde vivem os peixes raros.</li>
+        <li><b>Esperar</b>: olhe a boia. Beliscadas pequenas são só o peixe experimentando; quando ela afunda e aparece o <span class="excl">!</span>, você tem uma fração de segundo.</li>
+        <li><b>Fisgar</b>: clique (ou <kbd>espaço</kbd>) na hora do <span class="excl">!</span> para cravar o anzol.</li>
+        <li><b>Recolher</b>: segure o clique para puxar. Puxar aumenta a <b>tensão</b>; solte para aliviar. Quando o peixe dá uma <b style="color:var(--danger)">arrancada</b>, pare de puxar ou a linha arrebenta!</li>
+        <li><b>Evoluir</b>: venda os peixes na Loja (<kbd>B</kbd>), troque vara, molinete, linha e isca, e libere novos pesqueiros no Mapa (<kbd>M</kbd>). O dourado é solto: captura proibida em MS.</li>
+        <li><b>Colecionar</b>: cada espécie que você pega entra no Diário (<kbd>J</kbd>). O horário e o lugar mudam o que morde.</li>
+        <li><b>Recolher</b>: segure o clique enquanto espera (ou aperte <kbd>R</kbd>) para trazer a boia de volta.</li>
+      </ul>
+      <button id="howto-back" class="btn btn-primary">Voltar</button>
+    </div>
+  </div>
+
+  <div id="screen-settings" class="screen hidden">
+    <div class="panel panel-narrow">
+      <h2 class="panel-title">Ajustes</h2>
+      <div class="setting-row">
+        <label for="set-volume">Volume</label>
+        <input id="set-volume" type="range" min="0" max="100" value="80" />
+      </div>
+      <div class="setting-row">
+        <label for="set-mute">Sem som</label>
+        <input id="set-mute" type="checkbox" />
+      </div>
+      <div class="setting-row">
+        <label for="set-quality">Qualidade</label>
+        <select id="set-quality">
+          <option value="high">Alta</option>
+          <option value="low">Baixa (celular)</option>
+        </select>
+      </div>
+      <div class="setting-row setting-danger">
+        <label>Apagar todo o progresso</label>
+        <button id="set-reset" class="btn btn-danger-ghost">Apagar progresso</button>
+      </div>
+      <button id="settings-back" class="btn btn-primary">Voltar</button>
+    </div>
+  </div>
+
+  <div id="screen-pause" class="screen hidden">
+    <div class="panel panel-narrow">
+      <h2 class="panel-title">Pausado</h2>
+      <div class="menu-buttons">
+        <button id="pause-resume" class="btn btn-primary btn-big">Continuar</button>
+        <button id="pause-settings" class="btn">Ajustes</button>
+        <button id="pause-howto" class="btn">Como jogar</button>
+        <button id="pause-quit" class="btn btn-danger-ghost">Salvar e voltar ao menu</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-shop" class="screen hidden">
+    <div class="panel panel-wide">
+      <div class="panel-head">
+        <h2 class="panel-title">Loja de pesca</h2>
+        <span id="shop-money" class="money-text">$0</span>
+        <button id="shop-close" class="btn btn-close">Fechar</button>
+      </div>
+      <nav id="shop-tabs" class="tab-row"></nav>
+      <div id="shop-content" class="shop-content"></div>
+    </div>
+  </div>
+
+  <div id="screen-journal" class="screen hidden">
+    <div class="panel panel-wide">
+      <div class="panel-head">
+        <h2 class="panel-title">Diário de espécies</h2>
+        <span id="journal-stats" class="journal-stats"></span>
+        <button id="journal-close" class="btn btn-close">Fechar</button>
+      </div>
+      <div id="journal-grid" class="journal-scroll"></div>
+    </div>
+  </div>
+
+  <div id="screen-map" class="screen hidden">
+    <div class="panel panel-wide">
+      <div class="panel-head">
+        <h2 class="panel-title">Pesqueiros</h2>
+        <span class="journal-stats">Viaje entre os pesqueiros liberados</span>
+        <button id="map-close" class="btn btn-close">Fechar</button>
+      </div>
+      <div id="map-grid" class="map-grid"></div>
+    </div>
+  </div>
+
+  <div id="catch-root"></div>
+
+  <div id="boot-loader">
+    <div class="boot-spin"></div>
+    <div class="boot-text">Carregando o jogo…</div>
+    <div class="boot-sub">baixando o motor 3D</div>
+  </div>
+</div>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

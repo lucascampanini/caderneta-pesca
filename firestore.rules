@@ -1,0 +1,34 @@
+rules_version = '2';
+// Regras do Firestore da Caderneta Pantaneira (publicadas no console do Firebase).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function logado() { return request.auth != null; }
+    function admin() {
+      return logado() && request.auth.token.email == 'lucasmondinicn@gmail.com' && request.auth.token.email_verified == true;
+    }
+
+    // Mochila e preferências: só o dono lê e grava.
+    match /usuarios/{uid} {
+      allow read, delete: if logado() && request.auth.uid == uid;
+      allow create, update: if logado() && request.auth.uid == uid
+        && (!('mochila' in request.resource.data) || request.resource.data.mochila.size() <= 600);
+    }
+
+    // Catálogo aprovado: todos leem, só o admin grava.
+    match /catalogo/{id} {
+      allow read: if true;
+      allow write: if admin();
+    }
+
+    // Sugestões de itens novos: cada usuário cria e vê as próprias; o admin aprova ou recusa.
+    match /sugestoes/{id} {
+      allow create: if logado()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == 'pendente'
+        && request.resource.data.keys().hasOnly(['uid', 'nome', 'email', 'status', 'criadoEm', 'item'])
+        && request.resource.data.item.size() <= 20;
+      allow read: if admin() || (logado() && resource.data.uid == request.auth.uid);
+      allow update, delete: if admin();
+    }
+  }
+}

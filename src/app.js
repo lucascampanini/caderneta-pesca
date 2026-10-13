@@ -32,42 +32,66 @@
     clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2800);
   }
 
-  /* ---------- Inventário: conta (db) quando disponível, senão este aparelho ---------- */
+  /* ---------- Mochila: na conta (Firebase) quando a pessoa entra, senão neste aparelho ---------- */
   const Store = {
-    items: lsGet(KEY_INV) || [], mode: 'local', ref: null, timer: null,
-    saveLocal() { lsSet(KEY_INV, this.items); },
-    async init() {
+    items: lsGet(KEY_INV) || [], mode: 'local', timer: null, uid: null,
+    chave() { return this.uid ? KEY_INV + '.' + this.uid : KEY_INV; },
+    saveLocal() { lsSet(this.chave(), this.items); },
+    async conta(u) {
+      if (!u) { this.uid = null; this.mode = 'local'; this.items = lsGet(KEY_INV) || []; onInv(); return; }
+      this.uid = u.uid;
+      const anon = (lsGet(KEY_INV) || []).filter(i => !i.exemplo);
       try {
-        if (!window.claude || typeof window.claude.use !== 'function') return;
-        const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
-        if (!db || !user) return;
-        const id = await user.id();
-        if (!id) return;
-        this.ref = db.collection('data/users/' + id).doc('inventario');
-        const snap = await this.ref.get();
-        if (snap.exists) {
-          const d = snap.data();
-          if (d && Array.isArray(d.itens)) { this.items = d.itens.map(x => Object.assign({}, x)); this.saveLocal(); }
-        } else if (this.items.length) {
-          await this.ref.set({ itens: this.items, atualizado: Date.now() });
-        }
-        this.mode = 'conta';
-        onInv();
-      } catch (e) { this.ref = null; this.mode = 'local'; onInv(); }
+        const d = await Conta.lerUsuario();
+        const nuvem = d && Array.isArray(d.mochila) ? d.mochila : [];
+        const ids = new Set(nuvem.map(i => i.id));
+        const novos = anon.filter(i => !ids.has(i.id));
+        this.items = nuvem.concat(novos);
+        if (novos.length || !d) await Conta.salvar({ mochila: this.items });
+        try { localStorage.removeItem(KEY_INV); } catch (e) { /* sem armazenamento */ }
+        this.mode = 'conta'; this.saveLocal();
+        if (novos.length) toast(novos.length + (novos.length === 1 ? ' item deste aparelho foi para a sua conta.' : ' itens deste aparelho foram para a sua conta.'));
+      } catch (e) {
+        console.warn(e);
+        this.items = lsGet(this.chave()) || anon; this.mode = 'offline';
+        toast('Sem conexão com a conta agora. Mostrando a última cópia salva neste aparelho.');
+      }
+      onInv();
     },
     set(items) {
       this.items = items; this.saveLocal(); onInv();
       clearTimeout(this.timer);
-      if (this.ref) this.timer = setTimeout(() => this.push(), 500);
+      if (this.mode === 'conta') this.timer = setTimeout(() => this.push(), 400);
     },
     async push() {
-      try { await this.ref.set({ itens: this.items, atualizado: Date.now() }); }
-      catch (e) { this.ref = null; this.mode = 'local'; onInv(); toast('Não deu para salvar na sua conta. O equipamento fica salvo neste aparelho.'); }
+      try { await Conta.salvar({ mochila: this.items }); }
+      catch (e) { this.mode = 'offline'; onInv(); toast('Não deu para salvar na conta agora. A mochila ficou guardada neste aparelho.'); }
     }
   };
   function onInv() {
     if (view === 'equip') renderEquip();
     renderMatch();
+  }
+
+  /* ---------- Login no topo ---------- */
+  const G_ICON = '<svg viewBox="0 0 48 48" width="18" height="18" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+  let entrando = false;
+  function renderConta() {
+    const el = $('#conta');
+    if (!el) return;
+    if (!Conta.disponivel()) { el.hidden = true; return; }
+    el.hidden = false;
+    const u = Conta.usuario();
+    if (!Conta.pronto() || entrando) { el.innerHTML = '<span class="conta-load">Carregando…</span>'; return; }
+    if (!u) { el.innerHTML = `<button class="btn-google" data-entrar>${G_ICON}<span>Entrar com Google</span></button>`; return; }
+    const nome = esc((u.displayName || u.email || 'Você').split(' ')[0]);
+    el.innerHTML = `<span class="conta-user">${u.photoURL ? `<img src="${esc(u.photoURL)}" alt="" referrerpolicy="no-referrer">` : ''}<b>${nome}</b>${Conta.admin() ? '<span class="tag">admin</span>' : ''}</span><button class="btn ghost small" data-sair>Sair</button>`;
+  }
+  async function entrar() {
+    entrando = true; renderConta();
+    try { await Conta.entrar(); }
+    catch (e) { console.warn(e); toast(e && e.code === 'auth/unauthorized-domain' ? 'Este endereço ainda não está autorizado no login.' : 'Não deu para entrar agora. Tente de novo.'); }
+    entrando = false; renderConta();
   }
 
   /* ---------- Piracema ---------- */
@@ -87,9 +111,10 @@
     peixes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M2 12c3-5 9-6 14-3l5-3v12l-5-3c-5 3-11 2-14-3z"/><circle cx="7.5" cy="11" r=".8" fill="currentColor"/></svg>',
     montagens: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v6"/><ellipse cx="12" cy="10.5" rx="2" ry="2.8"/><path d="M12 13.5v4a3 3 0 1 0 3-3"/></svg>',
     nos: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 15c4 0 6-9 10-9a4 4 0 0 1 0 8c-4 0-3-6 0-6"/><path d="M13 14c3 0 5 2 8 2"/></svg>',
-    equip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V5h6v3M3 13h18"/></svg>'
+    equip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V5h6v3M3 13h18"/></svg>',
+    jogo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5"/><path d="M7 11v3M5.5 12.5h3"/><circle cx="16" cy="11.5" r="1"/><circle cx="18" cy="13.5" r="1"/></svg>',
   };
-  const TABS = [['pescar', 'Pescar agora'], ['peixes', 'Peixes'], ['montagens', 'Montagens'], ['nos', 'Nós'], ['equip', 'Meu equipamento']];
+  const TABS = [['pescar', 'Pescar agora'], ['peixes', 'Peixes'], ['montagens', 'Montagens'], ['nos', 'Nós'], ['equip', 'Minha mochila'], ['jogo', 'Jogo']];
   function renderTabs() {
     $('#tabs').innerHTML = TABS.map(([id, nome]) => `<button role="tab" id="tab-${id}" aria-selected="${view === id}" aria-controls="v-${id}" data-tab="${id}">${ICONS[id]}<span>${nome}</span></button>`).join('');
   }
@@ -102,6 +127,8 @@
     if (id === 'montagens') renderMontagens();
     if (id === 'nos') renderNos();
     if (id === 'equip') renderEquip();
+    if (id === 'jogo') renderJogo();
+    else pausaJogo();
     if (location.hash !== '#' + id) { try { history.replaceState(null, '', '#' + id); } catch (e) { /* ignorado */ } }
     if (opts && opts.scroll) { const el = document.getElementById(opts.scroll); if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     else window.scrollTo(0, 0);
@@ -200,18 +227,25 @@
   }
 
   function descItem(i) {
+    const o = (mapa, v) => (mapa && mapa[v]) || '';
+    const opcao = (cat, k) => { const c = CATS.find(x => x.id === cat); const f = c && c.f.find(x => x[0] === k); return f && f[2] === 'sel' ? o(f[3], i[k]) : ''; };
+    const extra = [];
     switch (i.cat) {
-      case 'vara': return `${i.tipo === 'molinete' ? 'molinete' : 'carretilha'} · ${i.comp ? fmtN(i.comp) + ' m · ' : ''}${i.lbMin || '?'}–${i.lbMax || '?'} lb${i.acao ? ' · ' + ({ rapida: 'rápida', moderada: 'moderada', lenta: 'lenta' }[i.acao]) : ''}`;
-      case 'carretilha': return `${i.perfil === 'redonda' ? 'redonda' : 'perfil baixo'} · tamanho ${i.tam || '?'}`;
-      case 'molinete': return `tamanho ${i.tam || '?'}`;
-      case 'linha': return `${{ multi: 'multifilamento', mono: 'monofilamento', fluor: 'fluorcarbono' }[i.tipo]} · ${i.unid === 'mm' ? fmtN(i.res) + ' mm (≈' + lbOf(i) + ' lb)' : i.res + ' lb'}`;
-      case 'empate': return `aço · ${i.lb || '?'} lb`;
-      case 'anzol': return `${{ circular: 'circular', maruseigo: 'maruseigo / chinu', offset: 'offset / wide gap', haste: 'haste longa', jcomum: 'comum' }[i.modelo] || ''} · ${i.min || '?'}${i.max ? ' a ' + i.max : ''}`;
-      case 'chumbada': return `${i.tipo} · ${i.gMin || '?'}${i.gMax ? '–' + i.gMax : ''} g`;
-      case 'isca': return `${ART_TIPOS[i.art] || ''} · ${CORES_ISCA[i.cor] ? CORES_ISCA[i.cor].nome : ''}${i.cm ? ' · ' + fmtN(i.cm) + ' cm' : ''}`;
-      default: return '';
+      case 'vara': extra.push(i.tipo === 'molinete' ? 'molinete' : i.tipo === 'canico' ? 'caniço' : 'carretilha', i.comp ? fmtN(i.comp) + ' m' : '', (i.lbMin || '?') + '–' + (i.lbMax || '?') + ' lb', opcao('vara', 'acao').toLowerCase(), i.partes ? opcao('vara', 'partes').toLowerCase() : ''); break;
+      case 'carretilha': extra.push(i.perfil === 'redonda' ? 'redonda' : 'perfil baixo', 'tamanho ' + (i.tam || '?'), i.mao ? 'manivela ' + i.mao : '', i.drag ? 'drag ' + fmtN(i.drag) + ' kg' : ''); break;
+      case 'molinete': extra.push('tamanho ' + (i.tam || '?'), i.drag ? 'drag ' + fmtN(i.drag) + ' kg' : ''); break;
+      case 'linha': extra.push(o({ multi: 'multifilamento', mono: 'monofilamento', fluor: 'fluorcarbono' }, i.tipo), i.unid === 'mm' ? fmtN(i.res) + ' mm (≈' + lbOf(i) + ' lb)' : i.res + ' lb', i.metros ? i.metros + ' m' : ''); break;
+      case 'empate': extra.push(opcao('empate', 'material').toLowerCase() || 'aço', (i.lb || '?') + ' lb', i.compCm ? i.compCm + ' cm' : ''); break;
+      case 'anzol': extra.push(opcao('anzol', 'modelo').toLowerCase(), (i.min || '?') + (i.max ? ' a ' + i.max : ''), i.reforco && i.reforco !== 'normal' ? 'reforço ' + opcao('anzol', 'reforco') : ''); break;
+      case 'garateia': extra.push(i.tam ? 'nº ' + i.tam : '', i.reforco && i.reforco !== 'normal' ? 'reforço ' + opcao('garateia', 'reforco') : ''); break;
+      case 'chumbada': extra.push(i.tipo, (i.gMin || '?') + (i.gMax ? '–' + i.gMax : '') + ' g'); break;
+      case 'girador': case 'micanga': case 'boia': extra.push(opcao(i.cat, 'tipo').toLowerCase(), i.tam ? (i.cat === 'micanga' ? i.tam + ' mm' : 'nº ' + i.tam) : '', i.g ? i.g + ' g' : ''); break;
+      case 'isca': extra.push(ART_TIPOS[i.art] || '', CORES_ISCA[i.cor] ? CORES_ISCA[i.cor].nome : '', i.cm ? fmtN(i.cm) + ' cm' : '', i.g ? fmtN(i.g) + ' g' : ''); break;
+      case 'acessorio': case 'eletronico': extra.push(opcao(i.cat, 'tipo')); break;
     }
+    return extra.filter(Boolean).join(' · ');
   }
+
 
   function renderMatch() {
     const box = $('#match');
@@ -423,63 +457,141 @@
     paint(t0); sync();
   }
 
-  /* ---------- Meu equipamento ---------- */
-  const CATS = [
-    { id: 'vara', nome: 'Varas', um: 'Vara', f: [['nome', 'Nome ou modelo', 'text', 'Ex.: Lumis Ibiza 1,80 m'], ['tipo', 'Para', 'sel', { carretilha: 'Carretilha', molinete: 'Molinete' }], ['comp', 'Comprimento (m)', 'num', '1,80'], ['lbMin', 'Libragem mín. (lb)', 'num', '12'], ['lbMax', 'Libragem máx. (lb)', 'num', '25'], ['acao', 'Ação', 'sel', { rapida: 'Rápida', moderada: 'Moderada', lenta: 'Lenta' }]] },
-    { id: 'carretilha', nome: 'Carretilhas', um: 'Carretilha', f: [['nome', 'Nome ou modelo', 'text', 'Ex.: Abu Garcia Black Max'], ['perfil', 'Tipo', 'sel', { perfil: 'Perfil baixo', redonda: 'Redonda' }], ['tam', 'Tamanho', 'num', '150']] },
-    { id: 'molinete', nome: 'Molinetes', um: 'Molinete', f: [['nome', 'Nome ou modelo', 'text', 'Ex.: Shimano FX 3000'], ['tam', 'Tamanho', 'num', '3000']] },
-    { id: 'linha', nome: 'Linhas', um: 'Linha', f: [['nome', 'Nome ou marca', 'text', 'Ex.: Maruri Max Force 8X'], ['tipo', 'Tipo', 'sel', { multi: 'Multifilamento', mono: 'Monofilamento', fluor: 'Fluorcarbono' }], ['res', 'Resistência', 'num', '30'], ['unid', 'Unidade', 'sel', { lb: 'lb', mm: 'mm (diâmetro)' }]] },
-    { id: 'empate', nome: 'Empates de aço', um: 'Empate', f: [['nome', 'Descrição', 'text', 'Ex.: Cabo flexível 25 cm'], ['lb', 'Resistência (lb)', 'num', '40']] },
-    { id: 'anzol', nome: 'Anzóis', um: 'Anzol', f: [['nome', 'Descrição', 'text', 'Ex.: Circular Marine'], ['modelo', 'Modelo', 'sel', { circular: 'Circular', maruseigo: 'Maruseigo / chinu', offset: 'Offset / wide gap', haste: 'Haste longa', jcomum: 'Comum (J)' }], ['min', 'Menor tamanho', 'text', '2/0'], ['max', 'Maior tamanho', 'text', '6/0']] },
-    { id: 'chumbada', nome: 'Chumbadas', um: 'Chumbada', f: [['nome', 'Descrição', 'text', 'Ex.: Oliva sortida'], ['tipo', 'Tipo', 'sel', { oliva: 'Oliva', pera: 'Pera / gota', chata: 'Chata', chumbinho: 'Chumbinho' }], ['gMin', 'Peso mín. (g)', 'num', '10'], ['gMax', 'Peso máx. (g)', 'num', '40']] },
-    { id: 'isca', nome: 'Iscas artificiais', um: 'Isca', f: [['nome', 'Nome ou modelo', 'text', 'Ex.: Marine Sports Inna 90'], ['art', 'Tipo', 'sel', ART_TIPOS], ['cor', 'Cor', 'sel', Object.fromEntries(Object.entries(CORES_ISCA).map(([k, v]) => [k, v.nome]))], ['cm', 'Tamanho (cm)', 'num', '9']] }
-  ];
+  /* ---------- Jogo (só com login) ---------- */
+  function renderJogo() {
+    const box = $('#v-jogo'), u = Conta.usuario();
+    if (!u) {
+      box.innerHTML = `<section class="panel jogo-gate"><div class="sec"><div class="eyebrow">Para quem entra com Google</div><h2>Pesca Pantaneira, o jogo</h2>
+        <p style="margin:0;max-width:56ch">Arremesse, fisgue e brigue com os peixes do Pantanal: piauçu, pacu, pintado, cachara, jaú e o dourado (que é solto, como manda a lei). Libere a baía, o rio de água clara, o barranco do Rio Paraguai e o canal de barco. Seu progresso fica salvo na sua conta.</p>
+        <div class="row">${Conta.pronto() ? `<button class="btn-google" data-entrar>${G_ICON}<span>Entrar com Google para jogar</span></button>` : Conta.disponivel() ? '<span class="muted">Carregando…</span>' : '<span class="muted">O login ainda está sendo configurado.</span>'}</div></div></section>`;
+      return;
+    }
+    if (!$('#jogo-frame')) {
+      box.innerHTML = `<div class="jogo-wrap"><iframe id="jogo-frame" src="jogo/index.html" title="Pesca Pantaneira, o jogo" allow="autoplay; fullscreen" allowfullscreen></iframe></div>
+        <div class="row" style="justify-content:space-between;margin-top:8px"><span class="muted" style="font-size:13px">Progresso salvo na sua conta. Clique no jogo para usar o teclado; no celular, use na horizontal.</span><button class="btn ghost small" data-tela-cheia>Tela cheia</button></div>
+        <p class="muted" style="font-size:12px;margin:6px 0 0">Baseado no TIDELINE, da BridgeMind (licença MIT).</p>`;
+    }
+  }
+  function pausaJogo() {
+    const f = $('#jogo-frame');
+    if (!f) return;
+    try { f.contentWindow.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape' })); } catch (e) { /* jogo ainda carregando */ }
+  }
+
+  /* ---------- Mochila (meu equipamento) ---------- */
+  let catAprovado = [], busca = '', prefill = null, pendentesAdmin = null, minhasSug = null, carregandoSug = false;
+  const catTodos = () => CATALOGO_BASE.concat(catAprovado);
+  const umDe = (c) => (CATS.find(x => x.id === c) || {}).um || 'Item';
+  const nomeItem = (i) => i.nome || [i.marca, i.produto].filter(Boolean).join(' ') || umDe(i.cat);
+  const norm = (t) => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  function achaCatalogo(q) {
+    const termos = norm(q).split(/\s+/).filter(Boolean);
+    if (!termos.length) return [];
+    return catTodos().filter(c => { const t = norm(c.marca + ' ' + c.produto + ' ' + umDe(c.cat)); return termos.every(x => t.includes(x)); }).slice(0, 10);
+  }
+  function campoHTML(cat, [k, label, tipo, x], val) {
+    const id = `f-${cat.id}-${k}`, v = val === undefined || val === null ? '' : String(val);
+    if (tipo === 'sel') return `<div class="field"><label for="${id}">${label}</label><select id="${id}" name="${k}">${Object.entries(x).map(([ov, n]) => `<option value="${ov}"${ov === v ? ' selected' : ''}>${n}</option>`).join('')}</select></div>`;
+    if (tipo === 'marca') return `<div class="field"><label for="${id}">${label}</label><input id="${id}" name="${k}" list="dl-marca-${cat.id}" value="${esc(v)}" placeholder="Escolha ou digite" autocomplete="off"><datalist id="dl-marca-${cat.id}">${(MARCAS[cat.id] || []).map(m => `<option value="${esc(m)}">`).join('')}</datalist></div>`;
+    const produtos = k === 'produto' ? [...new Set(catTodos().filter(c => c.cat === cat.id).map(c => c.produto))] : [];
+    return `<div class="field"${k === 'produto' ? ' style="grid-column:1/-1"' : ''}><label for="${id}">${label}</label><input id="${id}" name="${k}" ${tipo === 'num' ? 'inputmode="decimal"' : ''} value="${esc(v)}" placeholder="${esc(x || '')}" autocomplete="off"${produtos.length ? ` list="dl-prod-${cat.id}"` : ''}>${produtos.length ? `<datalist id="dl-prod-${cat.id}">${produtos.map(m => `<option value="${esc(m)}">`).join('')}</datalist>` : ''}</div>`;
+  }
   function renderEquip() {
-    const inv = Store.items, cat = CATS.find(c => c.id === catForm);
-    const salvo = Store.mode === 'conta' ? '<span class="save-state cloud">Salvo na sua conta</span>' : '<span class="save-state">Salvo neste aparelho</span>';
+    const inv = Store.items, cat = CATS.find(c => c.id === catForm), logado = !!Conta.usuario();
+    const salvo = Store.mode === 'conta' ? '<span class="save-state cloud">Salvo na sua conta</span>' : Store.mode === 'offline' ? '<span class="save-state">Sem conexão: cópia deste aparelho</span>' : '<span class="save-state">Salvo neste aparelho</span>';
     const temEx = inv.some(i => i.exemplo);
-    const lista = inv.length ? CATS.filter(c => inv.some(i => i.cat === c.id)).map(c => `<div class="cat"><h3>${c.nome}</h3>${inv.filter(i => i.cat === c.id).map(i => `<div class="item"><div><b>${esc(i.nome || c.um)}</b>${i.exemplo ? '<span class="ex">exemplo</span>' : ''}<div class="d">${esc(descItem(i))}</div></div><button class="x" data-del="${i.id}" aria-label="Remover ${esc(i.nome || c.um)}">Remover</button></div>`).join('')}</div>`).join('')
-      : `<div class="empty"><h3>Seu equipamento aparece aqui</h3><p class="muted" style="margin:0;max-width:44ch">Cadastre cada vara, carretilha, molinete, linha, anzol, chumbada e isca. Com isso, a aba Pescar agora mostra o melhor conjunto que você já tem e o que falta.</p><button class="btn ghost" data-exemplo>Carregar kit de exemplo</button></div>`;
+    const lista = inv.length ? CATS.filter(c => inv.some(i => i.cat === c.id)).map(c => `<div class="cat"><h3>${c.nome}</h3>${inv.filter(i => i.cat === c.id).map(i => `<div class="item"><div><b>${esc(nomeItem(i))}</b>${i.exemplo ? '<span class="ex">exemplo</span>' : ''}<div class="d">${esc(descItem(i))}</div></div><button class="x" data-del="${i.id}" aria-label="Remover ${esc(nomeItem(i))}">Remover</button></div>`).join('')}</div>`).join('')
+      : `<div class="empty"><h3>Sua mochila aparece aqui</h3><p class="muted" style="margin:0;max-width:44ch">Cadastre o que você tem: varas, carretilhas, molinetes, linhas, anzóis, iscas e acessórios. Com isso, a aba Pescar agora mostra o melhor conjunto que você já tem e o que falta.</p><button class="btn ghost" data-exemplo>Carregar kit de exemplo</button></div>`;
     const cov = inv.length ? cobertura(inv) : [];
-    $('#v-equip').innerHTML = `<div class="row" style="justify-content:space-between;margin-bottom:14px"><div class="sec"><h2>Meu equipamento</h2><p class="muted" style="margin:0">${inv.length} ${inv.length === 1 ? 'item cadastrado' : 'itens cadastrados'}</p></div>${salvo}</div>
+    const pf = prefill && prefill.cat === cat.id ? prefill : null;
+    const valores = pf ? Object.assign({ marca: pf.marca, produto: pf.produto }, pf.campos) : {};
+    const resultados = achaCatalogo(busca);
+    $('#v-equip').innerHTML = `<div class="row" style="justify-content:space-between;margin-bottom:14px"><div class="sec"><h2>Minha mochila</h2><p class="muted" style="margin:0">${inv.length} ${inv.length === 1 ? 'item' : 'itens'}${Conta.disponivel() && !logado ? ' · entre com Google para guardar na sua conta e ver em qualquer aparelho' : ''}</p></div>${salvo}</div>
       <div class="inv">
         <div class="sec" style="gap:16px">
-          <section class="panel items" aria-label="Itens cadastrados">${lista}${temEx ? `<div><button class="btn danger small" data-limpa-ex>Remover itens de exemplo</button></div>` : ''}</section>
+          <section class="panel items" aria-label="Itens da mochila">${lista}${temEx ? `<div><button class="btn danger small" data-limpa-ex>Remover itens de exemplo</button></div>` : ''}</section>
           ${cov.length ? `<section class="panel sec"><h3>O que dá para pescar com o que você tem</h3><p class="muted" style="margin:0;font-size:14px">Aderência ao conjunto indicado para cada espécie, em condição boa de pesca. Toque para montar.</p><div class="cov">${cov.map(c => `<button class="cov-row" data-montar="${c.sp.id}"><b>${c.sp.nome}</b><span class="bar"><i class="${c.pct < 55 ? 'low' : c.pct < 85 ? 'mid' : ''}" style="width:${c.pct}%"></i></span><span class="mono">${c.pct}%</span></button>`).join('')}</div></section>` : ''}
         </div>
         <div class="sec" style="gap:16px">
-          <form class="panel form" id="f-add" novalidate><h3>Adicionar item</h3>
+          <section class="panel sec busca-cat"><h3>Buscar no catálogo</h3>
+            <div class="field"><label for="busca-cat">Marca e modelo</label><input id="busca-cat" type="search" value="${esc(busca)}" placeholder="Ex.: FX 2500, Black Max, Skitter Walk" autocomplete="off"></div>
+            <div id="busca-res" class="busca-res">${busca ? (resultados.length ? resultados.map(c => `<button class="res" data-cata="${esc(c.id)}"><b>${esc(c.marca + ' ' + c.produto)}</b><span>${esc(umDe(c.cat))}${c.fonte === 'aprovado' ? ' · enviado por pescador' : ''}</span></button>`).join('') : '<p class="muted" style="margin:0;font-size:14px">Não achei no catálogo. Cadastre abaixo e, se quiser, envie para o catálogo.</p>') : ''}</div>
+          </section>
+          <form class="panel form" id="f-add" novalidate><h3>${pf ? 'Conferir e adicionar' : 'Adicionar à mochila'}</h3>
             <div class="chips" role="group" aria-label="Categoria">${CATS.map(c => `<button type="button" class="chip" data-cat="${c.id}" aria-pressed="${c.id === catForm}">${c.um}</button>`).join('')}</div>
-            <div class="fields">${cat.f.map(([k, label, tipo, x]) => `<div class="field"${k === 'nome' ? ' style="grid-column:1/-1"' : ''}><label for="f-${cat.id}-${k}">${label}</label>${tipo === 'sel' ? `<select id="f-${cat.id}-${k}" name="${k}">${Object.entries(x).map(([v, n]) => `<option value="${v}">${n}</option>`).join('')}</select>` : `<input id="f-${cat.id}-${k}" name="${k}" ${tipo === 'num' ? 'inputmode="decimal"' : ''} placeholder="${x}" autocomplete="off">`}</div>`).join('')}</div>
-            <div><button class="btn" type="submit">Adicionar ${cat.um.toLowerCase()}</button></div>
+            ${pf ? `<p class="muted" style="margin:0;font-size:13.5px">Preenchido pelo catálogo. Confira na etiqueta o que estiver em branco (libragem, comprimento, drag) e ajuste se precisar.</p>` : ''}
+            <div class="fields">${cat.f.map(f => campoHTML(cat, f, valores[f[0]])).join('')}</div>
+            ${logado && !pf ? `<label class="check"><input type="checkbox" name="sugerir" checked> Enviar este item para o catálogo de todos (passa por aprovação)</label>` : ''}
+            <div class="row"><button class="btn" type="submit">Adicionar ${cat.um.toLowerCase()}</button>${pf ? '<button class="btn ghost small" type="button" data-limpa-pf>Limpar</button>' : ''}</div>
           </form>
-          <section class="panel sec"><h3>Levar para outro aparelho</h3>
-            <p class="muted" style="margin:0;font-size:14px">${Store.mode === 'conta' ? 'Seu equipamento já fica salvo na sua conta e aparece em qualquer aparelho em que você abrir o site com ela.' : 'Sem login, o equipamento fica só neste aparelho. Copie o código e cole no outro celular ou computador.'}</p>
+          ${logado ? sugestoesHTML() : ''}
+          ${Conta.admin() ? adminHTML() : ''}
+          ${logado ? '' : `<section class="panel sec"><h3>Levar para outro aparelho</h3>
+            <p class="muted" style="margin:0;font-size:14px">${Conta.disponivel() ? 'O jeito mais fácil é entrar com Google: a mochila fica na sua conta. Sem login, copie o código e cole no outro aparelho.' : 'Sem login, a mochila fica só neste aparelho. Copie o código e cole no outro celular ou computador.'}</p>
             <div class="row"><button class="btn ghost small" data-export>Copiar código</button></div>
             <div class="field"><label for="imp">Colar código de outro aparelho</label><textarea id="imp" rows="3" placeholder="Cole aqui o código copiado"></textarea></div>
             <div><button class="btn ghost small" data-import>Importar</button></div>
-          </section>
+          </section>`}
         </div>
       </div>`;
+    if (logado && minhasSug === null && !carregandoSug) carregaSugestoes();
+  }
+  const STATUS_SUG = { pendente: 'aguardando aprovação', aprovado: 'aprovado, já está no catálogo', recusado: 'não aprovado' };
+  function sugestoesHTML() {
+    if (!minhasSug || !minhasSug.length) return '';
+    return `<section class="panel sec"><h3>Minhas sugestões para o catálogo</h3>${minhasSug.map(sg => `<div class="item"><div><b>${esc((sg.item.marca || '') + ' ' + (sg.item.produto || ''))}</b><div class="d">${esc(umDe(sg.item.cat))} · ${STATUS_SUG[sg.status] || sg.status}</div></div></div>`).join('')}</section>`;
+  }
+  function adminHTML() {
+    const p = pendentesAdmin;
+    return `<section class="panel sec admin"><h3>Aprovar itens para o catálogo</h3>
+      ${p === null ? '<p class="muted" style="margin:0">Carregando…</p>' : !p.length ? '<p class="muted" style="margin:0;font-size:14px">Nenhuma sugestão esperando aprovação.</p>' : p.map(sg => `<div class="sug">
+        <div><b>${esc((sg.item.marca || '') + ' ' + (sg.item.produto || ''))}</b><div class="d">${esc(umDe(sg.item.cat))} · ${esc(descItem(Object.assign({ cat: sg.item.cat }, sg.item.campos)))}</div><div class="d">Enviado por ${esc(sg.nome || sg.email || 'pescador')}</div></div>
+        <div class="row"><button class="btn small" data-aprovar="${sg.id}">Aprovar</button><button class="btn ghost small" data-recusar="${sg.id}">Recusar</button></div></div>`).join('')}
+      <div><button class="btn ghost small" data-recarregar-adm>Atualizar lista</button></div></section>`;
+  }
+  async function carregaSugestoes() {
+    carregandoSug = true;
+    try {
+      minhasSug = await Conta.minhasSugestoes();
+      if (Conta.admin()) pendentesAdmin = await Conta.pendentes();
+    } catch (e) { console.warn(e); minhasSug = minhasSug || []; pendentesAdmin = pendentesAdmin || []; }
+    carregandoSug = false;
+    if (view === 'equip') renderEquip();
+  }
+  async function moderar(id, aprova) {
+    const sg = (pendentesAdmin || []).find(x => x.id === id);
+    if (!sg) return;
+    try {
+      if (aprova) { await Conta.aprovar(sg, sg.item); catAprovado = await Conta.catalogo(); toast('Aprovado: já aparece na busca do catálogo para todos.'); }
+      else { await Conta.recusar(sg); toast('Sugestão recusada.'); }
+      pendentesAdmin = pendentesAdmin.filter(x => x.id !== id);
+    } catch (e) { console.warn(e); toast('Não deu para salvar a decisão. Confira se entrou com a conta de administrador.'); }
+    renderEquip();
   }
   const num = (v) => { if (v === undefined || v === null || String(v).trim() === '') return ''; const n = parseFloat(String(v).replace(',', '.')); return isNaN(n) ? '' : n; };
   function addItem(form) {
     const cat = CATS.find(c => c.id === catForm), it = { id: Math.random().toString(36).slice(2, 9), cat: cat.id };
-    cat.f.forEach(([k, , tipo]) => { const v = form.elements[k].value; it[k] = tipo === 'num' ? num(v) : v.trim(); });
+    cat.f.forEach(([k, , tipo]) => { const el = form.elements[k]; if (!el) return; const v = el.value; it[k] = tipo === 'num' ? num(v) : v.trim(); });
     if (cat.id === 'vara' && it.lbMin !== '' && it.lbMax === '') it.lbMax = it.lbMin;
     if (cat.id === 'chumbada' && it.gMax === '') it.gMax = it.gMin;
-    const obrig = { vara: ['lbMin'], carretilha: ['tam'], molinete: ['tam'], linha: ['res'], empate: [], anzol: ['min'], chumbada: ['gMin'], isca: [] }[cat.id];
-    const faltando = obrig.filter(k => it[k] === '' || it[k] === undefined);
+    const faltando = (cat.obrig || []).filter(k => it[k] === '' || it[k] === undefined);
     if (faltando.length) {
       const f = cat.f.find(x => x[0] === faltando[0]);
-      toast('Preencha o campo "' + f[1] + '" para cruzar com as recomendações.');
+      toast('Preencha "' + f[1] + '"' + (['lbMin', 'tam', 'res', 'min', 'gMin'].includes(faltando[0]) ? ' para cruzar com as recomendações.' : '.'));
       form.elements[faltando[0]].focus();
       return;
     }
     if (cat.id === 'anzol' && hookNum(it.min) === null) { toast('Use o formato do anzol: 2/0, 1/0, 1, 2, 4…'); form.elements.min.focus(); return; }
-    if (!it.nome) it.nome = cat.um;
+    Object.keys(it).forEach(k => { if (it[k] === '') delete it[k]; });
     Store.set(Store.items.concat([it]));
-    toast(cat.um + ' adicionada ao seu equipamento.'.replace('adicionada', ['Anzol', 'Molinete', 'Empate'].includes(cat.um) ? 'adicionado' : 'adicionada'));
+    const sugerir = form.elements.sugerir && form.elements.sugerir.checked && (it.marca || it.produto);
+    if (sugerir) {
+      const campos = {}; Object.keys(it).forEach(k => { if (!['id', 'cat', 'marca', 'produto'].includes(k)) campos[k] = it[k]; });
+      Conta.sugerir({ cat: it.cat, marca: it.marca || '', produto: it.produto || '', campos })
+        .then(() => { minhasSug = null; toast('Adicionado à mochila e enviado para aprovação no catálogo.'); if (view === 'equip') renderEquip(); })
+        .catch((e) => { console.warn(e); toast('Adicionado à mochila. Não deu para enviar ao catálogo agora.'); });
+    } else toast(cat.um + ' na mochila.');
+    prefill = null;
   }
   async function exportar() {
     let code;
@@ -512,12 +624,26 @@
     if (d.peixe) { peixeAberto = d.peixe; go('peixes'); return; }
     if ('voltar' in d) { peixeAberto = null; renderPeixes(); return; }
     if (d.montar) { st.esp = d.montar; lsSet(KEY_ST, st); go('pescar'); return; }
-    if (d.cat) { catForm = d.cat; renderEquip(); return; }
+    if (d.cat) { catForm = d.cat; if (prefill && prefill.cat !== d.cat) prefill = null; renderEquip(); return; }
     if (d.del) { Store.set(Store.items.filter(i => i.id !== d.del)); toast('Item removido.'); return; }
     if ('exemplo' in d) { Store.set(Store.items.concat(kitExemplo())); toast('Kit de exemplo carregado. Troque pelos seus itens quando quiser.'); return; }
     if ('limpaEx' in d) { Store.set(Store.items.filter(i => !i.exemplo)); toast('Itens de exemplo removidos.'); return; }
     if ('export' in d) { exportar(); return; }
     if ('import' in d) { importar(); return; }
+    if ('entrar' in d) { entrar(); return; }
+    if ('telaCheia' in d) { const f = $('#jogo-frame'); if (f && f.requestFullscreen) f.requestFullscreen().catch(() => {}); return; }
+    if ('sair' in d) { Conta.sair().then(() => toast('Você saiu da conta.')); return; }
+    if (d.cata) { const c = catTodos().find(x => x.id === d.cata); if (c) { prefill = c; catForm = c.cat; busca = ''; renderEquip(); const f = $('#f-add'); if (f && f.scrollIntoView) f.scrollIntoView({ behavior: 'smooth', block: 'start' }); } return; }
+    if ('limpaPf' in d) { prefill = null; renderEquip(); return; }
+    if (d.aprovar) { moderar(d.aprovar, true); return; }
+    if (d.recusar) { moderar(d.recusar, false); return; }
+    if ('recarregarAdm' in d) { pendentesAdmin = null; renderEquip(); carregaSugestoes(); return; }
+  });
+  document.addEventListener('input', (ev) => {
+    if (ev.target.id !== 'busca-cat') return;
+    busca = ev.target.value;
+    const r = achaCatalogo(busca), box = $('#busca-res');
+    if (box) box.innerHTML = busca ? (r.length ? r.map(c => `<button class="res" data-cata="${esc(c.id)}"><b>${esc(c.marca + ' ' + c.produto)}</b><span>${esc(umDe(c.cat))}${c.fonte === 'aprovado' ? ' · enviado por pescador' : ''}</span></button>`).join('') : '<p class="muted" style="margin:0;font-size:14px">Não achei no catálogo. Cadastre abaixo e, se quiser, envie para o catálogo.</p>') : '';
   });
   document.addEventListener('submit', (ev) => { if (ev.target.id === 'f-add') { ev.preventDefault(); addItem(ev.target); } });
   window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (TABS.some(t => t[0] === h) && h !== view) go(h); });
@@ -528,5 +654,7 @@
   $('#pira').classList.toggle('on', p.on);
   const h0 = location.hash.slice(1);
   go(TABS.some(t => t[0] === h0) ? h0 : 'pescar');
-  Store.init();
+  renderConta();
+  Conta.onChange((u) => { minhasSug = null; pendentesAdmin = null; renderConta(); Store.conta(u); if (!u) { const f = $('#jogo-frame'); if (f) f.remove(); } if (view === 'jogo') renderJogo(); });
+  Conta.init().then((ok) => { renderConta(); if (view === 'jogo') renderJogo(); if (ok) Conta.catalogo().then(c => { catAprovado = c; if (view === 'equip') renderEquip(); }).catch(() => {}); });
 })();
