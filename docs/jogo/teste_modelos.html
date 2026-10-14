@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teste de modelos e água</title>
+  <link rel="icon" href="data:," />
+  <style>
+    html, body { margin: 0; height: 100%; background: #0d1a20; overflow: hidden; font-family: system-ui, sans-serif; }
+    #painel { position: fixed; top: 12px; left: 12px; background: rgba(10, 20, 26, 0.8); color: #e6efe9; padding: 10px 14px; border-radius: 10px; font-size: 13px; line-height: 1.6; }
+    #painel select, #painel input { margin-left: 6px; }
+    #fps { position: fixed; top: 12px; right: 12px; color: #9fe0b8; font: 13px monospace; background: rgba(10, 20, 26, 0.8); padding: 6px 10px; border-radius: 8px; }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="painel">
+    <b>Teste: água e modelos reais</b><br />
+    Água <select id="agua"></select><br />
+    Hora <input id="hora" type="range" min="5.5" max="19" step="0.1" value="10" /> <span id="horaTxt"></span><br />
+    Vento <input id="vento" type="range" min="0" max="1" step="0.01" value="0.35" /><br />
+    Câmera <select id="cam"><option value="pescador">pescador</option><option value="lado">de lado</option><option value="perto">objetos de perto</option></select><br />
+    <small>Arraste para girar · roda para zoom</small>
+  </div>
+  <div id="fps"></div>
+  <script type="module">
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+    import { Sky } from "three/addons/objects/Sky.js";
+    import { WaterSurface } from "./src/world/water.js";
+    import { colocarTrapiche, colocarGalhada, colocarPedra, colocarObjetosTrapiche, colocarEstacas } from "./src/world/modelos.js";
+    import { LOCATIONS } from "./src/data/locationData.js";
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.5;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    document.body.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0xa9c8d8, 0.0011);
+    const camera = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 0.1, 5000);
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    // céu físico do three e um ambiente PMREM gerado dele (no jogo, o céu fica a cargo do sky.js)
+    const sky = new Sky();
+    sky.scale.setScalar(4500);
+    scene.add(sky);
+    const su = sky.material.uniforms;
+    su.turbidity.value = 2.4; su.rayleigh.value = 2.2; su.mieCoefficient.value = 0.003; su.mieDirectionalG.value = 0.82;
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const cenaCeu = new THREE.Scene();
+    const skyEnv = new Sky(); skyEnv.scale.setScalar(4500); cenaCeu.add(skyEnv);
+    let envRT = null;
+
+    const sol = new THREE.DirectionalLight(0xffffff, 3.2);
+    sol.castShadow = true;
+    sol.shadow.mapSize.set(2048, 2048);
+    Object.assign(sol.shadow.camera, { left: -25, right: 25, top: 25, bottom: -25, near: 1, far: 200 });
+    sol.shadow.bias = -0.0006;
+    scene.add(sol, sol.target);
+    const hemi = new THREE.HemisphereLight(0xbcd9ff, 0x56683c, 0.9);
+    scene.add(hemi);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.12));
+
+    const water = new WaterSurface(scene, "high");
+
+    // margem simples atrás do trapiche
+    const terra = new THREE.Mesh(new THREE.CircleGeometry(60, 48), new THREE.MeshStandardMaterial({ color: 0x4a5e36, roughness: 1 }));
+    terra.rotation.x = -Math.PI / 2; terra.position.set(0, 0.25, 70); terra.receiveShadow = true;
+    scene.add(terra);
+
+    // ----- os modelos, com as mesmas chamadas que o jogo vai usar -----
+    const cena = new THREE.Group();
+    scene.add(cena);
+    colocarTrapiche(cena, { comprimento: 13, largura: 2.4, alturaDeck: 0.62, inicioZ: 9 });
+    colocarObjetosTrapiche(cena, { x: 0, y: 0.62, z: -2.6 });
+    colocarGalhada(cena, -9, -16, 0.6, { tipo: "grosso", escala: 1.6 });
+    colocarGalhada(cena, 7, -24, -0.9, { tipo: "fino", escala: 2.2, inclina: 0.2 });
+    colocarEstacas(cena, 5.5, -9, 0.3);
+    for (const [x, z, s] of [[-6, -6, 1.1], [9, -12, 1.4], [-13, -18, 1.8], [4, -24, 0.9], [16, -8, 1.2], [-22, -40, 2.4], [25, -55, 2.2], [-3.5, 4, 0.5], [3.5, 5, 0.7], [-2.5, -1, 0.35]]) {
+      colocarPedra(cena, x, z, s);
+    }
+
+    // ----- painel -----
+    const selAgua = document.getElementById("agua");
+    for (const l of LOCATIONS) selAgua.add(new Option(l.name, l.id));
+    const aplicarAgua = () => {
+      const l = LOCATIONS.find((x) => x.id === selAgua.value);
+      water.setParams(l.water);
+      scene.fog.color.setHex(l.fog.day);
+      scene.fog.density = l.fog.density;
+      document.getElementById("vento").value = l.water.vento ?? 0.35;
+      water.setWind(null);
+    };
+    selAgua.onchange = aplicarAgua;
+    document.getElementById("vento").oninput = (e) => water.setWind(+e.target.value);
+
+    const solDir = new THREE.Vector3();
+    const corSol = new THREE.Color();
+    function aplicarHora() {
+      const h = +document.getElementById("hora").value;
+      document.getElementById("horaTxt").textContent = `${Math.floor(h)}h${String(Math.round((h % 1) * 60)).padStart(2, "0")}`;
+      const ang = ((h - 6) / 12) * Math.PI; // nasce a leste (+X), põe a oeste
+      const elev = Math.sin(ang) * 1.05;
+      solDir.set(Math.cos(ang), Math.max(elev, -0.2), -0.35).normalize();
+      su.sunPosition.value.copy(solDir);
+      skyEnv.material.uniforms.sunPosition.value.copy(solDir);
+      Object.assign(skyEnv.material.uniforms, {});
+      for (const k of ["turbidity", "rayleigh", "mieCoefficient", "mieDirectionalG"]) skyEnv.material.uniforms[k].value = su[k].value;
+      const quente = 1 - THREE.MathUtils.smoothstep(solDir.y, 0.02, 0.35);
+      corSol.setRGB(1, 1 - quente * 0.35, 1 - quente * 0.65);
+      sol.color.copy(corSol);
+      sol.intensity = THREE.MathUtils.lerp(0.2, 3.2, THREE.MathUtils.smoothstep(solDir.y, -0.05, 0.3));
+      hemi.intensity = THREE.MathUtils.lerp(0.25, 0.9, THREE.MathUtils.smoothstep(solDir.y, -0.1, 0.3));
+      sol.position.copy(solDir).multiplyScalar(80);
+      water.setSun(solDir, corSol);
+      if (envRT) envRT.dispose();
+      envRT = pmrem.fromScene(cenaCeu);
+      scene.environment = envRT.texture;
+    }
+    document.getElementById("hora").oninput = aplicarHora;
+
+    const camPos = {
+      pescador: [[0.55, 2.5, 0.1], [0, 0.4, -20]],
+      lado: [[-14, 4.5, 4], [0, 0.4, -3]],
+      perto: [[2.6, 1.6, 0.4], [0, 0.6, -1.6]],
+    };
+    const selCam = document.getElementById("cam");
+    selCam.onchange = () => {
+      const [p, t] = camPos[selCam.value];
+      camera.position.set(...p);
+      controls.target.set(...t);
+      controls.update();
+    };
+
+    // parâmetros pela URL para os testes automáticos: ?agua=river&hora=17.5&cam=lado
+    const q = new URLSearchParams(location.search);
+    selAgua.value = q.get("agua") || "lake";
+    document.getElementById("hora").value = q.get("hora") || 10;
+    selCam.value = q.get("cam") || "pescador";
+    aplicarAgua(); aplicarHora(); selCam.onchange();
+
+    addEventListener("resize", () => {
+      camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+
+    const relogio = new THREE.Clock();
+    let quadros = 0, t0 = performance.now();
+    renderer.setAnimationLoop(() => {
+      const dt = Math.min(relogio.getDelta(), 0.1);
+      water.update(dt);
+      controls.update();
+      renderer.render(scene, camera);
+      quadros++;
+      const agora = performance.now();
+      if (agora - t0 > 1000) {
+        document.getElementById("fps").textContent = `${Math.round((quadros * 1000) / (agora - t0))} fps · ${renderer.info.render.calls} draws · ${renderer.info.render.triangles} tris`;
+        window.FPS = (quadros * 1000) / (agora - t0);
+        quadros = 0; t0 = agora;
+      }
+    });
+    window.TESTE = { scene, water, renderer, camera };
+  </script>
+</body>
+</html>

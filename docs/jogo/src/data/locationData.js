@@ -8,7 +8,12 @@ export const LOCATIONS = [
     blurb: "Água parada entre aguapés e camalotes. O lugar mais calmo para aprender.",
     unlock: { level: 1, cost: 0 },
     env: "lake",
-    water: { color: 0x2f4a2a, distortion: 1.7, size: 3.2, timeScale: 0.6 },
+    water: {
+      color: 0x2f4a2a, distortion: 1.7, size: 3.2, timeScale: 0.6,
+      // baía: água verde-escura cor de chá, quase parada, com película e folhas boiando; fundo de lodo
+      corRasa: 0x5a6a34, vento: 0.22, ventoDir: 0.9, turbidez: 1.5, sujeira: 0.5,
+      fundo: { textura: "lodo", raso: -0.45, fundo: -3.4, zMargem: 12, rampa: 26 },
+    },
     sky: { turbidity: 2.4, rayleigh: 2.2, mieCoefficient: 0.003, mieDirectionalG: 0.82 },
     fog: { day: 0xa9c8d8, night: 0x0a1422, density: 0.0011 },
     ambience: { waves: 0.3, wind: 0.22, birds: true, crickets: true, gulls: false },
@@ -24,7 +29,12 @@ export const LOCATIONS = [
     blurb: "Corredeira transparente sobre pedra, como em Bonito. Piraputanga e dourado.",
     unlock: { level: 3, cost: 400 },
     env: "river",
-    water: { color: 0x1f7a6a, distortion: 2.6, size: 4.2, timeScale: 1.0 },
+    water: {
+      color: 0x12524a, distortion: 2.6, size: 4.2, timeScale: 1.0,
+      // rio de água clara: verde-azulado e transparente, dá para ver os seixos e as cáusticas no fundo
+      corRasa: 0x5fb3a2, vento: 0.42, ventoDir: 0.2, turbidez: 0.2, sujeira: 0.04,
+      fundo: { textura: "seixos", raso: -0.35, fundo: -3.6, zMargem: 12, rampa: 34, caustica: 1.0 },
+    },
     sky: { turbidity: 2.0, rayleigh: 2.4, mieCoefficient: 0.0028, mieDirectionalG: 0.8 },
     fog: { day: 0xaecfdc, night: 0x0a1620, density: 0.0013 },
     ambience: { waves: 0.45, wind: 0.3, birds: true, crickets: true, gulls: false },
@@ -40,7 +50,11 @@ export const LOCATIONS = [
     blurb: "Pesca de barranco no rio grande. Bagres no fundo, piauçu e pacu.",
     unlock: { level: 6, cost: 1800 },
     env: "pier",
-    water: { color: 0x5a4a2e, distortion: 3.2, size: 2.6, timeScale: 0.85 },
+    water: {
+      color: 0x5a4a2e, distortion: 3.2, size: 2.6, timeScale: 0.85,
+      // Rio Paraguai: barrento, marrom e opaco, correnteza mexendo a superfície
+      corRasa: 0x8c7148, vento: 0.5, ventoDir: 1.6, turbidez: 4.0, sujeira: 0.18, fundo: null,
+    },
     sky: { turbidity: 3.2, rayleigh: 2.0, mieCoefficient: 0.0035, mieDirectionalG: 0.82 },
     fog: { day: 0xb4cddb, night: 0x0a141e, density: 0.0010 },
     ambience: { waves: 0.45, wind: 0.35, birds: true, crickets: true, gulls: false },
@@ -56,7 +70,11 @@ export const LOCATIONS = [
     blurb: "O canal do Rio Paraguai, de barco, à noite. Pintado, cachara e o jaú.",
     unlock: { level: 10, cost: 6500 },
     env: "ocean",
-    water: { color: 0x3a3424, distortion: 3.8, size: 2.0, timeScale: 1.0 },
+    water: {
+      color: 0x3a3424, distortion: 3.8, size: 2.0, timeScale: 1.0,
+      // canal fundo: água escura e opaca, marola mais forte no meio do rio
+      corRasa: 0x4c4430, vento: 0.58, ventoDir: 1.4, turbidez: 3.0, sujeira: 0.08, fundo: null,
+    },
     sky: { turbidity: 2.6, rayleigh: 2.2, mieCoefficient: 0.003, mieDirectionalG: 0.84 },
     fog: { day: 0xa8c6da, night: 0x060e1a, density: 0.0009 },
     ambience: { waves: 0.55, wind: 0.45, birds: true, crickets: true, gulls: false },
