@@ -1,9 +1,13 @@
+// Peixes: a foto real da Caderneta com volume e nado (createPhotoFish) ou, sem foto, de primitivas.
 // Procedural fish meshes built entirely from primitives. Geometry is shared
 // across all fish; materials are cached per species. A fish group is built at
 // 1 unit body length and scaled to its rolled real-world size.
 
 import * as THREE from "three";
 import { clamp } from "../utils/utils.js";
+import { CONFIG } from "../data/config.js";
+import { FISH_BY_ID } from "../data/fishData.js";
+import { envEquipamento } from "../gameplay/materiaisEquipamento.js";
 
 const geoCache = {};
 const matCache = new Map();
@@ -54,24 +58,32 @@ const SHAPES = {
   billed: { h: 0.26, w: 0.15 },
 };
 
-/**
- * Builds a fish facing +X (nose at +0.5, tail at -0.5) of unit length,
- * then scales the group so its body length equals sizeCm.
- */
-// ---------- peixe com a foto real (recorte da Caderneta) ----------
+// ---------- peixe com a foto real (recorte da Caderneta), com volume ----------
 // Os recortes ficam em ../fotos/<id>-card.webp. A maioria olha para a esquerda; estes olham para a direita.
+// A foto vira um corpo: uma malha subdividida inflada pela silhueta (lida do canal alfa), frente e verso,
+// que ondula de lado para nadar (no vertex shader). Debaixo d'água o peixe escurece, some com a
+// profundidade e treme com a refração, sem ser tapado pela superfície opaca da água.
 const OLHA_DIREITA = new Set(["cachara", "jurupoca", "pacupeva", "palmito", "piranha", "tilapia"]);
 const fotoCache = new Map();
 const loader = new THREE.TextureLoader();
+const WATER_Y = CONFIG.water.level;
+
+// grossura do corpo (fração da altura) por silhueta: pacu é achatado, bagre é roliço
+const GROSSURA = { standard: 0.45, slim: 0.5, long: 0.85, flat: 0.3, billed: 0.45 };
 
 function fotoMaterial(species) {
   if (fotoCache.has(species.id)) return fotoCache.get(species.id);
-  const entry = { mat: null, aspect: 0.4, ok: true, waiting: [] };
+  const entry = { tex: null, aspect: 0.4, ok: true, waiting: [], geo: null, boca: new THREE.Vector3(0.49, 0, 0), look: species.look };
   const tex = loader.load(
     `../fotos/${species.id}-card.webp`,
     (t) => {
       entry.aspect = t.image.height / t.image.width;
-      entry.waiting.forEach((fn) => fn(entry.aspect));
+      try {
+        entry.geo = corpoGeometria(t.image, OLHA_DIREITA.has(species.id), entry);
+      } catch {
+        entry.geo = null;
+      }
+      entry.waiting.forEach((fn) => fn(entry));
       entry.waiting = [];
     },
     undefined,
@@ -80,31 +92,221 @@ function fotoMaterial(species) {
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 4;
   tex.userData.shared = true;
-  entry.mat = new THREE.MeshStandardMaterial({ map: tex, alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.45, metalness: 0.1 });
-  entry.mat.userData.shared = true;
+  entry.tex = tex;
   fotoCache.set(species.id, entry);
   return entry;
 }
 
 /** Pré-carrega as fotos dos peixes de um pesqueiro, para a primeira briga já sair com foto. */
 export function preloadFishPhotos(ids) {
-  for (const id of ids) fotoMaterial({ id });
+  for (const id of ids) {
+    const sp = FISH_BY_ID[id];
+    fotoMaterial(sp || { id });
+  }
+}
+
+/**
+ * Lê a silhueta da foto (alfa) coluna a coluna e infla uma malha em forma de corpo.
+ * Nariz sempre em +X (fotos que olham para a esquerda são espelhadas no UV).
+ */
+function corpoGeometria(img, olhaDireita, entry) {
+  const W = 128;
+  const H = Math.max(8, Math.round(W * img.height / img.width));
+  const c = document.createElement("canvas");
+  c.width = W;
+  c.height = H;
+  const g = c.getContext("2d", { willReadFrequently: true });
+  g.drawImage(img, 0, 0, W, H);
+  const alfa = g.getImageData(0, 0, W, H).data;
+  // por coluna: centro e meia-altura da silhueta (em v, 0 = embaixo, 1 = em cima)
+  const centro = new Float32Array(W), meia = new Float32Array(W);
+  for (let x = 0; x < W; x++) {
+    let topo = -1, base = -1;
+    for (let y = 0; y < H; y++) {
+      if (alfa[(y * W + x) * 4 + 3] > 115) {
+        if (topo < 0) topo = y;
+        base = y;
+      }
+    }
+    if (topo < 0) continue;
+    const vTopo = 1 - topo / (H - 1), vBase = 1 - base / (H - 1);
+    centro[x] = (vTopo + vBase) / 2;
+    meia[x] = (vTopo - vBase) / 2;
+  }
+  // altura do corpo (sem nadadeiras): a maior meia-altura no miolo do peixe
+  let corpoMax = 0;
+  for (let x = Math.floor(W * 0.3); x < W * 0.7; x++) corpoMax = Math.max(corpoMax, meia[x]);
+  corpoMax = corpoMax || 0.4;
+  const aspect = H / W;
+  const k = (GROSSURA[entry.look?.shape] ?? 0.45) + (entry.look?.whiskers ? 0.12 : 0);
+  const NX = 56, NY = 24;
+  const pos = [], uv = [], idx = [];
+  for (const lado of [1, -1]) {
+    const base = pos.length / 3;
+    for (let iy = 0; iy <= NY; iy++) {
+      const v = iy / NY;
+      for (let ix = 0; ix <= NX; ix++) {
+        const s = ix / NX; // 0 = cauda, 1 = nariz
+        const tu = olhaDireita ? s : 1 - s;
+        const col = Math.min(W - 1, Math.round(tu * (W - 1)));
+        const hh = Math.min(meia[col], corpoMax);
+        let z = 0;
+        if (hh > 0.004) {
+          const r = (v - centro[col]) / hh;
+          if (Math.abs(r) < 1) {
+            // perfil: fino na cauda, cheio no meio, afinando no focinho
+            const env = smoothstep(0.08, 0.42, s) * (1 - 0.5 * smoothstep(0.82, 1.0, s));
+            z = Math.sqrt(1 - r * r) * hh * aspect * k * env;
+          }
+        }
+        pos.push(s - 0.5, (v - 0.5) * aspect, z * lado);
+        uv.push(tu, v);
+      }
+    }
+    for (let iy = 0; iy < NY; iy++) {
+      for (let ix = 0; ix < NX; ix++) {
+        const a = base + iy * (NX + 1) + ix, b = a + 1, cc = a + NX + 1, d = cc + 1;
+        if (lado > 0) idx.push(a, b, d, a, d, cc);
+        else idx.push(a, d, b, a, cc, d);
+      }
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  geo.userData.shared = true;
+  // boca: ponta do focinho, na altura do centro da silhueta ali
+  const colBoca = Math.min(W - 1, Math.round((olhaDireita ? 0.985 : 0.015) * (W - 1)));
+  entry.boca.set(0.49, (centro[colBoca] - 0.5) * aspect, 0);
+  return geo;
+}
+
+function smoothstep(a, b, x) {
+  const t = Math.max(0, Math.min(1, (x - a) / (b - a)));
+  return t * t * (3 - 2 * t);
+}
+
+/** Material do peixe com ondulação de nado e o truque da água (um por peixe: os uniforms são dele). */
+function materialPeixe(tex) {
+  const u = {
+    uFase: { value: 0 },
+    uAmp: { value: 0.05 },
+    uOnda: { value: 5.5 },
+    uCurva: { value: 0 },
+    uRelogio: { value: 0 },
+    uAguaY: { value: WATER_Y },
+    uTurbidez: { value: 0.9 },
+    uCorAgua: { value: new THREE.Color(0x3a5248) },
+    uMolhado: { value: 0 },
+  };
+  // reflexo do céu na escama (sem ambiente, peixe molhado fica preto)
+  const m = new THREE.MeshStandardMaterial({ map: tex, alphaTest: 0.45, transparent: true, roughness: 0.45, metalness: 0.1, envMap: envEquipamento(), envMapIntensity: 0.7 });
+  m.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, u);
+    sh.vertexShader = sh.vertexShader
+      .replace("#include <common>", `#include <common>
+uniform float uFase, uAmp, uOnda, uCurva, uRelogio, uAguaY;
+varying float vProf;`)
+      .replace("#include <begin_vertex>", `#include <begin_vertex>
+// nado: onda lateral que cresce para a cauda; a cabeça balança pouco ao contrário
+float sCorpo = position.x + 0.5;
+float wCauda = pow(1.0 - sCorpo, 1.7);
+transformed.z += uAmp * (wCauda * sin(uFase - sCorpo * uOnda) - 0.15 * sCorpo * sCorpo * sin(uFase));
+transformed.z += uCurva * position.x * position.x * 2.0;`)
+      .replace("#include <project_vertex>", `#include <project_vertex>
+vec4 wpA = modelMatrix * vec4(transformed, 1.0);
+vProf = uAguaY - wpA.y;
+if (vProf > 0.0) {
+  // refração: parece mais raso e treme com a superfície
+  float pr = min(vProf, 1.5);
+  wpA.y = uAguaY - vProf * 0.75;
+  wpA.x += sin(wpA.z * 3.1 + uRelogio * 2.1) * 0.025 * pr;
+  wpA.z += cos(wpA.x * 2.7 + uRelogio * 1.7) * 0.025 * pr;
+  mvPosition = viewMatrix * wpA;
+  gl_Position = projectionMatrix * mvPosition;
+  // profundidade do ponto da superfície no mesmo raio: passa na frente da água opaca,
+  // mas o que está acima da água entre a câmera e o peixe (vara, linha, trapiche) ainda tapa
+  vec3 raio = wpA.xyz - cameraPosition;
+  float tt = (uAguaY - cameraPosition.y) / raio.y;
+  if (raio.y < 0.0 && tt > 0.0 && tt < 1.0) {
+    vec4 sc = projectionMatrix * viewMatrix * vec4(cameraPosition + raio * tt, 1.0);
+    gl_Position.z = (sc.z / sc.w - 0.00002) * gl_Position.w;
+  }
+}`);
+    sh.fragmentShader = sh.fragmentShader
+      .replace("#include <common>", `#include <common>
+uniform vec3 uCorAgua;
+uniform float uTurbidez, uMolhado;
+varying float vProf;`)
+      .replace("#include <roughnessmap_fragment>", `#include <roughnessmap_fragment>
+roughnessFactor = mix(roughnessFactor, 0.28, uMolhado);`)
+      .replace("#include <opaque_fragment>", `#include <opaque_fragment>
+if (vProf > 0.0) {
+  // debaixo d'água: esverdeado, escuro e sumindo com a profundidade
+  float vis = exp(-vProf * uTurbidez);
+  gl_FragColor.rgb = mix(uCorAgua, gl_FragColor.rgb * vec3(0.72, 0.86, 0.78), 0.3 + 0.7 * vis);
+  gl_FragColor.a *= clamp(vis * 2.1, 0.0, 0.95);
+}`);
+  };
+  m.customProgramCacheKey = () => "peixeFoto1";
+  return { m, u };
 }
 
 function createPhotoFish(species, sizeCm) {
   const entry = fotoMaterial(species);
   if (!entry.ok) return null;
-  const plane = new THREE.Mesh(sharedGeo("fotoPlano", () => new THREE.PlaneGeometry(1, 1)), entry.mat);
-  // nariz em +X, como o peixe de primitivas
-  const ajusta = (aspect) => plane.scale.set(OLHA_DIREITA.has(species.id) ? 1 : -1, aspect, 1);
-  ajusta(entry.aspect);
-  if (entry.waiting) entry.waiting.push(ajusta);
-  plane.castShadow = true;
+  const { m, u } = materialPeixe(entry.tex);
+  const corpo = new THREE.Mesh(entry.geo || sharedGeo("fotoPlano", () => new THREE.PlaneGeometry(1, 1, 1, 1)), m);
+  const boca = new THREE.Object3D();
+  corpo.add(boca);
+  const ajusta = (e) => {
+    if (e.geo) {
+      corpo.geometry = e.geo;
+      corpo.scale.set(1, 1, 1);
+    } else corpo.scale.set(OLHA_DIREITA.has(species.id) ? 1 : -1, e.aspect, 1);
+    boca.position.copy(e.boca);
+  };
+  ajusta(entry);
+  if (!entry.geo && entry.waiting) entry.waiting.push(ajusta);
+  corpo.frustumCulled = false;
   const wrapper = new THREE.Group();
-  wrapper.add(plane);
+  wrapper.rotation.order = "YXZ"; // rumo, rolagem (de lado), arfagem (nariz para cima)
+  wrapper.add(corpo);
   wrapper.scale.setScalar(clamp(sizeCm / 100, 0.16, 3.6));
   wrapper.userData.speciesId = species.id;
+  wrapper.userData.anim = { u, boca, corpo };
   return wrapper;
+}
+
+/**
+ * Anima o nado: frequência da batida da cauda (Hz), amplitude (fração do corpo) e curvatura (virando).
+ * molhado: 0 a 1, brilho de peixe saindo da água.
+ */
+export function animarPeixe(mesh, dt, { batida = 1.5, amp = 0.05, curva = 0, molhado = 0 } = {}) {
+  const a = mesh?.userData.anim;
+  if (!a) return;
+  a.u.uFase.value += dt * batida * Math.PI * 2;
+  a.u.uAmp.value += (amp - a.u.uAmp.value) * Math.min(1, dt * 8);
+  a.u.uCurva.value += (curva - a.u.uCurva.value) * Math.min(1, dt * 6);
+  a.u.uRelogio.value += dt;
+  a.u.uMolhado.value = molhado;
+}
+
+/** Posição da boca do peixe no mundo (onde a linha se prende). */
+export function bocaDoPeixe(mesh, out) {
+  const a = mesh?.userData.anim;
+  if (!a) return out.copy(mesh.position);
+  mesh.updateMatrixWorld(true);
+  return a.boca.getWorldPosition(out);
+}
+
+/** Libera o que é só deste peixe (o material; foto e malha são compartilhadas). */
+export function descartarPeixe(mesh) {
+  mesh?.traverse((o) => {
+    if (o.material && !o.material.userData.shared) o.material.dispose();
+  });
 }
 
 export function createFishMesh(species, sizeCm) {

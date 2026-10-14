@@ -52,6 +52,7 @@ const postfx = new PostFX(renderer, scene, camera); // [ceu] pós-processamento 
 const env = new EnvironmentManager(scene);
 const effects = new Effects(scene);
 const casting = new CastingSystem(scene);
+casting.effects = effects; // [briga] marolinha e risco da linha na água
 const bobber = new Bobber(scene, effects);
 const bite = new BiteSystem(
   () => ({
@@ -200,6 +201,7 @@ machine.register(Phase.IDLE, {
 machine.register(Phase.CHARGING, {
   enter() {
     casting.beginCharge();
+    audio.play("pickupAbre"); // [briga] abre a alça do pick-up
     hud.showPower(true);
   },
   exit() {
@@ -212,6 +214,7 @@ machine.register(Phase.FLYING, {
   enter() {
     S.stats.casts += 1;
     audio.play("whoosh");
+    audio.play("linhaAssobio", { dur: Math.max(0.5, (2 * bobber.vel.y) / 9.8) }); // [briga] linha assobiando no voo
   },
 });
 
@@ -237,6 +240,7 @@ machine.register(Phase.REELING, {
     casting.setLineTension(0);
     casting.setReelMotion(0, 0);
     audio.fightStop();
+    rig.setBriga(null); // [briga]
     hud.showReel(false);
   },
 });
@@ -289,7 +293,9 @@ const lastBobberPos = new THREE.Vector3();
 let lastAv = null;
 
 events.on("bobber:landed", ({ distance, zone }) => {
-  audio.play("splash", { strength: 0.9 });
+  audio.play("boiaCai", { strength: 0.9 }); // [briga] boia caindo na água
+  casting.fecharPickup(); // [briga] alça do pick-up fecha
+  audio.play("pickupFecha"); // [briga]
   hud.setZone(`Água ${CONFIG.zones.labels[zone]} · ${Math.round(distance)} m da margem`);
   bite.begin(zone);
   machine.set(Phase.WAITING);
@@ -356,7 +362,7 @@ events.on("fight:headshake", ({ forca }) => {
   casting.tremor(forca);
   audio.play("headshake", { forca });
   vibrar(Math.round(12 + forca * 18));
-  effects.splash(fight.fishPoint, 0.35 + forca * 0.3);
+  if ((fight.prof ?? 0) < 1.1) effects.splash(fight.fishPoint, 0.35 + forca * 0.3); // [briga] só espirra se o peixe está raso
 });
 
 events.on("fight:snap", () => {
@@ -597,6 +603,7 @@ const biteScreenPos = { x: 0, y: 0 };
 function tick() {
   requestAnimationFrame(tick);
   const dt = Math.min(clock3.getDelta(), 0.05);
+  const dtM = dt * (fight.active ? fight.escalaTempo : 1); // [briga] câmera lenta curta nos pulos do peixe
   const phase = machine.current;
   const gameplay = isGameplayPhase(phase) && !paused;
 
@@ -624,13 +631,13 @@ function tick() {
   }
 
   // world always breathes, even behind menus
-  water.update(dt);
+  water.update(dtM); // [briga]
   sky.update(gclock.hours, cloudFactor, currentLoc());
-  effects.update(dt, camera, gclock.segment);
+  effects.update(dtM, camera, gclock.segment); // [briga]
 
   if (!paused) {
     const aiming = phase === Phase.IDLE || phase === Phase.CHARGING;
-    casting.update(dt, { aiming, previewVisible: aiming });
+    casting.update(dtM, { aiming, previewVisible: aiming }); // [briga]
 
     switch (phase) {
       case Phase.CHARGING:
@@ -665,7 +672,8 @@ function tick() {
         if (economy.getEquipped().reel.tipo !== "nenhum") audio.reelTick(dt, true, economy.getEquipped().reel.speed);
         break;
       case Phase.REELING:
-        fight.update(dt);
+        fight.update(dtM); // [briga]
+        rig.setBriga(fight); // [briga] câmera acompanha a briga
         audio.reelTick(dt, fight.reeling && economy.getEquipped().reel.tipo !== "nenhum", economy.getStats().reelSpeed);
         if (fight.active && fight.phase === "fight") {
           audio.fightLoop(dt, { saindo: fight.saindo, reeling: fight.reeling, speed: economy.getEquipped().reel.speed, tension: fight.tension / 100, tipo: economy.getEquipped().reel.tipo });
@@ -680,8 +688,8 @@ function tick() {
   }
 
   // the fishing line follows whatever is on the end of it
-  if (bobber.mode !== "hidden") casting.setLineTarget(bobber.pos);
-  else if (fight.active) casting.setLineTarget(fight.phase === "landing" && fight.fishMesh ? fight.fishMesh.position : fight.fishPoint);
+  if (bobber.mode !== "hidden") casting.setLineTarget(bobber.pos, bobber.mode === "flying" ? "voando" : "boia"); // [briga] modo da linha
+  else if (fight.active) casting.setLineTarget(fight.lineEnd, fight.phase === "landing" ? "embarque" : "briga"); // [briga] linha vai até a boca do peixe
   else casting.setLineTarget(null);
 
   rig.setAimYaw(casting.aimYaw);
@@ -709,4 +717,4 @@ requestAnimationFrame(() => {
 });
 
 // small debug handle (used by automated smoke tests; harmless in production)
-window.TIDELINE = { S, machine, version: 2, economy, tutorial, travelTo, gclock, sky, renderer, scene, casting, rig };
+window.TIDELINE = { S, machine, version: 2, economy, tutorial, travelTo, gclock, sky, renderer, scene, casting, rig, fight, bite, bobber, effects, audio, camera }; // [briga] fight/bite/bobber/effects/audio/camera para os testes automáticos
