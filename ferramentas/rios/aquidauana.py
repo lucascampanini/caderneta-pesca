@@ -13,9 +13,9 @@ Fontes (todas abertas, sem chave):
 Saída em docs/jogo/assets/rios/aquidauana/:
   rio.json   metadados, linha central suavizada com larguras, pontos de interesse (o Pindó), datas,
              nível, clima e a georreferência da grade
-  campo.png  grade de 10 m (UTM 21S) em RGBA: R distância com sinal até a beira d'água
+  campo.png  grade de 10 m (UTM 21S) em RGB: R distância com sinal até a beira d'água
              (128 = beira, 1 unidade = 0,75 m, <128 dentro d'água), G banco de areia (0..255),
-             B relevo relativo ao rio (0,1 m por unidade), A 255 dentro do corredor modelado
+             B relevo relativo ao rio (0,1 m por unidade)
   cor.webp   cor verdadeira do satélite na mesma grade (20 m) para o chão das margens
 
 Uso:  python ferramentas/rios/aquidauana.py [--saida DIR] [--cache DIR]
@@ -719,8 +719,8 @@ def main():
     R_ = u8(128 + sdf / 0.75)
     G_ = u8(ndimage.gaussian_filter(areia.astype(np.float32), 0.6) * 255)
     B_ = u8(rel * 10)
-    A_ = np.where(corredor, 255, 0).astype(np.uint8)
-    Image.fromarray(np.stack([R_, G_, B_, A_], -1), "RGBA").save(os.path.join(args.saida, "campo.png"), optimize=True)
+    # RGB sem alfa: o canvas do navegador perde a cor onde o alfa é zero (alfa pré-multiplicado)
+    Image.fromarray(np.stack([R_, G_, B_], -1), "RGB").save(os.path.join(args.saida, "campo.png"), optimize=True)
 
     def tom(v):
         return np.clip((np.nan_to_num(v, nan=0.06) / 0.20) ** (1 / 2.2), 0, 1) * 255

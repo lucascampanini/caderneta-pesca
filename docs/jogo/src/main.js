@@ -31,6 +31,7 @@ import { preloadFishPhotos } from "./fish/fishFactory.js";
 import { lerp, randRange, projectToScreen } from "./utils/utils.js";
 import { Tutorial } from "./ui/tutorial.js";
 import { compat, avaliar, dicaConjunto } from "./gameplay/rules.js";
+import { ModoLivre } from "./livre/modoLivre.js"; // [livre]
 
 // ---------------------------------------------------------------------------
 // boot
@@ -64,7 +65,7 @@ const bite = new BiteSystem(
     weather: S.world.weather,
     bait: economy.getStats().bait,
     eq: economy.getEquipped(),
-    tutorial: tutorial.treino(),
+    tutorial: !livre?.ativo && tutorial.treino(), // [livre] no rio não tem peixe de treino
   }),
   bobber
 );
@@ -112,12 +113,14 @@ const screens = new Screens({
   onQualityChange: (q) => {
     core.setQuality(q);
     water.setQuality(q);
-    travelTo(S.world.current, true); // a densidade da vegetação e os modelos dependem da qualidade
+    if (livre?.ativo) livre.setQualidade(q); // [livre]
+    else travelTo(S.world.current, true); // a densidade da vegetação e os modelos dependem da qualidade
     saveGame();
   },
 });
 
-const currentLoc = () => LOCATION_BY_ID[S.world.current] ?? LOCATION_BY_ID.lake;
+let livre = null; // [livre] modo livre (rio real); criado depois das telas
+const currentLoc = () => (livre?.ativo ? livre.loc : null) ?? LOCATION_BY_ID[S.world.current] ?? LOCATION_BY_ID.lake; // [livre]
 
 function applySettings() {
   audio.setVolume(S.settings.volume);
@@ -127,6 +130,7 @@ function applySettings() {
 }
 
 function travelTo(locId, silent = false) {
+  if (livre?.ativo) livre.sair(false); // [livre] viajar para um pesqueiro sai do rio
   const loc = LOCATION_BY_ID[locId] ?? LOCATION_BY_ID.lake;
   S.world.current = loc.id;
   bite.cancel();
@@ -173,6 +177,7 @@ function setPaused(on) {
 
 machine.register(Phase.MENU, {
   enter() {
+    if (livre?.ativo) livre.sair(true); // [livre]
     bite.cancel();
     bobber.hide();
     if (fight.active) fight.end();
@@ -395,6 +400,7 @@ events.on("fight:landed", ({ fish }) => {
   rig.addShake(0.25);
   machine.set(Phase.CATCH);
   catchCard.show(fish, result, () => machine.set(Phase.IDLE));
+  livre?.ajustarCaptura(fish); // [livre] piracema, medida mínima e espécie protegida: solta
 });
 
 events.on("gear", () => {
@@ -417,6 +423,7 @@ function pressDown() {
   audio.init();
   switch (machine.current) {
     case Phase.IDLE: {
+      if (livre?.bloqueiaArremesso()) break; // [livre] navegando de voadeira: o clique não arremessa
       // vara e molinete têm que combinar, como na vida real
       const erro = compat(economy.getEquipped());
       if (erro) {
@@ -495,6 +502,7 @@ window.addEventListener("keydown", (e) => {
       if (!paused && machine.is(Phase.WAITING)) machine.set(Phase.RETRIEVING);
       break;
     case "KeyM":
+      if (livre?.ativo && !paused) { livre.alternarMapa(); break; } // [livre]
       toggleScreen(Phase.MAP);
       break;
     case "KeyB":
@@ -556,7 +564,7 @@ function handleEscape() {
   }
 }
 
-document.getElementById("btn-map").addEventListener("click", () => toggleScreen(Phase.MAP));
+document.getElementById("btn-map").addEventListener("click", () => (livre?.ativo ? livre.alternarMapa() : toggleScreen(Phase.MAP))); // [livre]
 document.getElementById("btn-shop").addEventListener("click", () => toggleScreen(Phase.SHOP));
 document.getElementById("btn-journal").addEventListener("click", () => toggleScreen(Phase.JOURNAL));
 document.getElementById("btn-pause").addEventListener("click", () => {
@@ -617,7 +625,7 @@ function tick() {
   if (gameplay) {
     gclock.advance(dt);
     S.world.hour = gclock.hours;
-    updateWeather(dt);
+    if (!livre?.ativo) updateWeather(dt); // [livre] no rio o clima é o real
 
     autosaveT += dt;
     if (autosaveT >= CONFIG.autosaveEvery) {
@@ -638,12 +646,14 @@ function tick() {
   }
 
   // world always breathes, even behind menus
+  livre?.antes(dt, phase, paused); // [livre] hora/clima reais, barco e trechos do rio
   water.update(dtM); // [briga]
-  sky.update(gclock.hours, cloudFactor, currentLoc());
+  sky.update(gclock.hours, livre?.ativo ? livre.nuvens : cloudFactor, currentLoc()); // [livre]
+  livre?.depois(dt); // [livre] sol, chuva e câmera da navegação
   effects.update(dtM, camera, gclock.segment); // [briga]
 
   if (!paused) {
-    const aiming = phase === Phase.IDLE || phase === Phase.CHARGING;
+    const aiming = (phase === Phase.IDLE || phase === Phase.CHARGING) && !livre?.navegando; // [livre]
     casting.update(dtM, { aiming, previewVisible: aiming }); // [briga]
 
     switch (phase) {
@@ -700,13 +710,16 @@ function tick() {
   else casting.setLineTarget(null);
 
   rig.setAimYaw(casting.aimYaw);
-  rig.update(dt);
+  if (!livre?.cameraPropria()) rig.update(dt); // [livre] navegando, a câmera segue o barco
   postfx.render(); // [ceu] era renderer.render(scene, camera)
 }
 
 // ---------------------------------------------------------------------------
 // go
 // ---------------------------------------------------------------------------
+
+// [livre] modo livre: rio real com satélite, nível e clima ao vivo
+livre = new ModoLivre({ S, economy, compat, screens, machine, Phase, events, hud, audio, env, bite, bobber, fight, water, effects, gclock, scene, casting, rig, camera, sunLight: core.sunLight, setVento, travelTo, container });
 
 applySettings();
 travelTo(S.world.current, true);
@@ -724,4 +737,4 @@ requestAnimationFrame(() => {
 });
 
 // small debug handle (used by automated smoke tests; harmless in production)
-window.TIDELINE = { S, machine, version: 2, economy, tutorial, travelTo, gclock, sky, renderer, scene, casting, rig, fight, bite, bobber, effects, audio, camera }; // [briga] fight/bite/bobber/effects/audio/camera para os testes automáticos
+window.TIDELINE = { S, machine, version: 2, economy, tutorial, travelTo, gclock, sky, renderer, scene, casting, rig, fight, bite, bobber, effects, audio, camera, livre, water, env }; // [briga] [livre] fight/bite/bobber/effects/audio/camera para os testes automáticos
