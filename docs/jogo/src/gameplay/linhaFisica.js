@@ -61,15 +61,23 @@ export class LinhaFisica {
         const o = i * 3;
         const x = p[o], y = p[o + 1], z = p[o + 2];
         const naAgua = y < WATER_Y;
-        const amort = naAgua ? 0.9 : 0.992;
+        // fio leve: o ar freia bastante (sem isso a linha chicoteia como corda pesada)
+        const amort = naAgua ? 0.95 : 0.975;
         let ax = vx, ay = -G, az = vz;
         if (naAgua) {
           ax = 0; az = 0;
           ay = -G * this.afunda;
         }
-        p[o] = x + (x - q[o]) * amort + ax * h * h;
-        p[o + 1] = y + (y - q[o + 1]) * amort + ay * h * h;
-        p[o + 2] = z + (z - q[o + 2]) * amort + az * h * h;
+        // velocidade limitada: um tranco não pode jogar o fio para o céu
+        let ux = (x - q[o]) * amort, uy = (y - q[o + 1]) * amort, uz = (z - q[o + 2]) * amort;
+        const u2 = ux * ux + uy * uy + uz * uz, umax = 12 * h;
+        if (u2 > umax * umax) {
+          const k = umax / Math.sqrt(u2);
+          ux *= k; uy *= k; uz *= k;
+        }
+        p[o] = x + ux + ax * h * h;
+        p[o + 1] = y + uy + ay * h * h;
+        p[o + 2] = z + uz + az * h * h;
         q[o] = x; q[o + 1] = y; q[o + 2] = z;
         // linha parada: a tensão superficial segura o fio deitado na água
         if (this.boia && p[o + 1] < WATER_Y + 0.004 && p[o + 1] > WATER_Y - 0.25) {

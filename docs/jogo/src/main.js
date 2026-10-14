@@ -236,6 +236,7 @@ machine.register(Phase.REELING, {
     casting.setLineTension(0);
     casting.setReelMotion(0, 0);
     audio.fightStop();
+    rig.setBriga(null); // [briga]
     hud.showReel(false);
   },
 });
@@ -357,7 +358,7 @@ events.on("fight:headshake", ({ forca }) => {
   casting.tremor(forca);
   audio.play("headshake", { forca });
   vibrar(Math.round(12 + forca * 18));
-  effects.splash(fight.fishPoint, 0.35 + forca * 0.3);
+  if ((fight.prof ?? 0) < 1.1) effects.splash(fight.fishPoint, 0.35 + forca * 0.3); // [briga] só espirra se o peixe está raso
 });
 
 events.on("fight:snap", () => {
@@ -598,6 +599,7 @@ const biteScreenPos = { x: 0, y: 0 };
 function tick() {
   requestAnimationFrame(tick);
   const dt = Math.min(clock3.getDelta(), 0.05);
+  const dtM = dt * (fight.active ? fight.escalaTempo : 1); // [briga] câmera lenta curta nos pulos do peixe
   const phase = machine.current;
   const gameplay = isGameplayPhase(phase) && !paused;
 
@@ -625,13 +627,13 @@ function tick() {
   }
 
   // world always breathes, even behind menus
-  water.update(dt);
+  water.update(dtM); // [briga]
   sky.update(gclock.hours, cloudFactor, currentLoc());
-  effects.update(dt, camera, gclock.segment);
+  effects.update(dtM, camera, gclock.segment); // [briga]
 
   if (!paused) {
     const aiming = phase === Phase.IDLE || phase === Phase.CHARGING;
-    casting.update(dt, { aiming, previewVisible: aiming });
+    casting.update(dtM, { aiming, previewVisible: aiming }); // [briga]
 
     switch (phase) {
       case Phase.CHARGING:
@@ -666,7 +668,8 @@ function tick() {
         if (economy.getEquipped().reel.tipo !== "nenhum") audio.reelTick(dt, true, economy.getEquipped().reel.speed);
         break;
       case Phase.REELING:
-        fight.update(dt);
+        fight.update(dtM); // [briga]
+        rig.setBriga(fight); // [briga] câmera acompanha a briga
         audio.reelTick(dt, fight.reeling && economy.getEquipped().reel.tipo !== "nenhum", economy.getStats().reelSpeed);
         if (fight.active && fight.phase === "fight") {
           audio.fightLoop(dt, { saindo: fight.saindo, reeling: fight.reeling, speed: economy.getEquipped().reel.speed, tension: fight.tension / 100, tipo: economy.getEquipped().reel.tipo });

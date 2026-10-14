@@ -374,7 +374,9 @@ export class CastingSystem {
         // briga: sob tensão a linha fica reta; frouxa (peixe vindo) faz barriga
         F.boia = false;
         const folga = 0.0002 + Math.pow(1 - T, 5) * 0.03;
-        F.comprimento = lerp(F.comprimento, dist * (1 + folga), 1 - Math.exp(-6 * dt));
+        // a sobra é recolhida na hora (o pescador mantém a linha esticada); linha saindo acompanha rápido
+        const alvo = dist * (1 + folga);
+        F.comprimento = alvo < F.comprimento ? alvo : lerp(F.comprimento, alvo, 1 - Math.exp(-12 * dt));
         break;
       }
     }
@@ -453,8 +455,9 @@ export class CastingSystem {
     // na briga o pescador levanta a vara e a deita para o lado: o arco da vara aparece de verdade
     const querPose = !this.charging && this.bendTarget > 0.1 ? 1 : 0;
     this.pose = lerp(this.pose || 0, querPose, 1 - Math.exp(-3.5 * dt));
-    this.joint0.rotation.x = lerp(baseAngle, (this.ergue ?? -0.38) + (baseAngle + 0.95) * 0.5, this.pose);
-    this.joint0.rotation.z = -0.8 * this.pose;
+    this.joint0.rotation.x = lerp(baseAngle, (this.ergue ?? -0.38) + (this.ergueExtra ?? 0.2) + (baseAngle + 0.95) * 0.5, this.pose);
+    this.joint0.rotation.z = -(this.ladoPose ?? 0.35) * this.pose;
+    this.rodRoot.rotation.y = -(this.giroPose ?? 0.6) * this.pose;
 
     this.curvarVara(dt);
 

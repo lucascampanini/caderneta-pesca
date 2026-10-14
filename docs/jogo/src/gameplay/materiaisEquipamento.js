@@ -61,7 +61,7 @@ let envTex = null;
 let intensidadeAmbiente = 1;
 
 /** Panorama equirretangular simples (céu, horizonte claro, água esverdeada) para os reflexos. */
-function envEquipamento() {
+export function envEquipamento() {
   if (envTex) return envTex;
   const [c, g] = canvas(256, 128);
   const grad = g.createLinearGradient(0, 0, 0, 128);
