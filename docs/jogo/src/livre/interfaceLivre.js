@@ -26,9 +26,9 @@ const CSS = /* css */ `
   text-shadow: 0 1px 2px #000; white-space: nowrap; pointer-events: auto; }
 #livre-creditos a { color: inherit; }
 #livre-toque { position: absolute; left: 16px; bottom: 96px; display: none; gap: 10px; }
-#livre-toque .lv-pad { pointer-events: auto; width: 64px; height: 64px; border-radius: 50%; font-size: 1.6rem; display: grid; place-items: center;
+#livre-hud .lv-pad { pointer-events: auto; width: 64px; height: 64px; border-radius: 50%; font-size: 1.6rem; display: grid; place-items: center;
   background: var(--glass); border: 1px solid var(--stroke); color: var(--text); touch-action: none; user-select: none; }
-#livre-toque-acel { position: absolute; right: 16px; bottom: 270px; display: none; flex-direction: column; gap: 10px; }
+#livre-toque-acel { position: absolute; left: 16px; bottom: 170px; display: none; flex-direction: row; gap: 10px; }
 #livre-hud.lv-toque #livre-toque, #livre-hud.lv-toque #livre-toque-acel { display: flex; }
 #livre-hud.lv-ancorado #livre-toque, #livre-hud.lv-ancorado #livre-toque-acel { display: none !important; }
 #hud.lv-navegando #hud-kit, #hud.lv-navegando #hud-bag { display: none; }
@@ -53,6 +53,21 @@ body.lv-ativo #coach { display: none !important; }
 #livre-mapa .lv-mapa-lado { flex: 1; overflow: auto; font-size: .88rem; line-height: 1.5; color: var(--dim); }
 #livre-mapa .lv-mapa-lado b { color: var(--text); }
 #livre-mapa .lv-poi { display: block; width: 100%; text-align: left; margin: 4px 0; }
+/* celular deitado: pouca altura */
+@media (max-height: 520px) {
+  #livre-info { top: auto; bottom: 8px; left: 50%; font-size: .68rem; gap: 6px; padding: 4px 10px; }
+  #livre-mini { bottom: 8px; right: 8px; padding: 4px; }
+  #livre-mini canvas { width: 118px; height: 118px; }
+  #livre-mini .lv-mini-pe { display: none; }
+  #livre-acoes { right: 140px; bottom: 44px; gap: 6px; }
+  #livre-acoes .btn { padding: 6px 10px; font-size: .78rem; }
+  #livre-dica { display: none; }
+  #livre-toque { bottom: 14px; }
+  #livre-toque-acel { bottom: 88px; }
+  #livre-toque .lv-pad, #livre-toque-acel .lv-pad { width: 58px; height: 58px; }
+  #livre-creditos { font-size: .5rem; white-space: normal; width: 98vw; text-align: center; }
+  #hud.lv-navegando #hud-prompt { display: none; }
+}
 @media (max-width: 760px) {
   #livre-info { top: auto; bottom: 150px; font-size: .74rem; gap: 6px; padding: 6px 10px; }
   #livre-mini canvas { width: 120px; height: 120px; }

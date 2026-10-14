@@ -443,7 +443,7 @@ export class ModoLivre {
         const m = this.barcoMesh;
         const dir = this._v.set(Math.sin(this._psiMundo), 0, -Math.cos(this._psiMundo));
         const popa = m.position.clone().addScaledVector(dir, -3.1);
-        D.effects.ripple(popa, 0.7 + Math.abs(B.v) * 0.07, 1.3, 3.2, Math.atan2(-dir.z, dir.x), 0.26);
+        D.effects.ripple(popa, 0.7 + Math.abs(B.v) * 0.07, 1.3, 3.2, Math.atan2(-dir.z, dir.x), 0.15);
         if (Math.abs(B.v) > 8 && Math.random() < 0.5) D.effects.esteira(m.position.clone().addScaledVector(dir, 2.4), dir.clone().multiplyScalar(-1), 0.4);
       }
     }
