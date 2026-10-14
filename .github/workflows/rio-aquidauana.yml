@@ -1,0 +1,73 @@
+# Atualiza todo dia os dados do Rio Aquidauana do modo livre do jogo (docs/jogo/assets/rios/aquidauana/):
+# forma da água pelo Sentinel-2 mais recente, nível da ANA, relevo, linha do OSM e o clima do pacote.
+# Não precisa de chave: STAC da Element84, COGs públicos na AWS, Overpass, ANA e Open-Meteo são abertos.
+# Só comita quando algo relevante mudou (satélite, nível, geometria); a data de geração e o clima do
+# pacote sozinhos não geram commit (o jogo busca o clima ao vivo).
+name: Rio Aquidauana (dados diários)
+
+on:
+  schedule:
+    - cron: "30 11 * * *" # 07:30 em Mato Grosso do Sul (UTC−4)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rio-aquidauana
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Dependências
+        run: pip install --no-cache-dir rasterio numpy scipy pillow requests pyproj
+
+      - name: Gera o pacote do rio
+        env:
+          PYTHONIOENCODING: utf-8
+        run: |
+          python ferramentas/rios/aquidauana.py
+          node ferramentas/rios/fatores_caderneta.js
+
+      - name: Mudou alguma coisa relevante?
+        id: mudou
+        run: |
+          python - <<'PY'
+          import json, subprocess, os
+          pasta = "docs/jogo/assets/rios/aquidauana"
+          def sem_ruido(txt):
+              d = json.loads(txt)
+              for k in ("gerado_em", "clima_no_pacote"):
+                  d.pop(k, None)
+              return d
+          try:
+              antigo = subprocess.run(["git", "show", f"HEAD:{pasta}/rio.json"], capture_output=True, text=True, encoding="utf-8", check=True).stdout
+              mudou_json = sem_ruido(antigo) != sem_ruido(open(f"{pasta}/rio.json", encoding="utf-8").read())
+          except subprocess.CalledProcessError:
+              mudou_json = True
+          binarios = subprocess.run(["git", "diff", "--quiet", "--", f"{pasta}/campo.png", f"{pasta}/cor.webp", "docs/jogo/src/livre/fatoresCaderneta.js"]).returncode != 0
+          mudou = mudou_json or binarios
+          print("rio.json mudou:", mudou_json, "| imagens/fatores mudaram:", binarios)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"mudou={'sim' if mudou else 'nao'}\n")
+          PY
+
+      - name: Comita os dados novos
+        if: steps.mudou.outputs.mudou == 'sim'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/jogo/assets/rios/aquidauana docs/jogo/src/livre/fatoresCaderneta.js
+          SAT=$(python -c "import json;d=json.load(open('docs/jogo/assets/rios/aquidauana/rio.json',encoding='utf-8'));print(d['satelite']['data_principal'])")
+          NIV=$(python -c "import json;d=json.load(open('docs/jogo/assets/rios/aquidauana/rio.json',encoding='utf-8'));n=d.get('nivel') or {};print(str(n.get('cm','?'))+' cm em '+str(n.get('data','?')))")
+          git commit -m "Rio Aquidauana: satélite de $SAT, nível $NIV"
+          git push
