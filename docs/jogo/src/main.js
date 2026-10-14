@@ -50,6 +50,7 @@ const sky = new SkySystem(scene, renderer, core.sunLight, core.hemiLight, core.a
 const env = new EnvironmentManager(scene);
 const effects = new Effects(scene);
 const casting = new CastingSystem(scene);
+casting.effects = effects; // [briga] marolinha e risco da linha na água
 const bobber = new Bobber(scene, effects);
 const bite = new BiteSystem(
   () => ({
@@ -287,7 +288,9 @@ const lastBobberPos = new THREE.Vector3();
 let lastAv = null;
 
 events.on("bobber:landed", ({ distance, zone }) => {
-  audio.play("splash", { strength: 0.9 });
+  audio.play("boiaCai", { strength: 0.9 }); // [briga] boia caindo na água
+  casting.fecharPickup(); // [briga] alça do pick-up fecha
+  audio.play("pickupFecha"); // [briga]
   hud.setZone(`Água ${CONFIG.zones.labels[zone]} · ${Math.round(distance)} m da margem`);
   bite.begin(zone);
   machine.set(Phase.WAITING);
@@ -678,8 +681,8 @@ function tick() {
   }
 
   // the fishing line follows whatever is on the end of it
-  if (bobber.mode !== "hidden") casting.setLineTarget(bobber.pos);
-  else if (fight.active) casting.setLineTarget(fight.phase === "landing" && fight.fishMesh ? fight.fishMesh.position : fight.fishPoint);
+  if (bobber.mode !== "hidden") casting.setLineTarget(bobber.pos, bobber.mode === "flying" ? "voando" : "boia"); // [briga] modo da linha
+  else if (fight.active) casting.setLineTarget(fight.lineEnd, fight.phase === "landing" ? "embarque" : "briga"); // [briga] linha vai até a boca do peixe
   else casting.setLineTarget(null);
 
   rig.setAimYaw(casting.aimYaw);
@@ -707,4 +710,4 @@ requestAnimationFrame(() => {
 });
 
 // small debug handle (used by automated smoke tests; harmless in production)
-window.TIDELINE = { S, machine, version: 2, economy, tutorial, travelTo, gclock, sky, renderer, scene, casting, rig };
+window.TIDELINE = { S, machine, version: 2, economy, tutorial, travelTo, gclock, sky, renderer, scene, casting, rig, fight, bite, bobber, effects, audio, camera }; // [briga] fight/bite/bobber/effects/audio/camera para os testes automáticos

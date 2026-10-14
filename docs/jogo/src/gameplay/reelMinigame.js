@@ -21,6 +21,7 @@ export class ReelFight {
     this.fishPoint = new THREE.Vector3();
     this.playerSpot = new THREE.Vector3();
     this.fishMesh = null;
+    this.lineEnd = new THREE.Vector3();
   }
 
   /**
@@ -240,6 +241,7 @@ export class ReelFight {
       this.splashTimer = surging ? 0.13 : 0.26;
     }
 
+    this.lineEnd.copy(this.fishPoint); this.lineEnd.y = WATER_Y - 0.8;
     events.emit("fight:update", {
       tension: this.tension,
       progress: clamp(this.progress, 0, 100),
@@ -278,6 +280,7 @@ export class ReelFight {
     const p = a.lerp(b, k);
     this.fishMesh.visible = true;
     this.fishMesh.position.copy(p);
+    this.lineEnd.copy(p);
     this.fishMesh.rotation.y += dt * 4;
     this.fishMesh.rotation.z = lerp(0.8, -0.4, k);
     if (k >= 1) {
