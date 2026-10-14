@@ -1,10 +1,17 @@
-// Cenário de cada pesqueiro do Pantanal: trapiche, barranco, voadeira, margens com mata ciliar,
-// camalotes de aguapé, capim, aves e a mata no horizonte. Tudo feito de primitivas (ver pantanal.js).
-// The player always stands near the origin and casts toward -Z.
+// Cenário de cada pesqueiro do Pantanal: margens com chão de foto, mata ciliar em camadas feita de
+// impostores fotográficos (ver pantanal.js e impostores.js), camalotes de aguapé, aves e a mata no horizonte.
+// O pescador fica perto da origem e arremessa para -Z (até uns 45 m): essa faixa fica sempre livre.
+//
+// Trapiche, pedras, tronco caído, ranchinho e voadeira são criados nas funções objetosDePerto_<pesqueiro>(group),
+// separadas da vegetação, para poderem ser trocadas por modelos reais sem mexer no resto.
 
 import * as THREE from "three";
-import { disposeObject3D, randRange, pick } from "../utils/utils.js";
-import { aguapes, capim, garca, tuiuiu, ipe, palmeira, barranco, ranchinho, voadeira, mataCiliar } from "./pantanal.js";
+import { disposeObject3D, randRange } from "../utils/utils.js";
+import { S } from "../state/gameState.js";
+import {
+  Vegetacao, mataCiliar, mataDistante, camalotes, chaoMargem, alturaMargem,
+  garca, tuiuiu, barranco, ranchinho, voadeira,
+} from "./pantanal.js";
 
 const WOOD = 0x6e5138;
 const WOOD_DARK = 0x4c3725;
@@ -25,91 +32,13 @@ function mesh(geo, mat, { x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0, sx = 1, s
   return m;
 }
 
-// ---------- reusable scenery pieces ----------
-
-function makePine(mat, leafMat, h = 4) {
-  const g = new THREE.Group();
-  const trunk = mesh(new THREE.CylinderGeometry(0.09 * h * 0.25, 0.13 * h * 0.25, h * 0.42, 6), mat, {
-    y: h * 0.21, shadow: true,
-  });
-  g.add(trunk);
-  const tiers = 3;
-  for (let i = 0; i < tiers; i++) {
-    const t = i / (tiers - 1);
-    const radius = h * 0.26 * (1 - t * 0.55);
-    const cone = mesh(new THREE.ConeGeometry(radius, h * 0.34, 7), leafMat, {
-      y: h * (0.42 + 0.2 * i), shadow: true,
-    });
-    g.add(cone);
-  }
-  return g;
-}
+// ---------- peças de perto (trapiche, pedras, galhada): candidatas a virar modelo real ----------
 
 function makeRock(mat, s = 1) {
-  const rock = mesh(new THREE.DodecahedronGeometry(s, 0), mat, {
+  return mesh(new THREE.DodecahedronGeometry(s, 0), mat, {
     sx: randRange(0.7, 1.3), sy: randRange(0.5, 0.9), sz: randRange(0.7, 1.3),
     ry: randRange(0, Math.PI), shadow: true,
   });
-  return rock;
-}
-
-function makeReeds(stemMat, n = 7) {
-  const g = new THREE.Group();
-  for (let i = 0; i < n; i++) {
-    const h = randRange(0.7, 1.5);
-    const stem = mesh(new THREE.CylinderGeometry(0.015, 0.022, h, 4), stemMat, {
-      x: randRange(-0.5, 0.5), y: h / 2, z: randRange(-0.5, 0.5),
-      rx: randRange(-0.12, 0.12), rz: randRange(-0.12, 0.12),
-    });
-    g.add(stem);
-  }
-  return g;
-}
-
-function makeBuoy() {
-  const g = new THREE.Group();
-  const body = mesh(new THREE.CylinderGeometry(0.32, 0.42, 0.8, 10), std(0xd23b3b), { y: 0.3 });
-  const cap = mesh(new THREE.SphereGeometry(0.3, 10, 8), std(0xe8e4da), { y: 0.78 });
-  const pole = mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.9, 6), std(0x333a44), { y: 1.3 });
-  g.add(body, cap, pole);
-  return g;
-}
-
-// Pantanal: no lugar de montanhas, uma mata ciliar baixa e contínua no horizonte (copas achatadas).
-function makeMountainRing(group, { color, count = 12, rMin = 650, rMax = 950, hMin = 70, hMax = 200, arcStart = 0, arcEnd = Math.PI * 2 }) {
-  const tons = [0x2e4a26, 0x34522a, 0x3c5a2e, 0x283f22];
-  const mats = tons.map((c) => std(c, { flatShading: true }));
-  const n = count * 9;
-  for (let i = 0; i < n; i++) {
-    const a = arcStart + (i / n) * (arcEnd - arcStart) + randRange(-0.02, 0.02);
-    const r = randRange(rMin, rMax) * 0.85;
-    const h = randRange(18, 38) * (0.6 + (hMax / 260) * 0.5);
-    const blob = mesh(new THREE.SphereGeometry(h, 7, 5), mats[i % mats.length], {
-      x: Math.sin(a) * r, y: h * 0.18, z: Math.cos(a) * r, sx: randRange(1.4, 2.4), sy: randRange(0.38, 0.6), sz: randRange(1.2, 2.0), ry: randRange(0, Math.PI),
-    });
-    group.add(blob);
-  }
-}
-
-/** Irregular landmass: a noisy displaced disc sitting just above the water. */
-function makeLandmass({ color, radius = 70, x = 0, z = 60, height = 2.2 }) {
-  const geo = new THREE.CircleGeometry(radius, 48);
-  const pos = geo.attributes.position;
-  for (let i = 0; i < pos.count; i++) {
-    const px = pos.getX(i);
-    const py = pos.getY(i);
-    const d = Math.sqrt(px * px + py * py) / radius;
-    const bump =
-      Math.sin(px * 0.08 + 3) * Math.cos(py * 0.07 + 1) * 0.8 +
-      Math.sin(px * 0.21) * Math.cos(py * 0.18) * 0.4;
-    pos.setZ(i, Math.max(0, (1 - d) * height + bump * (1 - d)));
-  }
-  geo.computeVertexNormals();
-  const m = new THREE.Mesh(geo, std(color, { flatShading: true }));
-  m.rotation.x = -Math.PI / 2;
-  m.position.set(x, -0.55, z);
-  m.receiveShadow = true;
-  return m;
 }
 
 function makeDock({ length = 13, width = 2.4, deckY = 0.62, startZ = 9 }) {
@@ -119,80 +48,36 @@ function makeDock({ length = 13, width = 2.4, deckY = 0.62, startZ = 9 }) {
   const plankCount = Math.floor(length / 0.62);
   for (let i = 0; i < plankCount; i++) {
     const z = startZ - i * 0.62 - 0.3;
-    g.add(
-      mesh(new THREE.BoxGeometry(width, 0.09, 0.55), plankMat, {
-        y: deckY, z, ry: randRange(-0.015, 0.015), shadow: true,
-      })
-    );
+    g.add(mesh(new THREE.BoxGeometry(width, 0.09, 0.55), plankMat, { y: deckY, z, ry: randRange(-0.015, 0.015), shadow: true }));
   }
   for (let i = 0; i <= Math.floor(length / 3); i++) {
     const z = startZ - i * 3;
     for (const sx of [-1, 1]) {
-      g.add(
-        mesh(new THREE.CylinderGeometry(0.11, 0.13, deckY + 1.5, 7), postMat, {
-          x: (sx * width) / 2 - sx * 0.08, y: (deckY - 1.2) / 2 + 0.2, z, shadow: true,
-        })
-      );
+      g.add(mesh(new THREE.CylinderGeometry(0.11, 0.13, deckY + 1.5, 7), postMat, {
+        x: (sx * width) / 2 - sx * 0.08, y: (deckY - 1.2) / 2 + 0.2, z, shadow: true,
+      }));
     }
   }
-  // end posts stick up like mooring bollards
+  // as estacas da ponta sobem como cabeços de amarração
   for (const sx of [-1, 1]) {
-    g.add(
-      mesh(new THREE.CylinderGeometry(0.09, 0.1, 0.5, 7), postMat, {
-        x: (sx * width) / 2 - sx * 0.08, y: deckY + 0.22, z: startZ - length + 0.4, shadow: true,
-      })
-    );
+    g.add(mesh(new THREE.CylinderGeometry(0.09, 0.1, 0.5, 7), postMat, {
+      x: (sx * width) / 2 - sx * 0.08, y: deckY + 0.22, z: startZ - length + 0.4, shadow: true,
+    }));
   }
   return g;
 }
 
-// ---------- per-location builders (Pantanal) ----------
-// O pescador fica perto da origem e arremessa para -Z: o que aparece na tela é a margem da frente e as laterais.
-
-function bancoLateral(group, lado, z0, z1, x = 62) {
-  // faixa de terra com mata ciliar e capim na beira, ao longo do eixo Z
-  for (let z = z0; z > z1; z -= 70) group.add(makeLandmass({ color: 0x3f5f34, radius: 48, x: lado * (x + 40), z: z - 35, height: 2.4 }));
-  mataCiliar(group, [[lado * (x + 4), z0], [lado * (x + 4), z1]], 8, 0.6);
-  group.add(capim(900, [[lado * (x - 2), z0], [lado * (x - 2), z1]], 4, [0.6, 1.7], 0));
-}
-
-function buildLake(group) {
-  group.add(makeLandmass({ color: 0x3d5a3a, radius: 80, z: 78, height: 2.6 }));
-  // margem do fundo da baía e laterais fechando a lagoa
-  for (let x = -260; x <= 260; x += 90) group.add(makeLandmass({ color: 0x3f5f34, radius: 60, x, z: -205, height: 2.2 }));
-  mataCiliar(group, [[-240, -160], [-80, -150], [80, -155], [240, -165]], 9, 0.6, 0.12, 0.2);
-  group.add(capim(1600, [[-240, -152], [240, -152]], 5, [0.7, 1.8]));
-  bancoLateral(group, -1, 40, -140);
-  bancoLateral(group, 1, 40, -140);
-  // camalotes de aguapé nas beiradas e no fundo, fora do caminho do arremesso
-  const longeDoArremesso = (x, z) => Math.abs(x) > 22 || z < -52 || z > -1;
-  group.add(aguapes(1300, [-58, 58, -145, -6], longeDoArremesso));
-  group.add(aguapes(70, [-14, 14, -5, 5], (x, z) => Math.abs(x) > 3.5));
-  // capim e taboa na beira de trás, dos dois lados do trapiche
-  group.add(capim(700, [[-40, 7], [-4, 6.5]], 3, [0.5, 1.5]));
-  group.add(capim(700, [[4, 6.5], [40, 7]], 3, [0.5, 1.5]));
-  const g1 = garca(); g1.position.set(-55, 0.1, -40); g1.rotation.y = 0.8; group.add(g1);
-  const g2 = garca(); g2.position.set(-50, 0.1, -46); g2.rotation.y = 2.2; group.add(g2);
-  const g3 = garca(false); g3.position.set(53, 0.1, -70); g3.rotation.y = -2.4; group.add(g3);
-  const t = tuiuiu(); t.position.set(56, 0.15, -32); t.rotation.y = -2.6; group.add(t);
-  const ip = ipe(9, 0xf2c12e); ip.position.set(-14, 0.7, 18); group.add(ip);
-  const pa = palmeira(9); pa.position.set(12, 0.7, 16); group.add(pa);
-  makeMountainRing(group, { color: 0x2c4242, count: 14 });
+/** Baía: só o trapiche de madeira. */
+function objetosDePerto_lake(group) {
   group.add(makeDock({ length: 13, width: 2.4, deckY: 0.62, startZ: 9 }));
-  return { playerSpot: new THREE.Vector3(0, 0.66, -2.6) };
 }
 
-function buildRiver(group) {
-  // rio de água clara: margem da frente perto, pedras e galhada
-  group.add(makeLandmass({ color: 0x49603c, radius: 95, z: 92, height: 3 }));
-  for (let x = -240; x <= 240; x += 80) group.add(makeLandmass({ color: 0x42583a, radius: 55, x, z: -128, height: 3.2 }));
-  mataCiliar(group, [[-240, -80], [-60, -76], [60, -78], [240, -82]], 6, 0.7, 0.1, 0.18);
-  mataCiliar(group, [[-240, -100], [240, -104]], 9, 1.0, 0.05, 0.1);
-  group.add(capim(1400, [[-240, -74], [240, -74]], 4, [0.6, 1.6]));
-  group.add(capim(900, [[-40, 7], [40, 7]], 3, [0.5, 1.4]));
+/** Rio de água clara: trapiche curto, pedras na água e na beira, galhada caída. */
+function objetosDePerto_river(group) {
+  group.add(makeDock({ length: 9, width: 2.1, deckY: 0.58, startZ: 8 }));
   const rockMat = std(0x7d7a72, { flatShading: true });
   for (const [x, z, s] of [
-    [-6, -6, 0.7], [9, -12, 0.9], [-13, -18, 1.1], [4, -24, 0.6], [16, -8, 0.8], [-22, -40, 1.4], [25, -55, 1.2], [-3, -68, 1.6],
+    [-6, -6, 0.7], [9, -12, 0.9], [-13, -18, 1.1], [4, -24, 0.6], [16, -8, 0.8], [-22, -40, 1.4], [25, -55, 1.2], [-3, -58, 1.6],
     [-3, 8.5, 0.6], [6, 9, 0.8], [-9, 10, 0.7],
   ]) {
     const r = makeRock(rockMat, s);
@@ -200,51 +85,164 @@ function buildRiver(group) {
     group.add(r);
   }
   // galho caído na água (galhada), onde a piraputanga se esconde
-  const galho = mesh(new THREE.CylinderGeometry(0.18, 0.3, 14, 7), std(0x4a3a2a), { x: -18, y: 0.1, z: -66, rz: Math.PI / 2 - 0.15, ry: 0.5, shadow: true });
-  group.add(galho);
-  const g1 = garca(); g1.position.set(30, 0.1, -72); g1.rotation.y = -2; group.add(g1);
-  makeMountainRing(group, { color: 0x35504a, count: 12, hMin: 110, hMax: 260 });
-  group.add(makeDock({ length: 9, width: 2.1, deckY: 0.58, startZ: 8 }));
-  return { playerSpot: new THREE.Vector3(0, 0.62, -0.8) };
+  group.add(mesh(new THREE.CylinderGeometry(0.18, 0.3, 14, 7), std(0x4a3a2a), { x: -18, y: 0.1, z: -57, rz: Math.PI / 2 - 0.15, ry: 0.5, shadow: true }));
 }
 
-function buildPier(group) {
-  // barranco de terra no Rio Paraguai: rio largo e barrento, camalotes descendo, outra margem lá longe
-  group.add(barranco(160, 3.2, 7));
-  const r = ranchinho(); r.position.set(-7, 3.2, 16); group.add(r);
-  const deckY = 1.05;
+/** Barranco: trapiche alto com guarda-corpo e o ranchinho em cima do barranco. */
+function objetosDePerto_pier(group, deckY) {
+  const r = ranchinho();
+  r.position.set(-7, 3.2, 16);
+  group.add(r);
   group.add(makeDock({ length: 14, width: 2.6, deckY, startZ: 8 }));
   const railMat = std(WOOD_DARK);
   for (const sx of [-1, 1]) {
     group.add(mesh(new THREE.BoxGeometry(0.07, 0.07, 12), railMat, { x: sx * 1.22, y: deckY + 0.95, z: 2, shadow: true }));
     for (let i = 0; i < 5; i++) group.add(mesh(new THREE.BoxGeometry(0.06, 0.95, 0.06), railMat, { x: sx * 1.22, y: deckY + 0.48, z: 7.5 - i * 3 }));
   }
-  group.add(capim(1200, [[-80, 9], [-3, 9]], 4, [0.6, 1.8], 3.1));
-  group.add(capim(1200, [[3, 9], [80, 9]], 4, [0.6, 1.8], 3.1));
-  mataCiliar(group, [[-80, 26], [80, 26]], 8, 3.2, 0.1, 0.25);
-  for (let x = -480; x <= 480; x += 110) group.add(makeLandmass({ color: 0x3f5a34, radius: 75, x, z: -360, height: 2.4 }));
-  mataCiliar(group, [[-420, -300], [420, -300]], 12, 0.6, 0.08, 0.2);
-  group.add(aguapes(700, [-160, 160, -260, -50], (x, z) => Math.abs(x) > 18 || z < -60));
-  const t = tuiuiu(); t.position.set(-20, 3.2, 10); t.rotation.y = 0.4; group.add(t);
-  makeMountainRing(group, { color: 0x3a4a55, count: 6, arcStart: Math.PI * 0.65, arcEnd: Math.PI * 1.35, rMin: 750, rMax: 1000 });
-  return { playerSpot: new THREE.Vector3(0, deckY + 0.04, -4.5) };
 }
 
-function buildOcean(group) {
-  // canal do Rio Paraguai, de voadeira, com as duas margens de mata
-  const deckY = 0.95;
+/** Canal: a voadeira e a lanterna da pesca noturna. */
+function objetosDePerto_ocean(group, deckY) {
   group.add(voadeira(deckY));
-  // lanterna para a pesca noturna
   group.add(mesh(new THREE.CylinderGeometry(0.035, 0.035, 1.6, 6), std(0x2c333d), { x: 1.05, y: deckY + 0.85, z: 2.2 }));
   group.add(mesh(new THREE.SphereGeometry(0.12, 8, 8), new THREE.MeshStandardMaterial({
     color: 0xffd98a, emissive: 0xffb84d, emissiveIntensity: 0.9, roughness: 0.4,
   }), { x: 1.05, y: deckY + 1.68, z: 2.2 }));
-  bancoLateral(group, -1, 120, -420, 95);
-  bancoLateral(group, 1, 120, -420, 95);
-  for (let x = -300; x <= 300; x += 100) group.add(makeLandmass({ color: 0x3a5532, radius: 70, x, z: -560, height: 2.2 }));
-  mataCiliar(group, [[-300, -500], [300, -500]], 12, 0.6);
-  group.add(aguapes(500, [-92, -60, -400, 60]));
-  group.add(aguapes(500, [60, 92, -400, 60]));
+}
+
+// ---------- utilidades de composição ----------
+
+/** Linha de margem ondulada entre dois pontos, com recortes naturais (enseadas e pontas). */
+function margemReta(x0, z0, x1, z1, passo = 12, amp = 4, fase = Math.random() * 10) {
+  const n = Math.max(2, Math.round(Math.hypot(x1 - x0, z1 - z0) / passo));
+  const nx = -(z1 - z0), nz = x1 - x0, l = Math.hypot(nx, nz);
+  const pts = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n;
+    const o = (Math.sin(t * 9 + fase) * 0.6 + Math.sin(t * 23 + fase * 2) * 0.3 + Math.sin(t * 51) * 0.1) * amp;
+    pts.push([x0 + (x1 - x0) * t + (nx / l) * o, z0 + (z1 - z0) * t + (nz / l) * o]);
+  }
+  return pts;
+}
+
+function aves(group, lista) {
+  for (const [tipo, x, y, z, ry] of lista) {
+    const a = tipo === "tuiuiu" ? tuiuiu() : garca(tipo !== "garca_moura");
+    a.position.set(x, y, z);
+    a.rotation.y = ry;
+    group.add(a);
+  }
+}
+
+const qualidade = () => S.settings?.quality ?? "high";
+
+// ---------- pesqueiros ----------
+
+function buildLake(group) {
+  // Baía Pantaneira: lagoa fechada de mata, camalotes de aguapé nas beiradas
+  const veg = new Vegetacao(qualidade());
+  const centro = [0, -46];
+  const pts = [];
+  for (let i = 0; i <= 72; i++) {
+    const a = (i / 72) * Math.PI * 2;
+    const r = 1 + Math.sin(a * 3 + 1) * 0.08 + Math.sin(a * 7 + 2) * 0.04;
+    pts.push([centro[0] + Math.sin(a) * 74 * r, centro[1] + Math.cos(a) * 58 * r]);
+  }
+  const trapiche = (x, z) => !(Math.abs(x) < 3.5 && z > -6);
+  group.add(chaoMargem(pts, centro, { profundidade: 70, altura: 1.0 }));
+  mataCiliar(veg, pts, centro, { profundidade: 50, chanceIpe: 0.06, chancePalmeira: 0.1, aguape: 0.5, livre: trapiche });
+  // camalotes pelas beiradas e no fundo, longe da faixa de arremesso
+  const longeDoArremesso = (x, z) => {
+    const dx = (x - centro[0]) / 70, dz = (z - centro[1]) / 54;
+    return dx * dx + dz * dz < 1 && (Math.abs(x) > 16 || z < -62) && trapiche(x, z) && !(Math.abs(x) < 9 && z > -4);
+  };
+  camalotes(veg, 1100, [-75, 75, -115, 8], longeDoArremesso);
+  camalotes(veg, 60, [-14, 14, -3, 8], (x, z) => Math.abs(x) > 4.5);
+  mataDistante(veg, { rMin: 260, rMax: 620, n: 650 });
+  // ipê amarelo e carandá logo atrás do pescador
+  veg.add("ipe_amarelo", -14, 0.75, 18, { altura: 11, cor: [1, 1, 1] });
+  veg.add("caranda", 12, 0.75, 16, { altura: 11 });
+  veg.build(group);
+  aves(group, [
+    ["garca", -60, 0.1, -40, 0.8], ["garca", -55, 0.1, -47, 2.2], ["garca_moura", 58, 0.1, -72, -2.4], ["tuiuiu", 60, 0.15, -30, -2.6],
+  ]);
+  objetosDePerto_lake(group);
+  return { playerSpot: new THREE.Vector3(0, 0.66, -2.6) };
+}
+
+function buildRiver(group) {
+  // Rio de Água Clara: margem da frente perto, pedras e galhada
+  const veg = new Vegetacao(qualidade());
+  const frente = margemReta(-320, -62, 320, -66, 10, 5);
+  const daqui = margemReta(-320, 7.5, 320, 7.5, 10, 2.5);
+  const trapiche = (x, z) => !(Math.abs(x) < 3.2 && z < 12);
+  group.add(chaoMargem(frente, -1, { profundidade: 80, altura: 1.6 }));
+  group.add(chaoMargem(daqui, 1, { profundidade: 70, altura: 0.9 }));
+  mataCiliar(veg, frente, -1, { profundidade: 55, altura: 1.6, chanceIpe: 0.06, chancePalmeira: 0.08, aguape: 0.08, taboa: 0.04 });
+  mataCiliar(veg, daqui, 1, { profundidade: 45, altura: 0.9, aguape: 0.05, taboa: 0.06, livre: trapiche });
+  mataDistante(veg, { rMin: 300, rMax: 640, n: 600 });
+  veg.build(group);
+  aves(group, [["garca", 30, alturaMargem(-1, 1.6) + 0.1, -63, -2]]);
+  objetosDePerto_river(group);
+  return { playerSpot: new THREE.Vector3(0, 0.62, -0.8) };
+}
+
+function buildPier(group) {
+  // Barranco do Rio Paraguai: barranco de terra vermelha atrás, rio largo e barrento, outra margem lá longe
+  const veg = new Vegetacao(qualidade());
+  const altB = 3.2, deckY = 1.05;
+  group.add(barranco(170, altB, 7));
+  // em cima do barranco: capim na beirada, arbustos e mata atrás
+  for (let i = 0; i < veg.n(1400); i++) {
+    const x = randRange(-85, 85), z = randRange(7.6, 14);
+    if (Math.abs(x) < 2 && z < 10) continue;
+    veg.add(Math.random() < 0.5 ? "capim_alto" : "grama", x, altB, z, { altura: randRange(0.6, 1.6) });
+  }
+  for (let i = 0; i < veg.n(120); i++) {
+    const x = randRange(-85, 85), z = randRange(11, 24);
+    if (Math.abs(x + 7) < 4 && Math.abs(z - 16) < 4) continue; // ranchinho
+    veg.add(Math.random() < 0.6 ? "arbusto" : "pachira", x, altB, z, { altura: randRange(1.5, 3.4) });
+  }
+  const fundo = margemReta(85, 22, -85, 22, 10, 3);
+  mataCiliar(veg, fundo, -1, { profundidade: 40, altura: altB, aguape: 0, taboa: 0, capimAlto: 0.4, chanceIpe: 0.1, chancePalmeira: 0.14 });
+  // capim e taboa no pé do barranco, dentro d'água, dos dois lados do trapiche
+  for (let i = 0; i < veg.n(260); i++) {
+    const x = randRange(-80, 80), z = randRange(4.5, 6.5);
+    if (Math.abs(x) < 3.5) continue;
+    veg.add(Math.random() < 0.75 ? "capim_alto" : "taboa", x, -0.1, z, { altura: randRange(1.0, 2.2) });
+  }
+  // outra margem, lá longe
+  const longe = margemReta(-700, -320, 700, -310, 14, 10);
+  group.add(chaoMargem(longe, -1, { profundidade: 120, altura: 1.4 }));
+  mataCiliar(veg, longe, -1, { profundidade: 90, altura: 1.4, densidade: 0.7, chanceIpe: 0.05, chancePalmeira: 0.08, alturaArvore: [15, 26], aguape: 0.1 });
+  // camalotes descendo o rio
+  camalotes(veg, 650, [-170, 170, -280, -40], (x, z) => Math.abs(x) > 18 || z < -70);
+  mataDistante(veg, { rMin: 420, rMax: 760, n: 550, livre: (x, z) => z < -400 || z > 40 });
+  veg.build(group);
+  aves(group, [["tuiuiu", -20, altB, 10, 0.4]]);
+  objetosDePerto_pier(group, deckY);
+  return { playerSpot: new THREE.Vector3(0, deckY + 0.04, -4.5) };
+}
+
+function buildOcean(group) {
+  // Canal Fundo, de voadeira: as duas margens de mata seguindo o canal
+  const veg = new Vegetacao(qualidade());
+  const deckY = 0.95;
+  const esq = margemReta(-92, 160, -98, -640, 12, 6);
+  const dir = margemReta(95, 160, 92, -640, 12, 6);
+  const fim = margemReta(-110, -640, 110, -650, 12, 6);
+  group.add(chaoMargem(esq, -1, { profundidade: 90, altura: 1.2 }));
+  group.add(chaoMargem(dir, 1, { profundidade: 90, altura: 1.2 }));
+  group.add(chaoMargem(fim, -1, { profundidade: 90, altura: 1.2 }));
+  mataCiliar(veg, esq, -1, { profundidade: 55, chanceIpe: 0.06, chancePalmeira: 0.1, aguape: 0.5 });
+  mataCiliar(veg, dir, 1, { profundidade: 55, chanceIpe: 0.06, chancePalmeira: 0.1, aguape: 0.5 });
+  mataCiliar(veg, fim, -1, { profundidade: 60, densidade: 0.7, aguape: 0.2 });
+  camalotes(veg, 300, [-88, -62, -420, 80]);
+  camalotes(veg, 300, [62, 88, -420, 80]);
+  mataDistante(veg, { rMin: 320, rMax: 700, n: 600, livre: (x, z) => Math.abs(x) > 170 || z < -720 });
+  veg.build(group);
+  aves(group, [["garca", -90, 0.1, -60, 1.2], ["tuiuiu", 91, 0.15, -140, -1.8]]);
+  objetosDePerto_ocean(group, deckY);
   return { playerSpot: new THREE.Vector3(0, deckY + 0.04, -1.7) };
 }
 
@@ -264,6 +262,7 @@ export class EnvironmentManager {
       this.group = null;
     }
     const group = new THREE.Group();
+    group.name = `cenario_${location.env}`;
     const builder = BUILDERS[location.env] || buildLake;
     const info = builder(group);
     this.scene.add(group);
