@@ -52,6 +52,8 @@ const FRAG = /* glsl */ `
   uniform vec3 uChao;
   uniform vec3 uReserva;     // cor lisa enquanto a primeira foto não carregou
   uniform float uPesoReserva;
+  uniform vec3 uLuaDir;
+  uniform float uLua;        // 0 some, 1 lua cheia no céu da noite
   varying vec3 vMundo;
   #define PI 3.141592653589793
 
@@ -72,6 +74,14 @@ const FRAG = /* glsl */ `
     if (uPeso[1] > 0.001) c += amostra(tCeu[1], d, uGiro[1]) * uPeso[1] * uGanho[1];
     if (uPeso[2] > 0.001) c += amostra(tCeu[2], d, uGiro[2]) * uPeso[2] * uGanho[2];
     if (uPeso[3] > 0.001) c += amostra(tCeu[3], d, uGiro[3]) * uPeso[3] * uGanho[3];
+
+    // lua: disco claro com borda suave e um halo fraco (o bloom faz o resto)
+    if (uLua > 0.001) {
+      float m = dot(d, uLuaDir);
+      float disco = smoothstep(0.99985, 0.99992, m);
+      float halo = pow(max(m, 0.0), 900.0) * 0.06 + pow(max(m, 0.0), 60.0) * 0.012;
+      c = mix(c, vec3(1.6, 1.65, 1.75), disco * uLua) + vec3(0.55, 0.65, 0.85) * halo * uLua;
+    }
 
     // tempo fechado: tira a cor, achata o contraste e escurece um pouco
     float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
@@ -120,6 +130,8 @@ export class SkySystem {
       uChao: { value: new THREE.Color(0.05, 0.06, 0.04) },
       uReserva: { value: new THREE.Color(0.35, 0.5, 0.8) },
       uPesoReserva: { value: 1 },
+      uLuaDir: { value: new THREE.Vector3(0, 1, 0) },
+      uLua: { value: 0 },
     };
     const mat = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
@@ -158,6 +170,7 @@ export class SkySystem {
     this._pesos = [1, 0, 0, 0];
     this._neb = new THREE.Color();
     this._tmp = new THREE.Color();
+    this._corAgua = new THREE.Color();
     this._cinza = new THREE.Color();
     this._hemiSkyDay = new THREE.Color(0xbcd9ff);
     this._hemiSkyNight = new THREE.Color(0x24345a);
@@ -336,12 +349,20 @@ export class SkySystem {
     // olho adaptado: de noite a exposição sobe para ainda se enxergar a água e a mata
     this.renderer.toneMappingExposure = lerp(1.25, 0.62, f) * (1 + cloud * 0.12);
 
+    // lua no céu (do lado oposto do sol), some com o tempo fechado
+    u.uLuaDir.value.copy(this.sunDir).multiplyScalar(-1);
+    u.uLuaDir.value.y = Math.abs(u.uLuaDir.value.y) * 0.7 + 0.25;
+    u.uLuaDir.value.normalize();
+    u.uLua.value = p[3] * (1 - cloud * 0.9);
+
     this.atualizarEnv(p, cloud);
 
-    // a água acompanha a fonte de luz ativa
+    // a água acompanha a fonte de luz ativa; o shader dela usa a cor como intensidade absoluta,
+    // então a lua entra bem mais fraca que o sol (senão a água acende de noite)
+    this._corAgua.copy(this.sunColor).multiplyScalar(isDay ? lerp(0.35, 1, f) * (1 - cloud * 0.5) : 0.12);
     this.water.setSun(
       isDay ? this.sunDir : this.sunLight.position.clone().normalize(),
-      this.sunColor
+      this._corAgua
     );
   }
 
