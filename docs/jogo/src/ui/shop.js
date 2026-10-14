@@ -41,7 +41,7 @@ export class ShopUI {
   }
 
   render() {
-    this.moneyEl.textContent = formatMoney(S.profile.money);
+    this.moneyEl.textContent = economy.modoDono() ? "R$ ∞" : formatMoney(S.profile.money);
     this.renderTabs();
     if (this.tab === "sell") this.renderSell();
     else this.renderGear(this.tab);
@@ -77,8 +77,8 @@ export class ShopUI {
       const owned = S.gear.owned[catKey].includes(idx);
       const daMochila = (S.gear.daMochila?.[catKey] || []).includes(idx);
       const equipped = equippedIdx === idx;
-      const levelOk = S.profile.level >= item.level;
-      const afford = S.profile.money >= item.price;
+      const levelOk = economy.nivelOk(item.level);
+      const afford = economy.dinheiroOk(item.price);
 
       const row = document.createElement("div");
       row.className = `shop-item${equipped ? " equipped" : ""}${!owned && !levelOk ? " locked" : ""}`;

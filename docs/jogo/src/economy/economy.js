@@ -9,6 +9,19 @@ import { LOCATIONS } from "../data/locationData.js";
 import { saveGame } from "../state/saveLoad.js";
 import { maxCast } from "../gameplay/rules.js";
 
+/** Modo dono: na conta de administrador da Caderneta, dinheiro ilimitado, sem trava de nível e pesqueiros abertos. */
+export function modoDono() {
+  try {
+    const C = window.parent && window.parent !== window ? window.parent.Conta : null;
+    return !!(C && C.admin && C.admin());
+  } catch {
+    return false;
+  }
+}
+const nivelOk = (lvl) => modoDono() || S.profile.level >= lvl;
+const dinheiroOk = (v) => modoDono() || S.profile.money >= v;
+export { nivelOk, dinheiroOk };
+
 export const xpToNext = (level) => Math.round(CONFIG.economy.xpBase * Math.pow(level, CONFIG.economy.xpPow));
 
 export function getEquipped() {
@@ -148,9 +161,9 @@ export function buyGear(catKey, index) {
   const item = GEAR[catKey]?.[index];
   if (!item) return { ok: false, reason: "Item desconhecido" };
   if (S.gear.owned[catKey].includes(index)) return { ok: false, reason: "Você já tem" };
-  if (S.profile.level < item.level) return { ok: false, reason: `Precisa do nível ${item.level}` };
-  if (S.profile.money < item.price) return { ok: false, reason: "Dinheiro insuficiente" };
-  S.profile.money -= item.price;
+  if (!nivelOk(item.level)) return { ok: false, reason: `Precisa do nível ${item.level}` };
+  if (!dinheiroOk(item.price)) return { ok: false, reason: "Dinheiro insuficiente" };
+  if (!modoDono()) S.profile.money -= item.price;
   S.gear.owned[catKey].push(index);
   S.gear.equipped[catKey] = index; // auto-equip new purchases
   emitMoney(-item.price);
@@ -169,15 +182,15 @@ export function equipGear(catKey, index) {
 
 export function canUnlockLocation(loc) {
   if (S.world.unlocked.includes(loc.id)) return { ok: false, reason: "Já liberado" };
-  if (S.profile.level < loc.unlock.level) return { ok: false, reason: `Precisa do nível ${loc.unlock.level}` };
-  if (S.profile.money < loc.unlock.cost) return { ok: false, reason: "Dinheiro insuficiente" };
+  if (!nivelOk(loc.unlock.level)) return { ok: false, reason: `Precisa do nível ${loc.unlock.level}` };
+  if (!dinheiroOk(loc.unlock.cost)) return { ok: false, reason: "Dinheiro insuficiente" };
   return { ok: true };
 }
 
 export function unlockLocation(loc) {
   const check = canUnlockLocation(loc);
   if (!check.ok) return check;
-  S.profile.money -= loc.unlock.cost;
+  if (!modoDono()) S.profile.money -= loc.unlock.cost;
   S.world.unlocked.push(loc.id);
   emitMoney(-loc.unlock.cost);
   events.emit("toast", { msg: `${loc.name} liberado!`, kind: "gold" });

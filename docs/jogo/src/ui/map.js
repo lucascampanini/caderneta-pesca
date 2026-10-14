@@ -65,8 +65,8 @@ export class MapUI {
         });
         body.appendChild(btn);
       } else {
-        const lvlOk = S.profile.level >= loc.unlock.level;
-        const costOk = S.profile.money >= loc.unlock.cost;
+        const lvlOk = economy.nivelOk(loc.unlock.level);
+        const costOk = economy.dinheiroOk(loc.unlock.cost);
         req.innerHTML = `Liberar: <span class="${lvlOk ? "ok" : "bad"}">Level ${loc.unlock.level}</span> + <span class="${costOk ? "ok" : "bad"}">${formatMoney(loc.unlock.cost)}</span>`;
         const btn = document.createElement("button");
         btn.className = "btn btn-buy";

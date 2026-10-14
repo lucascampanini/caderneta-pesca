@@ -2,7 +2,7 @@
 // indicator, zone hint, toasts. Mostly event-driven off the shared bus.
 
 import { S, events, Phase } from "../state/gameState.js";
-import { xpToNext, getEquipped, inventoryValue } from "../economy/economy.js";
+import { xpToNext, getEquipped, inventoryValue, modoDono } from "../economy/economy.js";
 import { bomPara, compat } from "../gameplay/rules.js";
 import { hookTxt } from "../data/gearData.js";
 import { LOCATION_BY_ID } from "../data/locationData.js";
@@ -105,7 +105,7 @@ export class HUD {
   }
 
   updateMoney() {
-    this.money.textContent = formatMoney(S.profile.money);
+    this.money.textContent = modoDono() ? "R$ ∞ (dono)" : formatMoney(S.profile.money);
   }
 
   updateXp() {

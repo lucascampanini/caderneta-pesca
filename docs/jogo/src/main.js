@@ -2,7 +2,7 @@
 
 import * as THREE from "three";
 import { CONFIG } from "./data/config.js";
-import { LOCATION_BY_ID } from "./data/locationData.js";
+import { LOCATION_BY_ID, LOCATIONS } from "./data/locationData.js";
 import { S, events, machine, Phase, isGameplayPhase } from "./state/gameState.js";
 import { loadGame, saveGame, resetSave, syncFromCloud, mochilaDoSite } from "./state/saveLoad.js";
 import { aplicarMochila } from "./state/mochila.js";
@@ -40,6 +40,8 @@ await syncFromCloud();
 loadGame();
 // equipamento cadastrado na "Minha mochila" do site já vem liberado no jogo
 const daMochila = aplicarMochila(mochilaDoSite);
+// conta de administrador: todos os pesqueiros abertos (dinheiro e nível já são livres em economy.modoDono)
+if (economy.modoDono()) for (const l of LOCATIONS) if (!S.world.unlocked.includes(l.id)) S.world.unlocked.push(l.id);
 
 const container = document.getElementById("canvas-wrap");
 const core = createCore(container);
