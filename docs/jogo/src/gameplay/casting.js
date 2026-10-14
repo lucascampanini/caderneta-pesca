@@ -336,9 +336,10 @@ export class CastingSystem {
           tmp.set(r, g, b).lerp(COR_AGUA, f);
           r = tmp.x; g = tmp.y; b = tmp.z;
         }
-        col.array[d] = r;
-        col.array[d + 1] = g;
-        col.array[d + 2] = b;
+        const luz = this.luz ?? 1;
+        col.array[d] = r * luz;
+        col.array[d + 1] = g * luz;
+        col.array[d + 2] = b * luz;
       }
     }
     pos.needsUpdate = true;
@@ -489,6 +490,7 @@ export class CastingSystem {
     this.luzT = 0.5;
     if (!this.hemi) this.scene.traverse((o) => { if (o.isHemisphereLight && !this.hemi) this.hemi = o; });
     const k = this.hemi ? clamp(this.hemi.intensity / 0.7, 0.12, 1.1) : 1;
+    this.luz = clamp(k, 0.22, 1); // a linha (sem iluminação própria) escurece de noite
     ajustarAmbienteEquipamento(k, this.scene.environment);
   }
 

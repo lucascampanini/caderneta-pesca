@@ -363,6 +363,14 @@ export class Effects {
     }
     pos.needsUpdate = true;
     const night = segment === "night";
+    // marolas, espirros e gotas não têm luz própria: escurecem com a noite
+    const luz = night ? 0.3 : segment === "dusk" ? 0.6 : 1;
+    if (luz !== this.luzAgua) {
+      this.luzAgua = luz;
+      for (const r of this.ripples) r.mat.color.setHex(0xcfeaf5).multiplyScalar(luz);
+      for (const s of this.splashes) s.mat.color.setHex(0xdcf2ff).multiplyScalar(luz);
+      this.gotas.mat.color.setScalar(luz);
+    }
     this.motes.material.color.setHex(night ? 0xbdf2a6 : 0xfff7d9);
     this.motes.material.opacity = night ? 0.5 : 0.3;
     this.motes.position.x = camera.position.x;
