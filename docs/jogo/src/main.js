@@ -187,6 +187,7 @@ machine.register(Phase.IDLE, {
     bobber.hide();
     casting.setBend(0);
     casting.setLineTension(0);
+    casting.setReelMotion(0, 0);
     rig.setMode("play");
     rig.setFocus(null);
     hud.show();
@@ -232,6 +233,8 @@ machine.register(Phase.REELING, {
     rig.setFocus(null);
     casting.setBend(0);
     casting.setLineTension(0);
+    casting.setReelMotion(0, 0);
+    audio.fightStop();
     hud.showReel(false);
   },
 });
@@ -276,6 +279,10 @@ machine.register(Phase.MAP, {
 // gameplay event wiring
 // ---------------------------------------------------------------------------
 
+// vibração no celular (ignorada onde não existe)
+const vibrar = (p) => { try { navigator.vibrate?.(p); } catch { /* sem vibração */ } };
+let ultimaArrancada = "calm";
+
 const lastBobberPos = new THREE.Vector3();
 let lastAv = null;
 
@@ -298,6 +305,7 @@ events.on("bite:nibble", () => {
 events.on("bite:start", () => {
   lastBobberPos.copy(bobber.pos);
   audio.play("bite");
+  vibrar(40);
   hud.shake();
   rig.addShake(0.3);
   effects.splash(bobber.pos, 0.7);
@@ -319,19 +327,41 @@ events.on("bite:stolen", ({ reason }) => {
 
 events.on("bite:hooked", ({ fish }) => {
   lastBobberPos.copy(bobber.pos);
+  casting.hookset();
+  vibrar(60);
   machine.set(Phase.REELING, { fish });
 });
 
 events.on("fight:update", (data) => {
   hud.updateFight(data);
+  if (data.landing) return;
   casting.setLineTension(data.tension / 100);
-  casting.setBend(0.25 + (data.tension / 100) * 0.75);
-  if (data.surge === "active") rig.addShake(0.018);
+  // quanto a vara enverga depende da tensão e do peso do peixe frente à libragem da vara
+  const eq = economy.getEquipped();
+  const peso = fight.fish ? fight.fish.weightKg : 1;
+  const carga = Math.min(1.35, Math.max(0.45, 0.45 + (peso * 2.2) / (eq.rod.lb[1] * 0.5)));
+  casting.setBend((0.18 + (data.tension / 100) * 0.9) * carga + data.saindo * 0.15);
+  casting.setReelMotion(data.reeling ? eq.reel.speed : 0, data.saindo);
+  if (data.surge === "active") {
+    rig.addShake(0.018);
+    casting.tremor(0.5);
+    if (ultimaArrancada !== "active") vibrar([80, 40, 120]);
+  }
+  ultimaArrancada = data.surge;
+});
+
+events.on("fight:headshake", ({ forca }) => {
+  casting.tremor(forca);
+  audio.play("headshake", { forca });
+  vibrar(Math.round(12 + forca * 18));
+  effects.splash(fight.fishPoint, 0.35 + forca * 0.3);
 });
 
 events.on("fight:snap", () => {
   S.stats.snaps += 1;
+  audio.fightStop();
   audio.play("snap");
+  vibrar(220);
   hud.shake();
   rig.addShake(0.5);
   // explica o motivo: equipamento fraco para o peixe ou tensão demais
@@ -349,6 +379,7 @@ events.on("fight:escape", ({ fish, reason, gear }) => {
 
 events.on("fight:landed", ({ fish }) => {
   const result = economy.registerCatch(fish);
+  vibrar([30, 40, 30]);
   rig.addShake(0.25);
   machine.set(Phase.CATCH);
   catchCard.show(fish, result, () => machine.set(Phase.IDLE));
@@ -356,8 +387,10 @@ events.on("fight:landed", ({ fish }) => {
 
 events.on("gear", () => {
   casting.castMult = economy.getStats().castMult;
+  casting.setGear(economy.getEquipped());
 });
 casting.castMult = economy.getStats().castMult;
+casting.setGear(economy.getEquipped());
 
 // ---------------------------------------------------------------------------
 // input
@@ -626,10 +659,15 @@ function tick() {
       }
       case Phase.RETRIEVING:
         bobber.update(dt);
+        casting.setReelMotion(1, 0);
+        if (economy.getEquipped().reel.tipo !== "nenhum") audio.reelTick(dt, true, economy.getEquipped().reel.speed);
         break;
       case Phase.REELING:
         fight.update(dt);
-        audio.reelTick(dt, fight.reeling, economy.getStats().reelSpeed);
+        audio.reelTick(dt, fight.reeling && economy.getEquipped().reel.tipo !== "nenhum", economy.getStats().reelSpeed);
+        if (fight.active && fight.phase === "fight") {
+          audio.fightLoop(dt, { saindo: fight.saindo, reeling: fight.reeling, speed: economy.getEquipped().reel.speed, tension: fight.tension / 100, tipo: economy.getEquipped().reel.tipo });
+        } else audio.fightStop();
         if (fight.active && fight.phase === "fight") {
           casting.aimAtPoint(fight.fishPoint);
         }
@@ -669,4 +707,4 @@ requestAnimationFrame(() => {
 });
 
 // small debug handle (used by automated smoke tests; harmless in production)
-window.TIDELINE = { S, machine, version: 2, economy, tutorial, travelTo, gclock, sky, renderer, scene };
+window.TIDELINE = { S, machine, version: 2, economy, tutorial, travelTo, gclock, sky, renderer, scene, casting, rig };

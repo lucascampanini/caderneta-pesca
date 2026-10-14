@@ -6,10 +6,14 @@ import { FISH_SPECIES, RARITIES } from "../data/fishData.js";
 import { LOCATIONS } from "../data/locationData.js";
 import { hookTxt } from "../data/gearData.js";
 import { formatMoney } from "../utils/utils.js";
+import { GEAR, GEAR_CATS, gearStatLines } from "../data/gearData.js";
+import { indicadoPara } from "../gameplay/rules.js";
+import { fotoItem } from "./vitrine.js";
 
 const ABAS = [
   ["controles", "Como jogar"],
   ["equip", "Montar o conjunto"],
+  ["equipamentos", "Equipamentos"],
   ["peixes", "Peixes e iscas"],
   ["lugares", "Pesqueiros"],
 ];
@@ -43,6 +47,18 @@ function equip() {
   </div>`;
 }
 
+function equipamentos() {
+  return `<p class="guia-intro">Todos os equipamentos do jogo, com especificação e os peixes em que cada um é o indicado pela Caderneta.</p>
+  ${GEAR_CATS.map((c) => `<h3 class="guia-h3">${c.label}</h3><div class="guia-equip">${GEAR[c.key].map((it) => {
+    const ind = indicadoPara(c.key, it);
+    return `<div class="guia-item"><img class="shop-thumb-${c.key}" src="${fotoItem(c.key, it)}" alt="">
+      <div><div class="gi-nome">${it.name}</div>
+      <div class="gp-l">${gearStatLines(c.key, it).join(" · ")} · ${it.price ? `${formatMoney(it.price)} · nível ${it.level}` : "inicial"}</div>
+      <div class="gp-l">${it.blurb}</div>
+      ${ind.length ? `<div class="gp-l gi-ind"><b>Indicado para:</b> ${ind.join(", ")}</div>` : ""}</div></div>`;
+  }).join("")}</div>`).join("")}`;
+}
+
 function peixes() {
   const ordem = [...FISH_SPECIES].sort((a, b) => RARITIES[a.rarity].order - RARITIES[b.rarity].order || a.name.localeCompare(b.name));
   const lugares = (sp) => LOCATIONS.filter((l) => l.fishTable.some(([id]) => id === sp.id)).map((l) => l.name.replace(/ \(.*\)/, "")).join(", ");
@@ -68,6 +84,6 @@ function lugares() {
 export function renderGuia(tabsEl, contentEl, aba, onAba) {
   tabsEl.innerHTML = ABAS.map(([k, t]) => `<button class="tab-btn${k === aba ? " active" : ""}" data-aba="${k}">${t}</button>`).join("");
   tabsEl.onclick = (e) => { const b = e.target.closest("[data-aba]"); if (b) onAba(b.dataset.aba); };
-  contentEl.innerHTML = { controles, equip, peixes, lugares }[aba]();
+  contentEl.innerHTML = { controles, equip, equipamentos, peixes, lugares }[aba]();
   contentEl.scrollTop = 0;
 }

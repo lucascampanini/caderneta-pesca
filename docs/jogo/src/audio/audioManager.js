@@ -149,6 +149,10 @@ class AudioManager {
         this.noise({ dur: 0.12, peak: 0.4, filterType: "highpass", freq: 1800, attack: 0.002 });
         this.tone({ type: "sawtooth", freq: 320, freqEnd: 55, dur: 0.4, peak: 0.18 });
         break;
+      case "headshake":
+        this.tone({ type: "sine", freq: 95, freqEnd: 60, dur: 0.09, peak: 0.12 * (opts.forca ?? 1) });
+        this.noise({ dur: 0.08, peak: 0.05 * (opts.forca ?? 1), filterType: "lowpass", freq: 700, attack: 0.003 });
+        break;
       case "escape":
         this.tone({ type: "sine", freq: 420, freqEnd: 210, dur: 0.35, peak: 0.12 });
         break;
@@ -181,6 +185,70 @@ class AudioManager {
       default:
         break;
     }
+  }
+
+  // ----- briga: som contínuo de freio, catraca, engrenagem e linha esticada -----
+
+  /** Nós persistentes da briga (criados na primeira chamada). */
+  ensureFightNodes() {
+    if (this.fight || !this.ctx) return;
+    try {
+      const mk = (type, freq, Q) => { const f = this.ctx.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = Q; return f; };
+      // zumbido do freio patinando (linha saindo): ruído em banda estreita
+      const buzzSrc = this.ctx.createBufferSource(); buzzSrc.buffer = this.noiseBuffer; buzzSrc.loop = true;
+      const buzzF = mk("bandpass", 2600, 4); const buzzG = this.ctx.createGain(); buzzG.gain.value = 0;
+      buzzSrc.connect(buzzF).connect(buzzG).connect(this.master); buzzSrc.start();
+      // ronco da engrenagem ao recolher
+      const gearSrc = this.ctx.createBufferSource(); gearSrc.buffer = this.noiseBuffer; gearSrc.loop = true; gearSrc.playbackRate.value = 0.6;
+      const gearF = mk("lowpass", 380, 1.2); const gearG = this.ctx.createGain(); gearG.gain.value = 0;
+      gearSrc.connect(gearF).connect(gearG).connect(this.master); gearSrc.start();
+      // linha rangendo sob tensão alta
+      const creak = this.ctx.createOscillator(); creak.type = "triangle"; creak.frequency.value = 2400;
+      const vib = this.ctx.createOscillator(); vib.frequency.value = 11; const vibG = this.ctx.createGain(); vibG.gain.value = 90;
+      vib.connect(vibG).connect(creak.frequency);
+      const creakG = this.ctx.createGain(); creakG.gain.value = 0;
+      creak.connect(creakG).connect(this.master); creak.start(); vib.start();
+      this.fight = { buzzG, buzzF, gearG, creakG, creak, nodes: [buzzSrc, gearSrc, creak, vib], clickAcc: 0 };
+    } catch {
+      this.fight = null;
+    }
+  }
+
+  /**
+   * Chamado a cada quadro durante a briga.
+   * saindo: 0-1 linha saindo (freio); reeling: recolhendo; speed: velocidade do molinete; tension: 0-1; tipo: "molinete" | "carretilha" | "nenhum"
+   */
+  fightLoop(dt, { saindo = 0, reeling = false, speed = 1, tension = 0, tipo = "molinete" }) {
+    if (!this.ctx) return;
+    this.ensureFightNodes();
+    const F = this.fight;
+    if (!F) return;
+    const t = this.ctx.currentTime;
+    const semFreio = tipo === "nenhum";
+    // freio: zumbido + cliques rápidos da catraca do drag ("tomando linha")
+    F.buzzG.gain.setTargetAtTime(semFreio ? 0 : saindo * 0.07, t, 0.03);
+    F.buzzF.frequency.setTargetAtTime(tipo === "carretilha" ? 1900 + saindo * 900 : 2600 + saindo * 1400, t, 0.05);
+    if (!semFreio && saindo > 0.05) {
+      F.clickAcc += dt * (18 + saindo * 85);
+      while (F.clickAcc >= 1) {
+        F.clickAcc -= 1;
+        this.noise({ dur: 0.012, peak: 0.05 + saindo * 0.07, filterType: "bandpass", freq: tipo === "carretilha" ? 2100 : 3300, Q: 5, attack: 0.001 });
+      }
+    } else F.clickAcc = 0;
+    // engrenagem ao recolher
+    F.gearG.gain.setTargetAtTime(reeling && !semFreio ? 0.045 * speed : 0, t, 0.05);
+    // linha esticada demais começa a cantar
+    const canta = clamp((tension - 0.68) / 0.32, 0, 1);
+    F.creakG.gain.setTargetAtTime(canta * canta * 0.045, t, 0.05);
+    F.creak.frequency.setTargetAtTime(2100 + tension * 900, t, 0.08);
+  }
+
+  /** Silencia os sons contínuos da briga. */
+  fightStop() {
+    if (!this.fight || !this.ctx) return;
+    const t = this.ctx.currentTime;
+    for (const g of [this.fight.buzzG, this.fight.gearG, this.fight.creakG]) g.gain.setTargetAtTime(0, t, 0.04);
+    this.fight.clickAcc = 0;
   }
 
   /** Ratchet clicks while reeling; called every frame with held state. */

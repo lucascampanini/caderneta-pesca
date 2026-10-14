@@ -640,3 +640,17 @@ kbd {
 .jc-sombra { filter: brightness(0) opacity(0.35); }
 .sell-row .fish-mini img { width: 100%; height: 100%; object-fit: contain; }
 .tag-mochila { font-size: 0.66rem; font-weight: 600; color: #1a1408; background: var(--gold); border-radius: 99px; padding: 1px 8px; }
+/* fotos 3D dos equipamentos (vitrine) */
+.shop-thumb { flex-shrink: 0; object-fit: contain; margin-right: 12px; filter: drop-shadow(0 3px 4px rgba(0,0,0,.4)); }
+.shop-thumb-rods { width: 230px; height: 50px; }
+.shop-thumb-reels, .shop-thumb-lines, .shop-thumb-terminals, .shop-thumb-baits { width: 84px; height: 62px; }
+.guia-h3 { font-size: 1rem; color: var(--gold); margin: 16px 0 8px; }
+.guia-equip { display: flex; flex-direction: column; gap: 8px; }
+.guia-item { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,.035); }
+.guia-item img { object-fit: contain; filter: drop-shadow(0 3px 4px rgba(0,0,0,.4)); }
+.gi-nome { font-weight: 700; font-size: .95rem; }
+.gi-ind { color: #9af0ba !important; }
+@media (max-width: 760px) {
+  .shop-thumb-rods { width: 120px; height: 34px; }
+  .guia-item { grid-template-columns: 1fr; }
+}

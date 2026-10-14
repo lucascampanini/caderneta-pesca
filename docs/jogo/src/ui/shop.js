@@ -9,6 +9,7 @@ import { audio } from "../audio/audioManager.js";
 import { formatMoney, formatLength, formatWeight } from "../utils/utils.js";
 import { fishSVG } from "./fishSvg.js";
 import { indicadoPara, compat } from "../gameplay/rules.js";
+import { fotoItem } from "./vitrine.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -86,6 +87,7 @@ export class ShopUI {
       const ind = indicadoPara(catKey, item);
 
       row.innerHTML = `
+        <img class="shop-thumb shop-thumb-${catKey}" src="${fotoItem(catKey, item)}" alt="">
         <div class="shop-item-info">
           <div class="shop-item-name">${item.name}${daMochila ? ' <span class="tag-mochila">da sua mochila</span>' : ""}</div>
           <div class="shop-item-stats">${stats}</div>

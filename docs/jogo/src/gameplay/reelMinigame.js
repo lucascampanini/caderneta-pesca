@@ -60,6 +60,9 @@ export class ReelFight {
     this.jump = null;
     this.landing = null;
     this.falha = null; // motivo de escape decidido numa arrancada (dente sem aço, anzol que abre)
+    this.prevProgress = this.progress;
+    this.saindo = 0; // 0 a 1: velocidade com que o peixe tira linha do carretel (freio patinando)
+    this.cabecadaT = randRange(1.2, 3);
   }
 
   setReeling(on) {
@@ -202,6 +205,19 @@ export class ReelFight {
 
     this.tension = clamp(this.tension, 0, 100);
 
+    // linha saindo: quando a captura recua, o peixe está tirando linha; na arrancada o freio patina forte
+    const recuo = Math.max(0, (this.prevProgress - this.progress) / dt);
+    this.prevProgress = this.progress;
+    const alvoSaida = clamp(recuo / 9, 0, 1) * 0.8 + (surging ? 0.55 + 0.45 * clamp(strength / 1.6, 0, 1) : 0);
+    this.saindo = lerp(this.saindo, clamp(alvoSaida, 0, 1), 1 - Math.exp(-10 * dt));
+
+    // cabeçadas: o peixe sacode a cabeça e a ponta da vara treme
+    this.cabecadaT -= dt;
+    if (this.cabecadaT <= 0 && !surging) {
+      this.cabecadaT = randRange(1.1, 3.2) / Math.max(0.6, f.strength);
+      events.emit("fight:headshake", { forca: clamp(0.4 + this.fish.sizeNorm * 0.6, 0.4, 1) });
+    }
+
     if (this.progress >= 100) {
       this.beginLanding();
       return;
@@ -229,6 +245,8 @@ export class ReelFight {
       progress: clamp(this.progress, 0, 100),
       surge: this.surgeState,
       time: this.t,
+      saindo: this.saindo,
+      reeling: this.reeling,
     });
   }
 

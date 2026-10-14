@@ -4,6 +4,10 @@
 import * as THREE from "three";
 import { CONFIG } from "../data/config.js";
 import { clamp, lerp, degToRad } from "../utils/utils.js";
+import { montarVara } from "./rodModel.js";
+import { Line2 } from "three/addons/lines/Line2.js";
+import { LineGeometry } from "three/addons/lines/LineGeometry.js";
+import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 
 const LINE_POINTS = 22;
 
@@ -42,43 +46,65 @@ export class CastingSystem {
     rodRoot.position.set(0.42, 1.1, 0.15);
     this.rig.add(rodRoot);
     this.rodRoot = rodRoot;
-
-    const handleMat = new THREE.MeshStandardMaterial({ color: 0x2c2c34, roughness: 0.7 });
-    const rodMat = new THREE.MeshStandardMaterial({ color: 0x7d5a36, roughness: 0.55, metalness: 0.1 });
-
+    // até o equipamento chegar, uma vara vazia (setGear monta a de verdade)
     this.joint0 = new THREE.Group();
-    this.joint0.rotation.x = -0.95;
     rodRoot.add(this.joint0);
-
-    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.028, 0.34, 8), handleMat);
-    handle.position.y = -0.1;
-    this.joint0.add(handle);
-
-    const lens = [0.62, 0.56, 0.5];
-    const radii = [
-      [0.014, 0.019],
-      [0.009, 0.014],
-      [0.005, 0.009],
-    ];
     this.joints = [];
-    let parent = this.joint0;
-    for (let i = 0; i < 3; i++) {
-      const joint = new THREE.Group();
-      if (i > 0) joint.position.y = lens[i - 1];
-      const seg = new THREE.Mesh(
-        new THREE.CylinderGeometry(radii[i][0], radii[i][1], lens[i], 7),
-        rodMat
-      );
-      seg.position.y = lens[i] / 2;
-      seg.castShadow = true;
-      joint.add(seg);
-      parent.add(joint);
-      this.joints.push(joint);
-      parent = joint;
-    }
+    this.pesos = [];
+    this.flex = 1;
+    this.reel = null;
     this.tipMarker = new THREE.Object3D();
-    this.tipMarker.position.y = lens[2];
-    parent.add(this.tipMarker);
+    this.joint0.add(this.tipMarker);
+    this.bendVel = 0;
+    this.tremorAmp = 0;
+    this.tremorT = 0;
+    this.hookT = 1;
+    this.reelIn = 0;
+    this.lineOut = 0;
+  }
+
+  /** Monta a vara, o molinete/carretilha e a cor da linha conforme o equipamento em uso. */
+  setGear(eq) {
+    const key = [eq.rod.id, eq.reel.id, eq.line.id].join("|");
+    if (key === this.gearKey) return;
+    this.gearKey = key;
+    if (this.joint0) {
+      this.rodRoot.remove(this.joint0);
+      this.joint0.traverse((o) => { o.geometry?.dispose(); o.material?.dispose?.(); });
+    }
+    const m = montarVara(eq);
+    this.joint0 = m.root;
+    this.joint0.rotation.x = -0.95;
+    this.rodRoot.add(m.root);
+    this.joints = m.joints;
+    this.pesos = m.pesos;
+    this.flex = m.spec.flex;
+    // vara comprida sobe menos na briga, para a ponta continuar no quadro
+    this.ergue = -0.38 - Math.min(1, Math.max(0, (m.spec.comp - 1.65) / 1.35)) * 0.34;
+    this.reel = m.reel;
+    this.tipMarker = m.tip;
+    if (this.line) {
+      this.line.material.color.setHex(m.linha.cor);
+      this.line.material.opacity = m.linha.opacidade;
+      this.line.material.linewidth = eq.line.tipo === "multi" ? 2 : 1.6;
+    }
+  }
+
+  /** Fisgada: a vara dá um tranco para cima e enverga. */
+  hookset() {
+    this.hookT = 0;
+    this.bendVel += 7;
+  }
+
+  /** Cabeçada do peixe: a ponta treme. */
+  tremor(amount) {
+    this.tremorAmp = Math.max(this.tremorAmp, amount);
+  }
+
+  /** Velocidade de recolher (manivela) e de linha saindo (carretel girando ao contrário), 0 a 1. */
+  setReelMotion(recolhendo, saindo) {
+    this.reelIn = recolhendo;
+    this.lineOut = saindo;
   }
 
   attachTo(playerSpot) {
@@ -119,6 +145,7 @@ export class CastingSystem {
   endCharge() {
     this.charging = false;
     this.flickT = 0;
+    this.bendVel += 4 + this.power * 8; // chicotada: a ponta vai para a frente
     return this.power;
   }
 
@@ -207,13 +234,14 @@ export class CastingSystem {
   // ---------- fishing line ----------
 
   buildLine() {
+    // linha com espessura em pixels (Line2), para aparecer bem na tela
     this.linePositions = new Float32Array(LINE_POINTS * 3);
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.BufferAttribute(this.linePositions, 3));
-    this.line = new THREE.Line(
-      geo,
-      new THREE.LineBasicMaterial({ color: 0xdde8ee, transparent: true, opacity: 0.55 })
-    );
+    const geo = new LineGeometry();
+    geo.setPositions(this.linePositions);
+    const mat = new LineMaterial({ color: 0xdde8ee, linewidth: 1.6, transparent: true, opacity: 0.7, worldUnits: false });
+    mat.resolution.set(window.innerWidth, window.innerHeight);
+    window.addEventListener("resize", () => mat.resolution.set(window.innerWidth, window.innerHeight));
+    this.line = new Line2(geo, mat);
     this.line.frustumCulled = false;
     this.line.visible = false;
     this.scene.add(this.line);
@@ -245,7 +273,7 @@ export class CastingSystem {
       this.linePositions[i * 3 + 1] = y;
       this.linePositions[i * 3 + 2] = z;
     }
-    this.line.geometry.attributes.position.needsUpdate = true;
+    this.line.geometry.setPositions(this.linePositions);
     this.line.visible = true;
   }
 
@@ -269,7 +297,7 @@ export class CastingSystem {
       this.power = 1 - Math.abs((u % 2) - 1); // triangle wave 0->1->0
     }
 
-    // rod animation: idle sway + charge pull-back + cast flick + fight bend
+    // vara: balanço parado, carga para trás no arremesso, chicotada, fisgada e curvatura na briga
     this.swayT += dt;
     let baseAngle = -0.95 + Math.sin(this.swayT * 1.3) * 0.012;
     if (this.charging) baseAngle -= this.power * 0.45;
@@ -277,21 +305,47 @@ export class CastingSystem {
     if (this.flickT < 1) {
       this.flickT = Math.min(1, this.flickT + dt / 0.42);
       const t = this.flickT;
-      // quick whip forward, then settle back to neutral
       if (t < 0.3) baseAngle += lerp(0, 0.62, t / 0.3);
       else baseAngle += lerp(0.62, 0, (t - 0.3) / 0.7);
     }
-    this.joint0.rotation.x = baseAngle;
+    if (this.hookT < 1) {
+      this.hookT = Math.min(1, this.hookT + dt / 0.35);
+      baseAngle -= Math.sin(this.hookT * Math.PI) * 0.4;
+    }
+    // na briga o pescador levanta a vara e a deita para o lado: o arco da vara aparece de verdade
+    const querPose = !this.charging && this.bendTarget > 0.1 ? 1 : 0;
+    this.pose = lerp(this.pose || 0, querPose, 1 - Math.exp(-3.5 * dt));
+    this.joint0.rotation.x = lerp(baseAngle, (this.ergue ?? -0.38) + (baseAngle + 0.95) * 0.5, this.pose);
+    this.joint0.rotation.z = -0.62 * this.pose;
 
-    this.bend = lerp(this.bend, this.bendTarget, 1 - Math.exp(-8 * dt));
-    this.joints[1].rotation.x = -this.bend * 0.3;
-    this.joints[2].rotation.x = -this.bend * 0.55;
+    // curvatura como mola amortecida: enverga, passa um pouco do ponto e assenta (pulsa nas arrancadas)
+    const alvo = this.charging ? -this.power * 0.35 : this.bendTarget;
+    this.bendVel += (alvo - this.bend) * 75 * dt;
+    this.bendVel *= Math.exp(-8.5 * dt);
+    this.bend += this.bendVel * dt;
+    this.tremorT += dt;
+    this.tremorAmp *= Math.exp(-4 * dt);
+    const tremor = Math.sin(this.tremorT * 34) * this.tremorAmp * 0.12;
+    const total = (this.bend + tremor) * this.flex;
+    // com a vara deitada para o lado, a linha puxa a ponta para baixo e para o centro (onde está o peixe)
+    const lado = 1.15 * this.pose;
+    const cx = Math.cos(lado), sz = Math.sin(lado);
+    for (let i = 0; i < this.joints.length; i++) {
+      this.joints[i].rotation.x = -total * this.pesos[i] * cx;
+      this.joints[i].rotation.z = total * this.pesos[i] * sz;
+    }
+
+    // manivela gira quando recolhe; carretel gira ao contrário quando o peixe toma linha
+    if (this.reel) {
+      this.reel.manivela.rotation.x -= this.reelIn * dt * 14;
+      if (this.lineOut > 0) this.reel.carretel.rotateY(this.lineOut * dt * 40);
+    }
 
     this.updatePreview(!!opts.previewVisible);
     this.updateLine();
   }
 
   setBend(t) {
-    this.bendTarget = clamp(t, 0, 1);
+    this.bendTarget = clamp(t, -0.6, 1.4);
   }
 }
