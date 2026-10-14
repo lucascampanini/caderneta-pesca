@@ -4,6 +4,7 @@
 
 import { S } from "../state/gameState.js";
 import { audio } from "../audio/audioManager.js";
+import { renderGuia } from "./guia.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -40,6 +41,13 @@ export class Screens {
     click("pause-quit", () => this.cb.onQuitToMenu());
 
     click("howto-back", () => this.back());
+    $("guia-content").addEventListener("click", (e) => {
+      if (e.target.closest("[data-tutorial]")) {
+        audio.play("click");
+        this.hideAll();
+        this.cb.onTutorial();
+      }
+    });
     click("settings-back", () => this.back());
     click("set-reset", () => this.confirmReset());
 
@@ -92,9 +100,11 @@ export class Screens {
     this.pause.classList.remove("hidden");
   }
 
-  showHowto(from) {
+  showHowto(from, aba = "controles") {
     this.returnTo = from;
     this.hideAll();
+    const abre = (a) => renderGuia($("guia-tabs"), $("guia-content"), a, (n) => { audio.play("click"); abre(n); });
+    abre(aba);
     this.howto.classList.remove("hidden");
   }
 

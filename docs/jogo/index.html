@@ -54,8 +54,11 @@
     </div>
 
     <div class="hud-corner hud-bottomleft">
-      <div id="hud-rod" class="gear-chip"><span class="gear-label">Vara</span><span class="gear-name">Caniço de bambu</span></div>
-      <div id="hud-bait" class="gear-chip"><span class="gear-label">Isca</span><span class="gear-name">Minhoca</span></div>
+      <button id="hud-kit" class="kit-card" title="Meu conjunto (abre a Loja)">
+        <span class="kit-head">Meu conjunto</span>
+        <span id="kit-rows" class="kit-rows"></span>
+        <span id="kit-bom" class="kit-bom"></span>
+      </button>
     </div>
 
     <div class="hud-corner hud-bottomright">
@@ -102,7 +105,7 @@
       <p class="game-sub">um jogo da Caderneta Pantaneira</p>
       <div class="menu-buttons">
         <button id="menu-play" class="btn btn-primary btn-big">Jogar</button>
-        <button id="menu-howto" class="btn">Como jogar</button>
+        <button id="menu-howto" class="btn">Guia do pescador</button>
         <button id="menu-settings" class="btn">Ajustes</button>
         <button id="menu-reset" class="btn btn-danger-ghost">Apagar progresso</button>
       </div>
@@ -112,19 +115,10 @@
   </div>
 
   <div id="screen-howto" class="screen hidden">
-    <div class="panel panel-mid">
-      <h2 class="panel-title">Como jogar</h2>
-      <ul class="howto-list">
-        <li><b>Mirar</b>: mova o mouse (ou o dedo) para escolher a direção do arremesso.</li>
-        <li><b>Arremessar</b>: segure o <kbd>clique</kbd> ou a <kbd>barra de espaço</kbd> para carregar a força e solte. Arremessos longos chegam à água funda, onde vivem os peixes raros.</li>
-        <li><b>Esperar</b>: olhe a boia. Beliscadas pequenas são só o peixe experimentando; quando ela afunda e aparece o <span class="excl">!</span>, você tem uma fração de segundo.</li>
-        <li><b>Fisgar</b>: clique (ou <kbd>espaço</kbd>) na hora do <span class="excl">!</span> para cravar o anzol.</li>
-        <li><b>Recolher</b>: segure o clique para puxar. Puxar aumenta a <b>tensão</b>; solte para aliviar. Quando o peixe dá uma <b style="color:var(--danger)">arrancada</b>, pare de puxar ou a linha arrebenta!</li>
-        <li><b>Evoluir</b>: venda os peixes na Loja (<kbd>B</kbd>), troque vara, molinete, linha e isca, e libere novos pesqueiros no Mapa (<kbd>M</kbd>). O dourado é solto: captura proibida em MS.</li>
-        <li><b>Colecionar</b>: cada espécie que você pega entra no Diário (<kbd>J</kbd>). O horário e o lugar mudam o que morde.</li>
-        <li><b>Recolher</b>: segure o clique enquanto espera (ou aperte <kbd>R</kbd>) para trazer a boia de volta.</li>
-      </ul>
-      <button id="howto-back" class="btn btn-primary">Voltar</button>
+    <div class="panel panel-wide">
+      <div class="panel-head"><h2 class="panel-title">Guia do pescador</h2><button id="howto-back" class="btn btn-close">Voltar</button></div>
+      <nav id="guia-tabs" class="tab-row"></nav>
+      <div id="guia-content" class="guia-content"></div>
     </div>
   </div>
 
@@ -160,7 +154,7 @@
       <div class="menu-buttons">
         <button id="pause-resume" class="btn btn-primary btn-big">Continuar</button>
         <button id="pause-settings" class="btn">Ajustes</button>
-        <button id="pause-howto" class="btn">Como jogar</button>
+        <button id="pause-howto" class="btn">Guia do pescador</button>
         <button id="pause-quit" class="btn btn-danger-ghost">Salvar e voltar ao menu</button>
       </div>
     </div>

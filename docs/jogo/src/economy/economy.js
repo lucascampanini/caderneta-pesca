@@ -7,6 +7,7 @@ import { S, events } from "../state/gameState.js";
 import { GEAR } from "../data/gearData.js";
 import { LOCATIONS } from "../data/locationData.js";
 import { saveGame } from "../state/saveLoad.js";
+import { maxCast } from "../gameplay/rules.js";
 
 export const xpToNext = (level) => Math.round(CONFIG.economy.xpBase * Math.pow(level, CONFIG.economy.xpPow));
 
@@ -15,6 +16,7 @@ export function getEquipped() {
     rod: GEAR.rods[S.gear.equipped.rods],
     reel: GEAR.reels[S.gear.equipped.reels],
     line: GEAR.lines[S.gear.equipped.lines],
+    term: GEAR.terminals[S.gear.equipped.terminals],
     bait: GEAR.baits[S.gear.equipped.baits],
   };
 }
@@ -23,12 +25,10 @@ export function getEquipped() {
 export function getStats() {
   const eq = getEquipped();
   return {
-    castMult: eq.rod.castMult,
-    control: eq.rod.control,
+    castMult: maxCast(eq) / CONFIG.cast.baseMaxDist,
     reelSpeed: eq.reel.speed,
-    lineStrength: eq.line.strength,
-    biteSpeed: eq.bait.biteSpeed,
     bait: eq.bait,
+    eq,
   };
 }
 
@@ -58,14 +58,14 @@ export function addXp(amount) {
     for (const [cat, items] of Object.entries(GEAR)) {
       for (const item of items) {
         if (item.level === S.profile.level && item.price > 0) {
-          unlocks.push(`${item.name} available in the shop`);
+          unlocks.push(`Novo na Loja: ${item.name}`);
         }
       }
       void cat;
     }
     for (const loc of LOCATIONS) {
       if (loc.unlock.level === S.profile.level && !S.world.unlocked.includes(loc.id)) {
-        unlocks.push(`${loc.name} can now be unlocked on the Map`);
+        unlocks.push(`Já dá para liberar no Mapa: ${loc.name}`);
       }
     }
     events.emit("levelup", { level: S.profile.level, unlocks });
@@ -180,7 +180,7 @@ export function unlockLocation(loc) {
   S.profile.money -= loc.unlock.cost;
   S.world.unlocked.push(loc.id);
   emitMoney(-loc.unlock.cost);
-  events.emit("toast", { msg: `${loc.name} unlocked!`, kind: "gold" });
+  events.emit("toast", { msg: `${loc.name} liberado!`, kind: "gold" });
   saveGame();
   return { ok: true };
 }

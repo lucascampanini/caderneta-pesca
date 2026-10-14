@@ -8,6 +8,7 @@ import * as economy from "../economy/economy.js";
 import { audio } from "../audio/audioManager.js";
 import { formatMoney, formatLength, formatWeight } from "../utils/utils.js";
 import { fishSVG } from "./fishSvg.js";
+import { indicadoPara, compat } from "../gameplay/rules.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -47,7 +48,7 @@ export class ShopUI {
 
   renderTabs() {
     this.tabsEl.innerHTML = "";
-    const tabs = [...GEAR_CATS.map((c) => ({ key: c.key, label: c.label })), { key: "sell", label: `Vender (${S.inventory.length})` }];
+    const tabs = [{ key: "sell", label: `Vender (${S.inventory.length})` }, ...GEAR_CATS.map((c) => ({ key: c.key, label: c.label }))];
     for (const t of tabs) {
       const btn = document.createElement("button");
       btn.className = `tab-btn${this.tab === t.key ? " active" : ""}`;
@@ -63,6 +64,13 @@ export class ShopUI {
 
   renderGear(catKey) {
     this.contentEl.innerHTML = "";
+    const erro = compat(economy.getEquipped());
+    if (erro && (catKey === "rods" || catKey === "reels")) {
+      const av = document.createElement("div");
+      av.className = "shop-aviso";
+      av.textContent = erro;
+      this.contentEl.appendChild(av);
+    }
     const equippedIdx = S.gear.equipped[catKey];
     GEAR[catKey].forEach((item, idx) => {
       const owned = S.gear.owned[catKey].includes(idx);
@@ -73,15 +81,15 @@ export class ShopUI {
       const row = document.createElement("div");
       row.className = `shop-item${equipped ? " equipped" : ""}${!owned && !levelOk ? " locked" : ""}`;
 
-      const stats = gearStatLines(catKey, item)
-        .map((s) => `<span class="${idx > equippedIdx ? "stat-up" : ""}">${s}</span>`)
-        .join(" · ");
+      const stats = gearStatLines(catKey, item).join(" · ");
+      const ind = indicadoPara(catKey, item);
 
       row.innerHTML = `
         <div class="shop-item-info">
-          <div class="shop-item-name">${item.name} <span class="tier-badge">TIER ${item.tier}</span></div>
+          <div class="shop-item-name">${item.name}</div>
           <div class="shop-item-stats">${stats}</div>
           <div class="shop-item-blurb">${item.blurb}</div>
+          ${ind.length ? `<div class="shop-item-ind"><b>Indicado para:</b> ${ind.slice(0, 7).join(", ")}${ind.length > 7 ? "…" : ""}</div>` : ""}
         </div>
         <div class="shop-item-action"></div>
       `;
@@ -96,6 +104,7 @@ export class ShopUI {
         btn.addEventListener("click", () => {
           audio.play("click");
           economy.equipGear(catKey, idx);
+          this.autoCombina(catKey);
           this.render();
         });
         action.appendChild(btn);
@@ -108,7 +117,8 @@ export class ShopUI {
           const res = economy.buyGear(catKey, idx);
           if (res.ok) {
             audio.play("buy");
-            events.emit("toast", { msg: `${item.name} purchased and equipped`, kind: "success" });
+            this.autoCombina(catKey);
+            events.emit("toast", { msg: `Comprou e já está usando: ${item.name}`, kind: "success" });
           } else {
             audio.play("error");
             events.emit("toast", { msg: res.reason, kind: "warn" });
@@ -125,6 +135,21 @@ export class ShopUI {
       }
       this.contentEl.appendChild(row);
     });
+  }
+
+  /** Trocou a vara ou o molinete: se não combinam mais, usa o par certo que a pessoa já tem. */
+  autoCombina(catKey) {
+    const eq = economy.getEquipped();
+    if (!compat(eq)) return;
+    const quer = catKey === "rods" ? (eq.rod.tipo === "canico" ? "nenhum" : eq.rod.tipo) : null;
+    if (quer) {
+      const i = S.gear.owned.reels.filter((k) => GEAR.reels[k].tipo === quer).pop();
+      if (i !== undefined) economy.equipGear("reels", i);
+    } else if (catKey === "reels") {
+      const tipo = eq.reel.tipo === "nenhum" ? "canico" : eq.reel.tipo;
+      const i = S.gear.owned.rods.filter((k) => GEAR.rods[k].tipo === tipo).pop();
+      if (i !== undefined) economy.equipGear("rods", i);
+    }
   }
 
   renderSell() {

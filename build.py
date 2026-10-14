@@ -26,4 +26,7 @@ full = ('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta nam
         '<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>'
         f'</head><body>\n{page_site}</body></html>\n')
 (site/'index.html').write_text(full, encoding='utf-8')
+# regras do jogo (iscas, linha, anzol por espécie) saem dos mesmos dados do site
+import subprocess
+subprocess.run(['node', 'ferramentas/regras_jogo.js'], check=True)
 print(len(page))

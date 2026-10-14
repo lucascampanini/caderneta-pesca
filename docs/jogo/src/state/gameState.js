@@ -55,15 +55,15 @@ export const machine = new StateMachine();
 
 export function createDefaultState() {
   return {
-    version: 1,
+    version: 2,
     profile: {
       money: CONFIG.economy.startMoney,
       xp: 0,
       level: 1,
     },
     gear: {
-      owned: { rods: [0], reels: [0], lines: [0], baits: [0] },
-      equipped: { rods: 0, reels: 0, lines: 0, baits: 0 },
+      owned: { rods: [0], reels: [0], lines: [0], terminals: [0], baits: [0] },
+      equipped: { rods: 0, reels: 0, lines: 0, terminals: 0, baits: 0 },
     },
     world: {
       current: "lake",
@@ -75,6 +75,7 @@ export function createDefaultState() {
     inventory: [], // { speciesId, sizeCm, weightKg, value }
     stats: { casts: 0, catches: 0, earned: 0, snaps: 0, bestSpecies: null, bestSize: 0 },
     settings: { volume: 0.8, muted: false, quality: "high" },
+    tutorial: { step: 0, done: false },
   };
 }
 

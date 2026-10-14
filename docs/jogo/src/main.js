@@ -25,6 +25,8 @@ import { JournalUI } from "./ui/journal.js";
 import { MapUI } from "./ui/map.js";
 import { CatchCard } from "./ui/catchCard.js";
 import { lerp, randRange, projectToScreen } from "./utils/utils.js";
+import { Tutorial } from "./ui/tutorial.js";
+import { compat, avaliar, dicaConjunto } from "./gameplay/rules.js";
 
 // ---------------------------------------------------------------------------
 // boot
@@ -51,12 +53,15 @@ const bite = new BiteSystem(
     hours: gclock.hours,
     weather: S.world.weather,
     bait: economy.getStats().bait,
+    eq: economy.getEquipped(),
+    tutorial: tutorial.treino(),
   }),
   bobber
 );
 const fight = new ReelFight(scene, effects, audio);
 
 const hud = new HUD();
+const tutorial = new Tutorial();
 const catchCard = new CatchCard();
 const shopUI = new ShopUI(() => machine.set(Phase.IDLE));
 const journalUI = new JournalUI(() => machine.set(Phase.IDLE));
@@ -68,7 +73,15 @@ const mapUI = new MapUI(
   }
 );
 const screens = new Screens({
-  onPlay: () => machine.set(Phase.IDLE),
+  onPlay: () => {
+    machine.set(Phase.IDLE);
+    if (tutorial.ativo()) tutorial.mostrar(S.tutorial.step);
+  },
+  onTutorial: () => {
+    setPaused(false);
+    machine.set(Phase.IDLE);
+    tutorial.comecar();
+  },
   onResume: () => setPaused(false),
   onQuitToMenu: () => {
     saveGame();
@@ -202,7 +215,10 @@ machine.register(Phase.REELING, {
   enter({ fish }) {
     bobber.hide();
     hud.showReel(true, fish);
-    fight.start(fish, lastBobberPos.clone(), env.playerSpot, economy.getStats());
+    const eq = economy.getEquipped();
+    const av = avaliar(fish.speciesId, eq, fish.sizeNorm);
+    lastAv = av;
+    fight.start(fish, lastBobberPos.clone(), env.playerSpot, { reelSpeed: eq.reel.speed, lineStrength: av.lineStrength, control: av.control, av });
     fight.setReeling(inputHeld);
     rig.setFocus(fight.fishPoint);
     audio.play("hook");
@@ -226,7 +242,7 @@ machine.register(Phase.RETRIEVING, {
 
 machine.register(Phase.SHOP, {
   enter(data) {
-    shopUI.open(data?.tab ?? "rods");
+    shopUI.open(data?.tab ?? (S.inventory.length ? "sell" : "rods"));
   },
   exit() {
     shopUI.close();
@@ -256,10 +272,11 @@ machine.register(Phase.MAP, {
 // ---------------------------------------------------------------------------
 
 const lastBobberPos = new THREE.Vector3();
+let lastAv = null;
 
 events.on("bobber:landed", ({ distance, zone }) => {
   audio.play("splash", { strength: 0.9 });
-  hud.setZone(`${CONFIG.zones.labels[zone]} waters · ${Math.round(distance)}m out`);
+  hud.setZone(`Água ${CONFIG.zones.labels[zone]} · ${Math.round(distance)} m da margem`);
   bite.begin(zone);
   machine.set(Phase.WAITING);
 });
@@ -289,6 +306,12 @@ events.on("bite:missed", () => {
   machine.set(Phase.WAITING);
 });
 
+events.on("bite:stolen", ({ reason }) => {
+  audio.play("plip");
+  effects.ripple(bobber.pos, 1.6, 0.8);
+  hud.toast(`Roubou a isca! ${reason || ""}`, "warn");
+});
+
 events.on("bite:hooked", ({ fish }) => {
   lastBobberPos.copy(bobber.pos);
   machine.set(Phase.REELING, { fish });
@@ -306,13 +329,16 @@ events.on("fight:snap", () => {
   audio.play("snap");
   hud.shake();
   rig.addShake(0.5);
-  hud.toast("PLEC! A linha arrebentou e ele fugiu.", "warn");
+  // explica o motivo: equipamento fraco para o peixe ou tensão demais
+  if (lastAv && lastAv.fraco && !tutorial.treino()) hud.toast(`PLEC! A linha arrebentou. ${lastAv.problemas[0]}`, "warn");
+  else hud.toast("PLEC! A linha arrebentou: a tensão chegou ao fim. Solte quando a barra ficar vermelha e nas arrancadas.", "warn");
   machine.set(Phase.IDLE);
 });
 
-events.on("fight:escape", ({ reason }) => {
+events.on("fight:escape", ({ fish, reason, gear }) => {
   audio.play("escape");
   hud.toast(reason, "warn");
+  if (gear && fish) hud.toast(`Dica da Caderneta: ${dicaConjunto(fish.speciesId)}`, "info");
   machine.set(Phase.IDLE);
 });
 
@@ -340,9 +366,17 @@ function pressDown() {
   if (paused) return;
   audio.init();
   switch (machine.current) {
-    case Phase.IDLE:
+    case Phase.IDLE: {
+      // vara e molinete têm que combinar, como na vida real
+      const erro = compat(economy.getEquipped());
+      if (erro) {
+        audio.play("error");
+        hud.toast(erro, "warn");
+        break;
+      }
       machine.set(Phase.CHARGING);
       break;
+    }
     case Phase.BITE:
       bite.hookAttempt();
       break;
@@ -479,6 +513,7 @@ document.getElementById("btn-pause").addEventListener("click", () => {
   audio.play("click");
   setPaused(true);
 });
+document.getElementById("hud-kit").addEventListener("click", () => toggleScreen(Phase.SHOP));
 document.getElementById("hud-bag").addEventListener("click", () => {
   if (machine.is(Phase.IDLE)) {
     audio.play("click");
@@ -628,4 +663,4 @@ requestAnimationFrame(() => {
 });
 
 // small debug handle (used by automated smoke tests; harmless in production)
-window.TIDELINE = { S, machine, version: 1 };
+window.TIDELINE = { S, machine, version: 2, economy, tutorial };

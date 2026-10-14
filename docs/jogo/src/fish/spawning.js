@@ -4,6 +4,7 @@
 import { CONFIG } from "../data/config.js";
 import { FISH_BY_ID, RARITIES, getTimeSegment, sizeMid } from "../data/fishData.js";
 import { clamp, lerp, randRange, weightedPick } from "../utils/utils.js";
+import { baitMult, avaliar } from "../gameplay/rules.js";
 
 /**
  * Picks a species for the current cast.
@@ -23,7 +24,8 @@ export function rollSpecies(ctx) {
       w *= 0.2;
     }
     if (!sp.time.includes(segment)) w *= 0.32;
-    w *= ctx.bait.bias[sp.rarity] ?? 1;
+    w *= baitMult(sp.id, ctx.bait); // a isca certa para cada peixe, pela Caderneta
+    if (ctx.tutorial && sp.rarity !== "common") w *= 0.05; // primeiro peixe do tutorial: um comum
     if (cloudy && RARITIES[sp.rarity].order >= 2) w *= CONFIG.weather.cloudyRareBoost;
     return w;
   };
@@ -39,7 +41,7 @@ export function rollFish(ctx) {
   const sp = rollSpecies(ctx);
   const [minS, maxS] = sp.sizeCm;
   // skew toward small: big specimens are rare
-  const roll = Math.pow(Math.random(), 1.8);
+  const roll = ctx.tutorial ? Math.random() * 0.3 : Math.pow(Math.random(), 1.8);
   const sizeCm = Math.round(lerp(minS, maxS, roll) * 10) / 10;
   const mid = sizeMid(sp);
   const sizeNorm = (sizeCm - minS) / (maxS - minS);
@@ -64,7 +66,8 @@ export function rollFish(ctx) {
       heft: sp.fight.heft,
       stamina: sp.fight.stamina,
     },
-    hookWindow: CONFIG.bite.hookWindowBase * rarity.hookMult,
+    hookWindow: CONFIG.bite.hookWindowBase * rarity.hookMult * (ctx.eq ? avaliar(sp.id, ctx.eq, sizeNorm).hookWindowMult : 1) * (ctx.tutorial ? 2.5 : 1),
+    tutorial: !!ctx.tutorial,
     stars: rarity.stars,
   };
 }
@@ -72,9 +75,14 @@ export function rollFish(ctx) {
 /** Seconds until the next bite given location, bait, weather and depth. */
 export function rollBiteWait(ctx) {
   let wait = randRange(CONFIG.bite.waitMin, CONFIG.bite.waitMax);
-  wait *= ctx.bait.biteSpeed;
+  // isca que os peixes daqui gostam faz a mordida vir mais rápido
+  const tab = ctx.location.fishTable.filter(([id]) => FISH_BY_ID[id]?.zones.includes(ctx.zone));
+  const base = tab.reduce((s, [, w]) => s + w, 0) || 1;
+  const atrai = tab.reduce((s, [id, w]) => s + w * baitMult(id, ctx.bait), 0) / base;
+  wait /= clamp(atrai, 0.3, 1.8);
+  if (ctx.tutorial) wait = Math.min(wait, 6);
   wait /= ctx.location.biteMult;
   if (ctx.weather === "cloudy") wait /= CONFIG.weather.cloudyBiteMult;
   if (ctx.zone === "deep") wait *= CONFIG.bite.deepWaitMult;
-  return clamp(wait, 2, 25);
+  return clamp(wait, 2, 30);
 }

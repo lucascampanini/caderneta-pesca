@@ -15,7 +15,7 @@ export const CONFIG = {
   zones: {
     shallowMax: 14,
     midMax: 30,
-    labels: { shallow: "Raso", mid: "Mid", deep: "Fundo" },
+    labels: { shallow: "rasa", mid: "média", deep: "funda" },
   },
 
   cast: {

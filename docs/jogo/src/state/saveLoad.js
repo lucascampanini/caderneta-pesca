@@ -86,6 +86,16 @@ export function loadGame() {
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return false;
     delete parsed.salvoEm;
+    // versão 1 tinha outro catálogo de equipamento: devolve o kit inicial e reembolsa o que foi comprado
+    if (!parsed.version || parsed.version < 2) {
+      const precos = { rods: [0, 180, 950, 4200], reels: [0, 150, 800, 3600], lines: [0, 120, 700, 3200], baits: [0, 200, 900, 3800] };
+      let reembolso = 0;
+      for (const [k, lista] of Object.entries((parsed.gear && parsed.gear.owned) || {})) for (const i of lista) reembolso += (precos[k] && precos[k][i]) || 0;
+      delete parsed.gear;
+      parsed.version = 2;
+      if (parsed.profile) parsed.profile.money = (parsed.profile.money || 0) + reembolso;
+      parsed.tutorial = { step: 0, done: (parsed.stats && parsed.stats.catches > 0) || false };
+    }
     assignState(deepMerge(createDefaultState(), parsed));
     return true;
   } catch {

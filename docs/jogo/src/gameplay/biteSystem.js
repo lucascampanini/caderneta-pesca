@@ -6,6 +6,7 @@ import { CONFIG } from "../data/config.js";
 import { events } from "../state/gameState.js";
 import { rollFish, rollBiteWait } from "../fish/spawning.js";
 import { chance, randRange } from "../utils/utils.js";
+import { avaliar } from "./rules.js";
 
 export class BiteSystem {
   /**
@@ -72,6 +73,16 @@ export class BiteSystem {
       if (this.t >= this.wait) {
         const env = this.getEnv();
         this.fish = rollFish({ ...env, zone: this.zone });
+        // anzol grande demais para a boca do peixe: ele belisca, rouba a isca e vai embora
+        const av = !this.fish.tutorial && env.eq ? avaliar(this.fish.speciesId, env.eq, this.fish.sizeNorm) : null;
+        if (av && av.anzolGrande && chance(0.6)) {
+          const fish = this.fish;
+          this.begin(this.zone);
+          this.bobber.setDip(0.2);
+          this.nibbleEnd = 0.4;
+          events.emit("bite:stolen", { fish, reason: av.problemas.find((p) => p.startsWith("Anzol")) });
+          return;
+        }
         this.windowT = this.fish.hookWindow;
         this.state = "window";
         this.bobber.setDip(0.42);

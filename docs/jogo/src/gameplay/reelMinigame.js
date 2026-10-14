@@ -59,6 +59,7 @@ export class ReelFight {
     this.scene.add(this.fishMesh);
     this.jump = null;
     this.landing = null;
+    this.falha = null; // motivo de escape decidido numa arrancada (dente sem aço, anzol que abre)
   }
 
   setReeling(on) {
@@ -96,6 +97,11 @@ export class ReelFight {
       if (this.surgeT <= 0) {
         this.surgeState = "active";
         this.surgeT = randRange(...CONFIG.reel.surgeDuration);
+        const av = this.stats.av;
+        if (av && !this.fish.tutorial) {
+          if (av.dentes && Math.random() < 0.45) this.falha = `Cortou a linha com os dentes! ${av.nome} pede empate de aço.`;
+          else if (av.anzolPequeno && Math.random() < 0.3) this.falha = `O anzol abriu na arrancada: pequeno demais para ${av.nome}.`;
+        }
       }
     } else if (this.surgeState === "active") {
       this.surgeT -= dt;
@@ -150,10 +156,16 @@ export class ReelFight {
     const f = this.fish.fight;
     this.t += dt;
 
-    const strength = f.strength * (this.tired ? R.tiredStrengthMult : 1);
+    const strength = f.strength * (this.tired ? R.tiredStrengthMult : 1) * (this.fish.tutorial ? 0.55 : 1);
     const { reelSpeed, lineStrength, control } = this.stats;
 
     this.updateSurge(dt);
+    if (this.falha) {
+      const fish = this.fish, reason = this.falha;
+      this.end();
+      events.emit("fight:escape", { fish, reason, gear: true });
+      return;
+    }
     this.updateJump(dt);
     const surging = this.surgeState === "active";
 

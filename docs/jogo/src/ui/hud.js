@@ -3,6 +3,8 @@
 
 import { S, events, Phase } from "../state/gameState.js";
 import { xpToNext, getEquipped, inventoryValue } from "../economy/economy.js";
+import { bomPara, compat } from "../gameplay/rules.js";
+import { hookTxt } from "../data/gearData.js";
 import { LOCATION_BY_ID } from "../data/locationData.js";
 import { formatMoney, hourToClock, clamp } from "../utils/utils.js";
 
@@ -30,8 +32,8 @@ export class HUD {
     this.seg = $("hud-seg");
     this.weather = $("hud-weather");
     this.loc = $("hud-loc");
-    this.rodChip = $("hud-rod");
-    this.baitChip = $("hud-bait");
+    this.kitRows = $("kit-rows");
+    this.kitBom = $("kit-bom");
     this.bag = $("hud-bag");
     this.prompt = $("hud-prompt");
     this.zone = $("hud-zone");
@@ -66,6 +68,7 @@ export class HUD {
     events.on("journal:new", () => this.toast("Espécie nova no Diário!", "success"));
     events.on("inventory", () => this.updateBag());
     events.on("gear", () => this.updateGear());
+    events.on("location", () => this.updateGear());
     events.on("weather", ({ weather }) => {
       this.weather.textContent = weather === "cloudy" ? "Nublado" : "Limpo";
     });
@@ -114,8 +117,19 @@ export class HUD {
 
   updateGear() {
     const eq = getEquipped();
-    this.rodChip.querySelector(".gear-name").textContent = eq.rod.name;
-    this.baitChip.querySelector(".gear-name").textContent = eq.bait.name;
+    const curto = (n) => n.replace(/ · .*/, "");
+    this.kitRows.innerHTML = [
+      ["Vara", curto(eq.rod.name)],
+      ["Molinete", eq.reel.tipo === "nenhum" ? "nenhum" : curto(eq.reel.name)],
+      ["Linha", `${eq.line.tipo === "multi" ? "multi" : "mono"} ${eq.line.lb} lb`],
+      ["Anzol", `${hookTxt(eq.term.hook)}${eq.term.aco ? " + aço" : ""}`],
+      ["Isca", eq.bait.name.replace("Artificial: ", "")],
+    ].map(([k, v]) => `<span><i>${k}</i>${v}</span>`).join("");
+    const erro = compat(eq);
+    const loc = LOCATION_BY_ID[S.world.current];
+    const bons = loc ? bomPara(eq, loc) : [];
+    this.kitBom.className = `kit-bom${erro || !bons.length ? " ruim" : ""}`;
+    this.kitBom.textContent = erro ? erro : bons.length ? `Pega bem aqui: ${bons.join(", ")}` : "Esse conjunto não combina com os peixes daqui. Abra a Loja e veja \"Indicado para\".";
   }
 
   updateBag() {

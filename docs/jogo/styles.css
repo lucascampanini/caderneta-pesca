@@ -565,3 +565,73 @@ kbd {
 .catch-photo { width: 100%; display: grid; place-items: center; margin: 6px 0 4px; }
 .catch-photo img { max-width: 100%; max-height: 150px; object-fit: contain; filter: drop-shadow(0 8px 8px rgba(0,0,0,.45)); }
 .catch-desc { font-size: 13px; opacity: .8; margin: 4px 0 8px; line-height: 1.35; }
+
+/* ============ Caderneta: conjunto, tutorial, guia, loja ============ */
+[hidden] { display: none !important; }
+.kit-card {
+  font-family: inherit; color: var(--text); text-align: left; cursor: pointer;
+  background: var(--glass); border: 1px solid var(--stroke); border-radius: 12px;
+  padding: 9px 12px; display: flex; flex-direction: column; gap: 5px; max-width: min(360px, 46vw);
+  backdrop-filter: blur(8px); transition: background 0.15s ease;
+}
+.kit-card:hover { background: rgba(80, 150, 200, 0.22); }
+.kit-head { font-size: 0.62rem; color: var(--dim); text-transform: uppercase; letter-spacing: 0.1em; }
+.kit-rows { display: grid; grid-template-columns: auto 1fr; gap: 1px 10px; font-size: 0.8rem; font-weight: 600; }
+.kit-rows span { display: contents; }
+.kit-rows i { font-style: normal; font-weight: 400; color: var(--dim); }
+.kit-bom { font-size: 0.74rem; color: #9af0ba; line-height: 1.3; }
+.kit-bom.ruim { color: var(--gold); }
+
+.coach {
+  position: absolute; top: 96px; left: 50%; transform: translateX(-50%); z-index: 150;
+  width: min(440px, 92vw); padding: 14px 16px 15px;
+  background: rgba(8, 18, 14, 0.9); border: 1px solid rgba(255, 200, 87, 0.45); border-radius: 14px;
+  box-shadow: var(--shadow); backdrop-filter: blur(10px);
+  display: flex; flex-direction: column; gap: 7px; animation: coachIn 0.35s ease;
+}
+.coach.urgente { border-color: var(--danger); box-shadow: 0 0 40px rgba(255, 93, 108, 0.35); }
+.coach.urgente .coach-t { color: var(--danger); font-size: 1.35rem; }
+@keyframes coachIn { from { opacity: 0; transform: translate(-50%, -8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+.coach-head { display: flex; justify-content: space-between; align-items: center; }
+.coach-n { font-size: 0.68rem; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; }
+.coach-skip { font: inherit; font-size: 0.72rem; color: var(--dim); background: none; border: 0; cursor: pointer; text-decoration: underline; }
+.coach-t { font-size: 1.12rem; font-weight: 800; color: var(--gold); }
+.coach-x { font-size: 0.9rem; line-height: 1.45; color: #dbe7ef; }
+.coach-x b { color: var(--text); }
+.coach-aviso { font-size: 0.82rem; color: #ffd6a0; background: rgba(255, 200, 87, 0.1); border-radius: 8px; padding: 6px 9px; }
+.coach-row { display: flex; justify-content: flex-end; margin-top: 2px; }
+
+.guia-content { flex: 1; overflow-y: auto; padding-right: 6px; }
+.guia-intro { font-size: 0.9rem; color: #cfdde8; margin-bottom: 12px; line-height: 1.45; }
+.guia-passos { display: flex; flex-direction: column; gap: 10px; padding-left: 20px; }
+.guia-passos li { font-size: 0.92rem; color: #cfdde8; line-height: 1.45; }
+.guia-passos b { color: var(--text); }
+.guia-row { margin-top: 16px; }
+.guia-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.guia-card { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--stroke); border-radius: 12px; padding: 12px 14px; }
+.guia-card h4 { font-size: 0.95rem; margin-bottom: 4px; color: var(--gold); }
+.guia-card p { font-size: 0.84rem; color: #cfdde8; line-height: 1.4; }
+.guia-tabela { display: flex; flex-direction: column; gap: 8px; }
+.guia-peixe { display: grid; grid-template-columns: 96px 1fr; gap: 12px; align-items: center; padding: 8px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.035); }
+.guia-peixe img { width: 96px; height: 52px; object-fit: contain; }
+.gp-nome { font-weight: 700; font-size: 0.98rem; }
+.gp-nome span { font-size: 0.7rem; color: var(--dim); font-weight: 500; margin-left: 4px; }
+.gp-l { font-size: 0.8rem; color: #c3d2dd; line-height: 1.4; }
+.gp-l b { color: var(--text); font-weight: 600; }
+.gp-aco { color: #ffb4a0 !important; }
+
+.shop-aviso { background: rgba(255, 200, 87, 0.12); border: 1px solid rgba(255, 200, 87, 0.4); color: #ffe2a8; border-radius: 10px; padding: 9px 12px; font-size: 0.85rem; margin-bottom: 10px; }
+.shop-item-ind { font-size: 0.78rem; color: #9af0ba; margin-top: 4px; line-height: 1.35; }
+.shop-item-ind b { color: #c8f7d8; font-weight: 600; }
+
+@media (max-width: 760px) {
+  .kit-card { max-width: 62vw; padding: 7px 9px; }
+  .kit-rows { font-size: 0.7rem; }
+  .kit-bom { font-size: 0.66rem; }
+  .coach { top: 74px; }
+  .guia-peixe { grid-template-columns: 64px 1fr; }
+  .guia-peixe img { width: 64px; height: 36px; }
+}
+/* com a Loja aberta, o tutorial desce para não cobrir os itens */
+#screen-shop:not(.hidden) ~ #coach { top: auto; bottom: 14px; }
+@keyframes coachInB { from { opacity: 0; } to { opacity: 1; } }
