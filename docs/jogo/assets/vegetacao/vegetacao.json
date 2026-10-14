@@ -1,0 +1,528 @@
+{
+ "versao": 1,
+ "especies": {
+  "arvore_a": {
+   "arquivo": "arvore_a.webp",
+   "normal": "arvore_a_n.webp",
+   "angulos": 6,
+   "atlas_px": [
+    3120,
+    480
+   ],
+   "variantes": [
+    {
+     "largura": 5.688,
+     "altura": 5.24,
+     "base": 0.02,
+     "px": [
+      520,
+      480
+     ]
+    }
+   ],
+   "esfera": 0.5,
+   "balanco": 0.012,
+   "transluz": 0.3
+  },
+  "arvore_b": {
+   "arquivo": "arvore_b.webp",
+   "normal": "arvore_b_n.webp",
+   "angulos": 6,
+   "atlas_px": [
+    3840,
+    348
+   ],
+   "variantes": [
+    {
+     "largura": 6.643,
+     "altura": 3.612,
+     "base": 0.0208,
+     "px": [
+      640,
+      348
+     ]
+    }
+   ],
+   "esfera": 0.5,
+   "balanco": 0.012,
+   "transluz": 0.3
+  },
+  "arvore_c": {
+   "arquivo": "arvore_c.webp",
+   "normal": "arvore_c_n.webp",
+   "angulos": 6,
+   "atlas_px": [
+    3840,
+    436
+   ],
+   "variantes": [
+    {
+     "largura": 4.069,
+     "altura": 2.762,
+     "base": 0.0406,
+     "px": [
+      640,
+      436
+     ]
+    }
+   ],
+   "esfera": 0.5,
+   "balanco": 0.012,
+   "transluz": 0.3
+  },
+  "arvore_d": {
+   "arquivo": "arvore_d.webp",
+   "normal": "arvore_d_n.webp",
+   "angulos": 6,
+   "atlas_px": [
+    3360,
+    480
+   ],
+   "variantes": [
+    {
+     "largura": 5.562,
+     "altura": 4.761,
+     "base": 0.0155,
+     "px": [
+      560,
+      480
+     ]
+    }
+   ],
+   "esfera": 0.5,
+   "balanco": 0.012,
+   "transluz": 0.3
+  },
+  "copa_grande": {
+   "arquivo": "copa_grande.webp",
+   "normal": "copa_grande_n.webp",
+   "angulos": 6,
+   "atlas_px": [
+    3768,
+    480
+   ],
+   "variantes": [
+    {
+     "largura": 26.589,
+     "altura": 20.274,
+     "base": 0.0187,
+     "px": [
+      628,
+      480
+     ]
+    }
+   ],
+   "esfera": 0.5,
+   "balanco": 0.01,
+   "transluz": 0.3
+  },
+  "ipe_amarelo": {
+   "arquivo": "ipe_amarelo.webp",
+   "normal": "ipe_amarelo_n.webp",
+   "angulos": 6,
+   "atlas_px": [
+    3768,
+    480
+   ],
+   "variantes": [
+    {
+     "largura": 26.589,
+     "altura": 20.274,
+     "base": 0.0187,
+     "px": [
+      628,
+      480
+     ]
+    }
+   ],
+   "esfera": 0.45,
+   "balanco": 0.012,
+   "transluz": 0.4
+  },
+  "ipe_roxo": {
+   "arquivo": "ipe_roxo.webp",
+   "normal": "ipe_roxo_n.webp",
+   "angulos": 6,
+   "atlas_px": [
+    3768,
+    480
+   ],
+   "variantes": [
+    {
+     "largura": 26.589,
+     "altura": 20.274,
+     "base": 0.0187,
+     "px": [
+      628,
+      480
+     ]
+    }
+   ],
+   "esfera": 0.45,
+   "balanco": 0.012,
+   "transluz": 0.4
+  },
+  "caranda": {
+   "arquivo": "caranda.webp",
+   "normal": "caranda_n.webp",
+   "angulos": 6,
+   "atlas_px": [
+    1128,
+    1536
+   ],
+   "variantes": [
+    {
+     "largura": 3.978,
+     "altura": 11.545,
+     "base": 0.0157,
+     "px": [
+      176,
+      512
+     ]
+    },
+    {
+     "largura": 3.865,
+     "altura": 14.55,
+     "base": 0.0155,
+     "px": [
+      136,
+      512
+     ]
+    },
+    {
+     "largura": 3.437,
+     "altura": 9.451,
+     "base": 0.016,
+     "px": [
+      188,
+      512
+     ]
+    }
+   ],
+   "esfera": 0.25,
+   "balanco": 0.008,
+   "transluz": 0.3
+  },
+  "arbusto": {
+   "arquivo": "arbusto.webp",
+   "normal": "arbusto_n.webp",
+   "angulos": 4,
+   "atlas_px": [
+    1776,
+    1024
+   ],
+   "variantes": [
+    {
+     "largura": 1.462,
+     "altura": 1.441,
+     "base": 0.0182,
+     "px": [
+      260,
+      256
+     ]
+    },
+    {
+     "largura": 1.293,
+     "altura": 1.276,
+     "base": 0.0155,
+     "px": [
+      260,
+      256
+     ]
+    },
+    {
+     "largura": 1.942,
+     "altura": 1.123,
+     "base": 0.0249,
+     "px": [
+      444,
+      256
+     ]
+    },
+    {
+     "largura": 1.121,
+     "altura": 1.052,
+     "base": 0.0221,
+     "px": [
+      272,
+      256
+     ]
+    }
+   ],
+   "esfera": 0.45,
+   "balanco": 0.02,
+   "transluz": 0.3
+  },
+  "pachira": {
+   "arquivo": "pachira.webp",
+   "normal": "pachira_n.webp",
+   "angulos": 4,
+   "atlas_px": [
+    1072,
+    512
+   ],
+   "variantes": [
+    {
+     "largura": 1.266,
+     "altura": 1.201,
+     "base": 0.0168,
+     "px": [
+      268,
+      256
+     ]
+    },
+    {
+     "largura": 1.189,
+     "altura": 1.962,
+     "base": 0.0161,
+     "px": [
+      156,
+      256
+     ]
+    }
+   ],
+   "esfera": 0.4,
+   "balanco": 0.02,
+   "transluz": 0.3
+  },
+  "samambaia": {
+   "arquivo": "samambaia.webp",
+   "normal": "samambaia_n.webp",
+   "angulos": 4,
+   "atlas_px": [
+    1920,
+    384
+   ],
+   "variantes": [
+    {
+     "largura": 1.095,
+     "altura": 0.473,
+     "base": 0.0629,
+     "px": [
+      444,
+      192
+     ]
+    },
+    {
+     "largura": 0.921,
+     "altura": 0.368,
+     "base": 0.0243,
+     "px": [
+      480,
+      192
+     ]
+    }
+   ],
+   "esfera": 0.4,
+   "balanco": 0.03,
+   "transluz": 0.3
+  },
+  "grama": {
+   "arquivo": "grama.webp",
+   "normal": "grama_n.webp",
+   "angulos": 4,
+   "atlas_px": [
+    1680,
+    768
+   ],
+   "variantes": [
+    {
+     "largura": 0.368,
+     "altura": 0.17,
+     "base": 0.0918,
+     "px": [
+      416,
+      192
+     ]
+    },
+    {
+     "largura": 0.293,
+     "altura": 0.186,
+     "base": 0.07,
+     "px": [
+      304,
+      192
+     ]
+    },
+    {
+     "largura": 0.362,
+     "altura": 0.165,
+     "base": 0.081,
+     "px": [
+      420,
+      192
+     ]
+    },
+    {
+     "largura": 0.242,
+     "altura": 0.243,
+     "base": 0.0793,
+     "px": [
+      192,
+      192
+     ]
+    }
+   ],
+   "esfera": 0.35,
+   "balanco": 0.05,
+   "transluz": 0.4
+  },
+  "grama2": {
+   "arquivo": "grama2.webp",
+   "normal": "grama2_n.webp",
+   "angulos": 4,
+   "atlas_px": [
+    1152,
+    384
+   ],
+   "variantes": [
+    {
+     "largura": 0.424,
+     "altura": 0.281,
+     "base": 0.0336,
+     "px": [
+      288,
+      192
+     ]
+    },
+    {
+     "largura": 0.527,
+     "altura": 0.424,
+     "base": 0.0232,
+     "px": [
+      240,
+      192
+     ]
+    }
+   ],
+   "esfera": 0.35,
+   "balanco": 0.05,
+   "transluz": 0.4
+  },
+  "capim_alto": {
+   "arquivo": "capim_alto.webp",
+   "normal": "capim_alto_n.webp",
+   "angulos": 4,
+   "atlas_px": [
+    1424,
+    768
+   ],
+   "variantes": [
+    {
+     "largura": 2.91,
+     "altura": 2.222,
+     "base": 0.0217,
+     "px": [
+      336,
+      256
+     ]
+    },
+    {
+     "largura": 3.133,
+     "altura": 2.246,
+     "base": 0.0217,
+     "px": [
+      356,
+      256
+     ]
+    },
+    {
+     "largura": 1.59,
+     "altura": 1.27,
+     "base": 0.0268,
+     "px": [
+      320,
+      256
+     ]
+    }
+   ],
+   "esfera": 0.3,
+   "balanco": 0.06,
+   "transluz": 0.45
+  },
+  "taboa": {
+   "arquivo": "taboa.webp",
+   "normal": "taboa_n.webp",
+   "angulos": 4,
+   "atlas_px": [
+    1584,
+    768
+   ],
+   "variantes": [
+    {
+     "largura": 2.538,
+     "altura": 2.464,
+     "base": 0.0281,
+     "px": [
+      396,
+      384
+     ]
+    },
+    {
+     "largura": 1.767,
+     "altura": 2.461,
+     "base": 0.0271,
+     "px": [
+      276,
+      384
+     ]
+    }
+   ],
+   "esfera": 0.3,
+   "balanco": 0.04,
+   "transluz": 0.4
+  },
+  "aguape": {
+   "arquivo": "aguape.webp",
+   "normal": "aguape_n.webp",
+   "angulos": 4,
+   "atlas_px": [
+    2624,
+    1024
+   ],
+   "variantes": [
+    {
+     "largura": 0.541,
+     "altura": 0.362,
+     "base": 0.0206,
+     "px": [
+      384,
+      256
+     ]
+    },
+    {
+     "largura": 0.548,
+     "altura": 0.629,
+     "base": 0.0176,
+     "px": [
+      224,
+      256
+     ]
+    },
+    {
+     "largura": 1.493,
+     "altura": 0.652,
+     "base": 0.2127,
+     "px": [
+      588,
+      256
+     ]
+    },
+    {
+     "largura": 2.751,
+     "altura": 1.075,
+     "base": 0.2693,
+     "px": [
+      656,
+      256
+     ]
+    }
+   ],
+   "esfera": 0.3,
+   "balanco": 0.004,
+   "transluz": 0.2,
+   "aspereza": 0.45,
+   "ambiente": 1.0
+  }
+ }
+}
