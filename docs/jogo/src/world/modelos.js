@@ -226,16 +226,18 @@ export function colocarObjeto(group, nome, { x = 0, y = 0, z = 0, giro = 0, esca
 
 /**
  * Banquinho dobrável com o chapéu em cima, balde e lampião no deck, ao redor de onde o pescador fica.
- * (x, y, z) é a posição do pescador (playerSpot) e `y` o topo do deck; `lado` 1 = à direita, -1 = esquerda.
+ * (x, y, z) é a posição do pescador (playerSpot) e `y` o topo do deck; `lado` 1 = à esquerda dele (−X), -1 = à direita.
+ * Ficam do lado oposto ao da câmera (que fica à direita e atrás) para enfeitar a borda da tela sem tapar a água.
  * Em qualidade baixa só o banquinho e o balde.
  */
 export function colocarObjetosTrapiche(group, { x = 0, y = 0.62, z = -2.6, lado = 1, giro = 0 } = {}) {
   const g = reservar(group, "objetos_trapiche", x, y, z, giro);
   const alta = qualidadeAlta();
   // o pescador olha para -Z; os objetos ficam ao lado e um pouco atrás para não tapar o arremesso
-  colocarObjeto(g, "banquinho", { x: 0.75 * lado, z: 1.3, giro: 0.4 });
-  if (alta) colocarObjeto(g, "chapeu", { x: 0.75 * lado, y: 0.445, z: 1.3, giro: 2.1 });
-  colocarObjeto(g, "balde", { x: -0.78 * lado, z: 0.9, giro: 1.2 });
-  if (alta) colocarObjeto(g, "lampiao", { x: 0.8 * lado, z: 0.35, giro: -0.6, sombra: false });
+  const e = -lado; // X da esquerda do pescador
+  colocarObjeto(g, "banquinho", { x: 0.78 * e, z: 0.7, giro: 0.4 });
+  if (alta) colocarObjeto(g, "chapeu", { x: 0.78 * e, y: 0.445, z: 0.7, giro: 2.1 });
+  colocarObjeto(g, "balde", { x: 0.7 * e, z: 1.7, giro: 1.2 });
+  if (alta) colocarObjeto(g, "lampiao", { x: 0.85 * e, z: -0.6, giro: -0.6, sombra: false });
   return g;
 }
