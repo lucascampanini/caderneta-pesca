@@ -65,22 +65,23 @@ export class JournalUI {
         card.className = `journal-card${entry ? "" : " locked"}`;
         if (entry) {
           card.innerHTML = `
-            ${fishSVG(sp.look)}
+            <img class="jc-foto" src="../fotos/${sp.id}-card.webp" alt="" onerror="this.remove()">
             <div class="jc-name" style="color:${rarity.color}">${sp.name}</div>
             <div class="jc-meta">
-              Caught <span class="jc-count">×${entry.count}</span><br/>
-              Best: ${formatLength(entry.bestSize)} · ${formatWeight(entry.bestWeight)}
+              ${sp.solta ? "Fotografado e solto" : "Pescado"} <span class="jc-count">×${entry.count}</span><br/>
+              Recorde: ${formatLength(entry.bestSize)} · ${formatWeight(entry.bestWeight)}
             </div>
             <div class="jc-hint">${sp.desc}</div>
           `;
         } else {
           const locs = sp.locations.map((l) => LOCATION_BY_ID[l]?.name ?? l).join(", ");
-          const times = sp.time.length === 4 ? "Qualquer hora" : sp.time.map(cap).join("/");
+          const HORA = { dawn: "amanhecer", day: "dia", dusk: "entardecer", night: "noite" };
+          const times = sp.time.length === 4 ? "Qualquer hora" : cap(sp.time.map((t) => HORA[t]).join(", "));
           const zones = sp.zones.map((z) => CONFIG.zones.labels[z]).join("/");
           card.innerHTML = `
-            ${fishSVG(sp.look)}
+            <img class="jc-foto jc-sombra" src="../fotos/${sp.id}-card.webp" alt="" onerror="this.remove()">
             <div class="jc-name">???</div>
-            <div class="jc-hint">${locs}<br/>${times} · ${zones} water</div>
+            <div class="jc-hint">${locs}<br/>${times} · água ${zones}</div>
           `;
         }
         grid.appendChild(card);

@@ -74,6 +74,7 @@ export class ShopUI {
     const equippedIdx = S.gear.equipped[catKey];
     GEAR[catKey].forEach((item, idx) => {
       const owned = S.gear.owned[catKey].includes(idx);
+      const daMochila = (S.gear.daMochila?.[catKey] || []).includes(idx);
       const equipped = equippedIdx === idx;
       const levelOk = S.profile.level >= item.level;
       const afford = S.profile.money >= item.price;
@@ -86,7 +87,7 @@ export class ShopUI {
 
       row.innerHTML = `
         <div class="shop-item-info">
-          <div class="shop-item-name">${item.name}</div>
+          <div class="shop-item-name">${item.name}${daMochila ? ' <span class="tag-mochila">da sua mochila</span>' : ""}</div>
           <div class="shop-item-stats">${stats}</div>
           <div class="shop-item-blurb">${item.blurb}</div>
           ${ind.length ? `<div class="shop-item-ind"><b>Indicado para:</b> ${ind.slice(0, 7).join(", ")}${ind.length > 7 ? "…" : ""}</div>` : ""}
@@ -165,7 +166,7 @@ export class ShopUI {
       const row = document.createElement("div");
       row.className = "sell-row";
       row.innerHTML = `
-        <div class="fish-mini">${fishSVG(sp.look)}</div>
+        <div class="fish-mini"><img src="../fotos/${sp.id}-card.webp" alt="" onerror="this.remove()"></div>
         <span class="sell-name" style="color:${rarity.color}">${sp.name}</span>
         <span class="sell-meta">${formatLength(fish.sizeCm)} · ${formatWeight(fish.weightKg)}</span>
         <span class="sell-value">${formatMoney(fish.value)}</span>

@@ -58,7 +58,62 @@ const SHAPES = {
  * Builds a fish facing +X (nose at +0.5, tail at -0.5) of unit length,
  * then scales the group so its body length equals sizeCm.
  */
+// ---------- peixe com a foto real (recorte da Caderneta) ----------
+// Os recortes ficam em ../fotos/<id>-card.webp. A maioria olha para a esquerda; estes olham para a direita.
+const OLHA_DIREITA = new Set(["cachara", "jurupoca", "pacupeva", "palmito", "piranha", "tilapia"]);
+const fotoCache = new Map();
+const loader = new THREE.TextureLoader();
+
+function fotoMaterial(species) {
+  if (fotoCache.has(species.id)) return fotoCache.get(species.id);
+  const entry = { mat: null, aspect: 0.4, ok: true, waiting: [] };
+  const tex = loader.load(
+    `../fotos/${species.id}-card.webp`,
+    (t) => {
+      entry.aspect = t.image.height / t.image.width;
+      entry.waiting.forEach((fn) => fn(entry.aspect));
+      entry.waiting = [];
+    },
+    undefined,
+    () => { entry.ok = false; }
+  );
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  tex.userData.shared = true;
+  entry.mat = new THREE.MeshStandardMaterial({ map: tex, alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.45, metalness: 0.1 });
+  entry.mat.userData.shared = true;
+  fotoCache.set(species.id, entry);
+  return entry;
+}
+
+/** Pré-carrega as fotos dos peixes de um pesqueiro, para a primeira briga já sair com foto. */
+export function preloadFishPhotos(ids) {
+  for (const id of ids) fotoMaterial({ id });
+}
+
+function createPhotoFish(species, sizeCm) {
+  const entry = fotoMaterial(species);
+  if (!entry.ok) return null;
+  const plane = new THREE.Mesh(sharedGeo("fotoPlano", () => new THREE.PlaneGeometry(1, 1)), entry.mat);
+  // nariz em +X, como o peixe de primitivas
+  const ajusta = (aspect) => plane.scale.set(OLHA_DIREITA.has(species.id) ? 1 : -1, aspect, 1);
+  ajusta(entry.aspect);
+  if (entry.waiting) entry.waiting.push(ajusta);
+  plane.castShadow = true;
+  const wrapper = new THREE.Group();
+  wrapper.add(plane);
+  wrapper.scale.setScalar(clamp(sizeCm / 100, 0.16, 3.6));
+  wrapper.userData.speciesId = species.id;
+  return wrapper;
+}
+
 export function createFishMesh(species, sizeCm) {
+  const foto = createPhotoFish(species, sizeCm);
+  if (foto) return foto;
+  return createPrimitiveFish(species, sizeCm);
+}
+
+function createPrimitiveFish(species, sizeCm) {
   const { look } = species;
   const shape = SHAPES[look.shape] || SHAPES.standard;
   const mats = speciesMaterials(species);

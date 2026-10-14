@@ -9,8 +9,8 @@ export const LOCATIONS = [
     unlock: { level: 1, cost: 0 },
     env: "lake",
     water: { color: 0x2f4a2a, distortion: 1.7, size: 3.2, timeScale: 0.6 },
-    sky: { turbidity: 7, rayleigh: 1.9, mieCoefficient: 0.004, mieDirectionalG: 0.8 },
-    fog: { day: 0x9fc3c9, night: 0x0a1422, density: 0.0016 },
+    sky: { turbidity: 2.4, rayleigh: 2.2, mieCoefficient: 0.003, mieDirectionalG: 0.82 },
+    fog: { day: 0xa9c8d8, night: 0x0a1422, density: 0.0011 },
     ambience: { waves: 0.3, wind: 0.22, birds: true, crickets: true, gulls: false },
     biteMult: 1.0,
     fishTable: [
@@ -25,8 +25,8 @@ export const LOCATIONS = [
     unlock: { level: 3, cost: 400 },
     env: "river",
     water: { color: 0x1f7a6a, distortion: 2.6, size: 4.2, timeScale: 1.0 },
-    sky: { turbidity: 6, rayleigh: 2.2, mieCoefficient: 0.0035, mieDirectionalG: 0.78 },
-    fog: { day: 0xa9cdd2, night: 0x0a1620, density: 0.0019 },
+    sky: { turbidity: 2.0, rayleigh: 2.4, mieCoefficient: 0.0028, mieDirectionalG: 0.8 },
+    fog: { day: 0xaecfdc, night: 0x0a1620, density: 0.0013 },
     ambience: { waves: 0.45, wind: 0.3, birds: true, crickets: true, gulls: false },
     biteMult: 1.05,
     fishTable: [
@@ -41,8 +41,8 @@ export const LOCATIONS = [
     unlock: { level: 6, cost: 1800 },
     env: "pier",
     water: { color: 0x5a4a2e, distortion: 3.2, size: 2.6, timeScale: 0.85 },
-    sky: { turbidity: 9, rayleigh: 2.6, mieCoefficient: 0.005, mieDirectionalG: 0.82 },
-    fog: { day: 0xb6cfd8, night: 0x0a141e, density: 0.0014 },
+    sky: { turbidity: 3.2, rayleigh: 2.0, mieCoefficient: 0.0035, mieDirectionalG: 0.82 },
+    fog: { day: 0xb4cddb, night: 0x0a141e, density: 0.0010 },
     ambience: { waves: 0.45, wind: 0.35, birds: true, crickets: true, gulls: false },
     biteMult: 0.95,
     fishTable: [
@@ -57,8 +57,8 @@ export const LOCATIONS = [
     unlock: { level: 10, cost: 6500 },
     env: "ocean",
     water: { color: 0x3a3424, distortion: 3.8, size: 2.0, timeScale: 1.0 },
-    sky: { turbidity: 5, rayleigh: 3.0, mieCoefficient: 0.0045, mieDirectionalG: 0.85 },
-    fog: { day: 0xa6c4d8, night: 0x060e1a, density: 0.0011 },
+    sky: { turbidity: 2.6, rayleigh: 2.2, mieCoefficient: 0.003, mieDirectionalG: 0.84 },
+    fog: { day: 0xa8c6da, night: 0x060e1a, density: 0.0009 },
     ambience: { waves: 0.55, wind: 0.45, birds: true, crickets: true, gulls: false },
     biteMult: 0.9,
     fishTable: [

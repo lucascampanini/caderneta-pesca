@@ -635,3 +635,8 @@ kbd {
 /* com a Loja aberta, o tutorial desce para não cobrir os itens */
 #screen-shop:not(.hidden) ~ #coach { top: auto; bottom: 14px; }
 @keyframes coachInB { from { opacity: 0; } to { opacity: 1; } }
+/* fotos reais no Diário e na venda */
+.jc-foto { width: 100%; height: 64px; object-fit: contain; filter: drop-shadow(0 4px 5px rgba(0,0,0,.45)); }
+.jc-sombra { filter: brightness(0) opacity(0.35); }
+.sell-row .fish-mini img { width: 100%; height: 100%; object-fit: contain; }
+.tag-mochila { font-size: 0.66rem; font-weight: 600; color: #1a1408; background: var(--gold); border-radius: 99px; padding: 1px 8px; }

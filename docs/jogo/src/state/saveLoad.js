@@ -36,12 +36,16 @@ function enviaNuvem() {
   }, 1500);
 }
 
+/** Itens da "Minha mochila" do site, lidos junto com o progresso (null sem login). */
+export let mochilaDoSite = null;
+
 /** Antes de carregar: traz o progresso da conta, se for mais novo que o do aparelho. */
 export async function syncFromCloud() {
   const C = conta();
   if (!C || !storageOk) return false;
   try {
     const d = await Promise.race([C.lerUsuario(), new Promise((r) => setTimeout(() => r(null), 4000))]);
+    if (d && Array.isArray(d.mochila)) mochilaDoSite = d.mochila;
     if (!d || !d.jogo) return false;
     const nuvem = JSON.parse(d.jogo);
     const localRaw = localStorage.getItem(CONFIG.saveKey);

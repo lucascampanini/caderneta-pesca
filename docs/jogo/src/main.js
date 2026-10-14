@@ -4,7 +4,8 @@ import * as THREE from "three";
 import { CONFIG } from "./data/config.js";
 import { LOCATION_BY_ID } from "./data/locationData.js";
 import { S, events, machine, Phase, isGameplayPhase } from "./state/gameState.js";
-import { loadGame, saveGame, resetSave, syncFromCloud } from "./state/saveLoad.js";
+import { loadGame, saveGame, resetSave, syncFromCloud, mochilaDoSite } from "./state/saveLoad.js";
+import { aplicarMochila } from "./state/mochila.js";
 import { audio } from "./audio/audioManager.js";
 import { createCore } from "./core/scene.js";
 import { GameClock } from "./core/time.js";
@@ -24,6 +25,7 @@ import { ShopUI } from "./ui/shop.js";
 import { JournalUI } from "./ui/journal.js";
 import { MapUI } from "./ui/map.js";
 import { CatchCard } from "./ui/catchCard.js";
+import { preloadFishPhotos } from "./fish/fishFactory.js";
 import { lerp, randRange, projectToScreen } from "./utils/utils.js";
 import { Tutorial } from "./ui/tutorial.js";
 import { compat, avaliar, dicaConjunto } from "./gameplay/rules.js";
@@ -34,6 +36,8 @@ import { compat, avaliar, dicaConjunto } from "./gameplay/rules.js";
 
 await syncFromCloud();
 loadGame();
+// equipamento cadastrado na "Minha mochila" do site já vem liberado no jogo
+const daMochila = aplicarMochila(mochilaDoSite);
 
 const container = document.getElementById("canvas-wrap");
 const core = createCore(container);
@@ -122,6 +126,7 @@ function travelTo(locId, silent = false) {
   bobber.hide();
   if (fight.active) fight.end();
   env.load(loc);
+  preloadFishPhotos(loc.fishTable.map(([id]) => id));
   casting.attachTo(env.playerSpot);
   rig.setAnchor(env.playerSpot);
   water.setParams(loc.water);
@@ -651,6 +656,7 @@ function tick() {
 applySettings();
 travelTo(S.world.current, true);
 machine.set(Phase.MENU);
+if (daMochila) setTimeout(() => hud.toast(`${daMochila} ${daMochila === 1 ? "item da sua mochila liberado" : "itens da sua mochila liberados"} no jogo. Veja na Loja.`, "gold"), 1200);
 
 window.addEventListener("beforeunload", () => saveGame());
 document.addEventListener("visibilitychange", () => {
@@ -663,4 +669,4 @@ requestAnimationFrame(() => {
 });
 
 // small debug handle (used by automated smoke tests; harmless in production)
-window.TIDELINE = { S, machine, version: 2, economy, tutorial };
+window.TIDELINE = { S, machine, version: 2, economy, tutorial, travelTo, gclock, sky, renderer, scene };
