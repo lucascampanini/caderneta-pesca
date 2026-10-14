@@ -14,6 +14,7 @@ import { Barco } from "./barco.js";
 import { tabelaDoMomento, corDaAgua, motivoSoltar, emPiracema, dicaOnde, TABELA_AQUIDAUANA } from "./peixesRio.js";
 import { injetarEstilo, injetarBotaoMenu, PainelEntrada, HudLivre, MapaGrande, mostrarCarregando, nomeFase } from "./interfaceLivre.js";
 import { FISH_BY_ID } from "../data/fishData.js";
+import { bomPara } from "../gameplay/rules.js";
 
 const CHAVE_SALVO = "pesca_livre_aquidauana_v1";
 const PROMPT_PESCA = "Mire com o <b>mouse</b> e segure o <b>clique</b> ou <b>espaço</b> para arremessar · <b>E</b> levanta a âncora";
@@ -140,6 +141,7 @@ export class ModoLivre {
         this.d.casting.rig.visible = !this.navegando;
       }
     });
+    deps.events.on("gear", () => this._kit());
     // pré-carrega o rio.json para a escolha do rio aparecer rápido
     this.dados.carregarMeta().catch(() => {});
   }
@@ -205,8 +207,9 @@ export class ModoLivre {
 
     // nível do rio: barranco mais alto na seca, correnteza mais forte na cheia
     const pct = meta.percentil_nivel ?? 0.4;
-    const alturaBarranco = this.fase === "cheio" ? 0.5 : Math.max(0.6, Math.min(2.8, 2.9 - 2.4 * pct));
+    const alturaBarranco = this.fase === "cheio" ? 0.6 : Math.max(0.7, Math.min(3.4, 3.6 - 2.6 * pct));
     this.mundo = new MundoRio(D.scene, this.dados, { qualidade: D.S.settings.quality, alturaBarranco });
+    if (this.cidade) this.mundo.cidade = { x: this.cidade.xz[0], z: this.cidade.xz[1] };
     this.barco = new Barco(this.dados);
     this.barco.corrente = { subindo: 0.95, cheio: 1.15, baixando: 0.75, seco: 0.45 }[this.fase] ?? 0.6;
 
@@ -222,6 +225,11 @@ export class ModoLivre {
     }
     this.barco.colocar(pos.x, pos.z, psi);
     this.mundo.quadro.definir(pos.x, pos.z, -psi);
+    // o Pindó marcado no rio: boia vermelha com bandeira e placa no meio do canal
+    if (this.pindo) {
+      const pp = this.dados.emS(this.pindo.s);
+      this.mundo.setMarcos([{ nome: "Pindó", x: pp.x, z: pp.z, cor: 0xe0322e }]);
+    }
     const t0 = performance.now();
     this.mundo.refazer(pos.x, pos.z);
     console.info(`[livre] rio montado em ${Math.round(performance.now() - t0)} ms (${this.mundo.trechos.size} trechos)`);
@@ -235,7 +243,8 @@ export class ModoLivre {
     this.navegando = true;
     this.piloto = null;
     this._atualizarTabela(true);
-    D.hud.toast(`Rio Aquidauana: satélite de ${meta.satelite.data_principal.split("-").reverse().join("/")}, rio ${nomeFase(this.fase)}`, "info");
+    const dt = (iso) => iso.split("-").reverse().join("/");
+    D.hud.toast(`Rio Aquidauana pelo satélite de ${dt(meta.satelite.data_maior_parte || meta.satelite.data_principal)} a ${dt(meta.satelite.data_principal)}; rio ${nomeFase(this.fase)}`, "info");
     if (emPiracema(dataLocal())) D.hud.toast("Piracema em MS (5/nov a 28/fev): só pesque e solte.", "gold");
     mostrarCarregando(null);
     document.body.classList.add("lv-ativo");
@@ -319,7 +328,11 @@ export class ModoLivre {
         D.hud.toast("Diminua a velocidade para ancorar", "warn");
         return;
       }
-      this.ancorar();
+      mostrarCarregando("Ancorando…");
+      setTimeout(() => {
+        this.ancorar();
+        mostrarCarregando(null);
+      }, 30);
     } else {
       if (!D.machine.is(D.Phase.IDLE)) {
         D.hud.toast("Recolha a linha antes de levantar a âncora", "warn");
@@ -426,12 +439,12 @@ export class ModoLivre {
     if (navegaAgora && Math.abs(B.v) > 1.5) {
       this._esteiraT = (this._esteiraT || 0) - dt;
       if (this._esteiraT <= 0) {
-        this._esteiraT = 0.09;
+        this._esteiraT = 0.14;
         const m = this.barcoMesh;
         const dir = this._v.set(Math.sin(this._psiMundo), 0, -Math.cos(this._psiMundo));
         const popa = m.position.clone().addScaledVector(dir, -3.1);
-        D.effects.ripple(popa, 1.4 + Math.abs(B.v) * 0.18, 1.6, 2.6, Math.atan2(dir.z, -dir.x) + Math.PI, 0.45);
-        if (Math.abs(B.v) > 5) D.effects.esteira(m.position.clone().addScaledVector(dir, 2.4), dir.clone().multiplyScalar(-1), 0.4);
+        D.effects.ripple(popa, 0.7 + Math.abs(B.v) * 0.07, 1.3, 3.2, Math.atan2(-dir.z, dir.x), 0.26);
+        if (Math.abs(B.v) > 8 && Math.random() < 0.5) D.effects.esteira(m.position.clone().addScaledVector(dir, 2.4), dir.clone().multiplyScalar(-1), 0.4);
       }
     }
     // informações e salvamento
@@ -558,7 +571,19 @@ export class ModoLivre {
     const t = tabelaDoMomento(cl, this.fase, this.agua, this.d.gclock.hours);
     this.loc.fishTable = t.fishTable;
     this.loc.biteMult = t.biteMult;
+    this._kit();
     if (forcar) console.info("[livre] tabela de peixes", t);
+  }
+
+  /** "Pega bem aqui" do cartão Meu conjunto, com os peixes do rio. */
+  _kit() {
+    if (!this.ativo) return;
+    const D = this.d;
+    const eq = D.economy.getEquipped();
+    const erro = D.compat(eq);
+    const bons = erro ? [] : bomPara(eq, this.loc);
+    D.hud.kitBom.className = "kit-bom" + (erro || !bons.length ? " ruim" : "");
+    D.hud.kitBom.textContent = erro ? erro : bons.length ? "Pega bem no Aquidauana: " + bons.slice(0, 4).join(", ") : "Essa traia não combina com os peixes do rio. Veja \"Indicado para\" na Loja.";
   }
 
   _melhorAgora() {
@@ -622,12 +647,24 @@ export class ModoLivre {
   _cameraNavegacao(dt, snap = false) {
     const cam = this.d.camera;
     const m = this.barcoMesh;
+    if (this.vistaCima) {
+      // vista de cima, norte para cima (comparação com o satélite nos testes)
+      const Q = this.mundo.quadro;
+      cam.up.set(Q.s, 0, -Q.c);
+      cam.position.set(m.position.x, this.vistaCima, m.position.z);
+      cam.lookAt(m.position.x, 0, m.position.z);
+      cam.fov = 60;
+      cam.updateProjectionMatrix();
+      this.d.scene.fog.density = 0;
+      return;
+    }
+    cam.up.set(0, 1, 0);
     const psi = this._psiMundo + this.camYawExtra;
     const dx = Math.sin(psi), dz = -Math.cos(psi);
     const v = Math.abs(this.barco.v);
     const atras = 9.5 + v * 0.25, alto = 3.6 + v * 0.06;
     const alvoPos = this._v.set(m.position.x - dx * atras, alto, m.position.z - dz * atras);
-    const k = snap ? 1 : 1 - Math.exp(-3.5 * dt);
+    const k = snap || this.velocidadeTeste > 1 ? 1 : 1 - Math.exp(-3.5 * dt);
     this.camPos.lerp(alvoPos, k);
     if (snap) this.camPos.copy(alvoPos);
     this.camOlha.set(m.position.x + dx * 16, 1.2, m.position.z + dz * 16);

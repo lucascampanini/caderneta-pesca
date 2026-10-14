@@ -153,7 +153,8 @@ export class PainelEntrada {
       <div class="lv-rio">
         <h3>Rio Aquidauana (MS)</h3>
         <div class="lv-meta">${m.trecho}: <b>${(m.linha.comprimento_m / 1000).toFixed(1)} km de rio</b>, com o Pindó marcado.<br>
-        Formato do rio pela imagem de satélite de <b>${fmtData(sat.data_principal)}</b> (Sentinel-2; cenas usadas: ${datas}).<br>
+        Formato do rio pelo satélite Sentinel-2: imagem mais recente sem nuvem de <b>${fmtData(sat.data_principal)}</b>,
+        a maior parte de <b>${fmtData(sat.data_maior_parte || sat.data_principal)}</b> (cenas usadas: ${datas}).<br>
         Nível: ${nv ? `<b>${Math.round(nv.cm)} cm</b> em ${fmtData(nv.data)} na régua da ANA em Aquidauana, <b>${nomeFase(m.fase_rio)}</b>` : "sem leitura recente da ANA (usando o satélite)"}.<br>
         Clima agora: ${cl ? `<b>${Math.round(cl.temp)} °C</b>, ${cl.descricao.toLowerCase()}, vento ${Math.round(cl.vento)} km/h` : "buscando…"}.<br>
         Pacote atualizado em ${fmtData(m.gerado_em)}.</div>

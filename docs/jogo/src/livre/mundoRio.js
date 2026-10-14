@@ -39,6 +39,11 @@ const sstep = (a, b, x) => {
   return t * t * (3 - 2 * t);
 };
 
+function fatorMata(c) {
+  const lum = 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2];
+  return sstep(0.04, 0.1, c[1] - c[0]) * sstep(0.63, 0.54, lum);
+}
+
 const texLoader = new THREE.TextureLoader();
 const texCache = new Map();
 function tex(nome, srgb = true) {
@@ -82,7 +87,7 @@ function materialChao() {
         vec3 cLama = texture2D(uLama, vMapUv * 0.8).rgb;
         vec3 cBar = texture2D(uBarranco, vec2(vMapUv.x + vMapUv.y, vAlt * 0.32)).rgb;
         // capim tingido pela cor do satélite; lama escura e molhada na beira; areia clara; barranco vermelho
-        vec3 base = cCap * vColor * 2.3;
+        vec3 base = cCap * mix(vColor, vec3(0.36, 0.42, 0.25), 0.35) * 1.9;
         base = mix(base, cLama * vec3(0.46, 0.4, 0.33), vMisto.x);
         base = mix(base, (0.55 + 0.6 * cLama.r) * vec3(0.78, 0.67, 0.5), vMisto.y);
         base = mix(base, cBar * vec3(0.78, 0.55, 0.42), vMisto.z);
@@ -174,7 +179,7 @@ export class MundoRio {
       if (a > 0.15) y = THREE.MathUtils.lerp(y, 0.12, sstep(0.15, 0.6, a));
     } else {
       const hb = this.hb * (0.75 + 0.5 * (ruidoLento(x, z) * 0.5 + 0.5));
-      y = -0.05 + (hb + 0.05) * sstep(0, 5.5, d);
+      y = -0.05 + (hb + 0.05) * sstep(0, 3.2, d); // barranco
       y += Math.min(4, D.relevo(x, z) * 0.18) * sstep(12, 90, d);
       y += ruido(x, z) * 0.22 * sstep(4, 20, d);
       if (a > 0.15) y = THREE.MathUtils.lerp(y, 0.2 + d * 0.015, sstep(0.15, 0.6, a));
@@ -182,12 +187,19 @@ export class MundoRio {
     return y;
   }
 
-  /** 0..1: mata fechada (pela cor do satélite: verde escuro). */
+  /** 0..1: mata fechada (pela cor do satélite: verde escuro). Calibrado no trecho: mata g−r ≈ 0,14 e
+   *  brilho ≈ 0,49; pasto seco g−r ≈ 0 e brilho ≈ 0,65; cidade brilho ≈ 0,75 e cinza. */
   mata(x, z) {
     const c = this.dados.corEm(x, z, this._cor);
+    return fatorMata(c);
+  }
+
+  /** 0..1: área urbana (telhados e ruas: claro e acinzentado), só perto da cidade. */
+  urbano(x, z) {
+    const c = this.dados.corEm(x, z, this._cor);
     const lum = 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2];
-    const verde = c[1] - c[0];
-    return sstep(0.36, 0.27, lum) * sstep(-0.01, 0.04, verde);
+    const sat = Math.max(c[0], c[1], c[2]) - Math.min(c[0], c[1], c[2]);
+    return sstep(0.68, 0.76, lum) * sstep(0.22, 0.12, sat) * (this.cidade ? sstep(3500, 2500, Math.hypot(x - this.cidade.x, z - this.cidade.z)) : 0);
   }
 
   _chaoTrecho(i, j) {
@@ -217,11 +229,11 @@ export class MundoRio {
         // cor do satélite: no pasto vale a foto; debaixo da mata, chão de folhas escuro
         const c = D.corEm(x, z, this._cor);
         const lum = 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2];
-        const fm = sstep(0.36, 0.27, lum) * sstep(-0.01, 0.04, c[1] - c[0]);
-        const r = THREE.MathUtils.lerp(c[0], 0.3, fm), g = THREE.MathUtils.lerp(c[1], 0.32, fm), bb = THREE.MathUtils.lerp(c[2], 0.2, fm);
+        const fm = fatorMata(c);
+        const r = THREE.MathUtils.lerp(c[0], 0.3, fm), g = THREE.MathUtils.lerp(c[1], 0.3, fm), bb = THREE.MathUtils.lerp(c[2], 0.19, fm);
         // normaliza o brilho (a textura de capim traz o detalhe), mantendo o tom
         const l = Math.max(0.08, 0.3 * r + 0.59 * g + 0.11 * bb);
-        const kk = THREE.MathUtils.lerp(0.42 / l, 1, 0.35);
+        const kk = THREE.MathUtils.lerp(0.42 / l, 1, 0.55);
         cor[k * 3] = Math.min(1, r * kk);
         cor[k * 3 + 1] = Math.min(1, g * kk);
         cor[k * 3 + 2] = Math.min(1, bb * kk);
@@ -321,8 +333,19 @@ export class MundoRio {
           else { id = "ipe_amarelo"; h = 9 + R() * 5; }
         }
         add(id, px, pz, { altura: h, brilho: 0.8 + R() * 0.2 - (ciliar ? 0 : 0.06), cor: id.startsWith("ipe") ? [1, 1, 1] : undefined });
+        // sub-bosque: a mata ciliar do Aquidauana é fechada, sem vão embaixo das copas
+        if ((m > 0.5 || ciliar) && R() < 0.75 * dens) {
+          const qx = px + (R() - 0.5) * pa, qz = pz + (R() - 0.5) * pa;
+          if (D.sdf(qx, qz) > 2) {
+            const r2 = R();
+            const sid = r2 < 0.35 ? "arvore_c" : r2 < 0.6 ? "arvore_d" : r2 < 0.85 ? "arbusto" : "pachira";
+            add(sid, qx, qz, { altura: sid.startsWith("arvore") ? 4 + R() * 5 : 2.5 + R() * 2.5, brilho: 0.7 + R() * 0.15 });
+          }
+        }
       }
     }
+    // casas da cidade (Aquidauana e Anastácio), onde o satélite mostra área urbana
+    if (this.cidade) this._casas(x0, z0, R, group);
     // 2) arbustos na beira e na orla da mata
     const pb = this.q === "low" ? 7 : 4.5;
     for (let z = z0; z < z0 + CH; z += pb) {
@@ -375,6 +398,44 @@ export class MundoRio {
     for (const c of campos.values()) if (c.count) group.add(c.build());
   }
 
+  _casas(x0, z0, R, group) {
+    const D = this.dados, Q = this.quadro;
+    const lista = [];
+    const pc = 16;
+    for (let z = z0; z < z0 + CH; z += pc) {
+      for (let x = x0; x < x0 + CH; x += pc) {
+        const px = x + 3 + R() * (pc - 6), pz = z + 3 + R() * (pc - 6);
+        if (D.sdf(px, pz) < 14) continue;
+        const u = this.urbano(px, pz);
+        if (u < 0.3 || R() > u * 0.8) continue;
+        lista.push([px, pz, R()]);
+      }
+    }
+    if (!lista.length) return;
+    const n = lista.length;
+    const paredes = new THREE.InstancedMesh(geoCasa(), matCasa(), n);
+    const telhados = new THREE.InstancedMesh(geoTelhado(), matTelhado(), n);
+    const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), sc = new THREE.Vector3(), ps = new THREE.Vector3();
+    const cor = new THREE.Color();
+    const CORES = [0xf2efe6, 0xe9dcc3, 0xf0e2a8, 0xd9e6e0, 0xf3d9c7, 0xe4e4e4];
+    lista.forEach(([x, z, r], i) => {
+      const p = Q.paraMundo(x, z, this._p);
+      const y = this.altura(x, z);
+      const w = 6 + r * 5, l = 7 + ((r * 7.3) % 1) * 6, h = 2.8 + ((r * 3.1) % 1) * 0.6;
+      e.set(0, Q.a + Math.round(r * 4) * (Math.PI / 2) + 0.2, 0);
+      q.setFromEuler(e);
+      m4.compose(ps.set(p.x, y - 0.3, p.z), q, sc.set(w, h + 0.3, l));
+      paredes.setMatrixAt(i, m4);
+      paredes.setColorAt(i, cor.setHex(CORES[Math.floor(r * CORES.length)]));
+      m4.compose(ps.set(p.x, y + h, p.z), q, sc.set(w * 1.12, 1.4 + r * 0.5, l * 1.08));
+      telhados.setMatrixAt(i, m4);
+      telhados.setColorAt(i, cor.setHSL(0.03 + r * 0.03, 0.55, 0.38 + r * 0.1));
+    });
+    paredes.castShadow = telhados.castShadow = true;
+    paredes.receiveShadow = telhados.receiveShadow = true;
+    group.add(paredes, telhados);
+  }
+
   // ---------- trechos ----------
 
   _montarTrecho(i, j) {
@@ -389,13 +450,77 @@ export class MundoRio {
   _descartar(g) {
     this.root.remove(g);
     g.traverse((o) => {
-      if (o.geometry) o.geometry.dispose();
+      if (o.isInstancedMesh) o.dispose();
+      else if (o.geometry && !o.geometry.userData.shared) o.geometry.dispose();
       // materiais e texturas são compartilhados (cache): não descarta
     });
   }
 
+  /** Marcos no rio (boia com bandeira e placa), como o do Pindó: [{ nome, x, z, cor }] */
+  setMarcos(lista) {
+    this.marcosDef = lista;
+    this._montarMarcos();
+  }
+
+  _montarMarcos() {
+    if (this.marcos) {
+      this.root.remove(this.marcos);
+      this.marcos.traverse((o) => {
+        o.geometry?.dispose();
+        if (o.material) {
+          o.material.map?.dispose();
+          o.material.dispose();
+        }
+      });
+    }
+    this.marcos = new THREE.Group();
+    this.marcos.name = "marcos_rio";
+    for (const m of this.marcosDef || []) {
+      const g = new THREE.Group();
+      const cor = m.cor ?? 0xe0322e;
+      const boia = new THREE.Mesh(new THREE.SphereGeometry(0.55, 16, 12), new THREE.MeshStandardMaterial({ color: cor, roughness: 0.5 }));
+      boia.scale.y = 0.75;
+      boia.position.y = 0.15;
+      g.add(boia);
+      const faixa = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.14, 16), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 }));
+      faixa.position.y = 0.3;
+      g.add(faixa);
+      const mastro = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 4.2, 6), new THREE.MeshStandardMaterial({ color: 0xdddddd, metalness: 0.5, roughness: 0.4 }));
+      mastro.position.y = 2.3;
+      g.add(mastro);
+      const band = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.9), new THREE.MeshStandardMaterial({ color: cor, side: THREE.DoubleSide, roughness: 0.7 }));
+      band.position.set(0.76, 3.9, 0);
+      g.add(band);
+      g.userData.bandeira = band;
+      // placa com o nome, sempre de frente para a câmera
+      const cv = document.createElement("canvas");
+      cv.width = 512;
+      cv.height = 128;
+      const c2 = cv.getContext("2d");
+      c2.fillStyle = "rgba(10,18,26,.78)";
+      c2.beginPath();
+      c2.roundRect(4, 4, 504, 120, 28);
+      c2.fill();
+      c2.fillStyle = "#fff";
+      c2.font = "bold 70px Outfit, sans-serif";
+      c2.textAlign = "center";
+      c2.fillText(m.nome, 256, 88);
+      const tx = new THREE.CanvasTexture(cv);
+      tx.colorSpace = THREE.SRGBColorSpace;
+      const placa = new THREE.Sprite(new THREE.SpriteMaterial({ map: tx, depthTest: true, fog: false }));
+      placa.scale.set(6, 1.5, 1);
+      placa.position.y = 6.2;
+      g.add(placa);
+      const p = this.quadro.paraMundo(m.x, m.z, this._p);
+      g.position.set(p.x, 0, p.z);
+      this.marcos.add(g);
+    }
+    this.root.add(this.marcos);
+  }
+
   /** Recria tudo num novo referencial (ao ancorar). bx, bz: barco no rio. */
   refazer(bx, bz) {
+    this._montarMarcos();
     for (const t of this.trechos.values()) this._descartar(t.group);
     this.trechos.clear();
     if (this.longe) this._descartar(this.longe);
@@ -597,6 +722,38 @@ export class MundoRio {
       this.chuva = null;
     }
   }
+}
+
+// ---------- casas ----------
+
+let _geoCasa, _geoTelhado, _matCasa, _matTelhado;
+function geoCasa() {
+  if (!_geoCasa) {
+    _geoCasa = new THREE.BoxGeometry(1, 1, 1);
+    _geoCasa.translate(0, 0.5, 0);
+    _geoCasa.userData.shared = true;
+  }
+  return _geoCasa;
+}
+function geoTelhado() {
+  if (!_geoTelhado) {
+    // telhado de duas águas
+    const s = new THREE.Shape();
+    s.moveTo(-0.5, 0);
+    s.lineTo(0.5, 0);
+    s.lineTo(0, 1);
+    s.closePath();
+    _geoTelhado = new THREE.ExtrudeGeometry(s, { depth: 1, bevelEnabled: false });
+    _geoTelhado.translate(0, 0, -0.5);
+    _geoTelhado.userData.shared = true;
+  }
+  return _geoTelhado;
+}
+function matCasa() {
+  return (_matCasa ??= new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 }));
+}
+function matTelhado() {
+  return (_matTelhado ??= new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 }));
 }
 
 // ---------- a voadeira ----------

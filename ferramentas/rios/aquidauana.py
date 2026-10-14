@@ -808,7 +808,8 @@ def main():
         "satelite": {
             "fonte": "Copernicus Sentinel-2 L2A (Element84 Earth Search / AWS)",
             "cenas": usadas,
-            "data_principal": usadas[0]["data"],
+            "data_principal": usadas[0]["data"],  # a cena mais recente usada (onde estava sem nuvem)
+            "data_maior_parte": max(usadas, key=lambda u: u["fracao_corredor"])["data"],
             "data_cor_do_chao": data_cor,
             "data_mais_antiga": min(u["data"] for u in usadas),
             "agua_km2": round(float(agua_rio.sum()) * CELULA * CELULA / 1e6, 3),
