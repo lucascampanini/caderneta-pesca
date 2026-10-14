@@ -197,7 +197,7 @@ function materialPeixe(tex) {
     uCurva: { value: 0 },
     uRelogio: { value: 0 },
     uAguaY: { value: WATER_Y },
-    uTurbidez: { value: 1.1 },
+    uTurbidez: { value: 0.9 },
     uCorAgua: { value: new THREE.Color(0x3a5248) },
     uMolhado: { value: 0 },
   };
@@ -246,8 +246,8 @@ roughnessFactor = mix(roughnessFactor, 0.28, uMolhado);`)
 if (vProf > 0.0) {
   // debaixo d'água: esverdeado, escuro e sumindo com a profundidade
   float vis = exp(-vProf * uTurbidez);
-  gl_FragColor.rgb = mix(uCorAgua, gl_FragColor.rgb * vec3(0.7, 0.88, 0.8), vis);
-  gl_FragColor.a *= clamp(vis * 1.5, 0.0, 0.92);
+  gl_FragColor.rgb = mix(uCorAgua, gl_FragColor.rgb * vec3(0.72, 0.86, 0.78), 0.3 + 0.7 * vis);
+  gl_FragColor.a *= clamp(vis * 2.1, 0.0, 0.95);
 }`);
   };
   m.customProgramCacheKey = () => "peixeFoto1";

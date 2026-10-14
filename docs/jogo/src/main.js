@@ -199,6 +199,7 @@ machine.register(Phase.IDLE, {
 machine.register(Phase.CHARGING, {
   enter() {
     casting.beginCharge();
+    audio.play("pickupAbre"); // [briga] abre a alça do pick-up
     hud.showPower(true);
   },
   exit() {
@@ -211,6 +212,7 @@ machine.register(Phase.FLYING, {
   enter() {
     S.stats.casts += 1;
     audio.play("whoosh");
+    audio.play("linhaAssobio", { dur: Math.max(0.5, (2 * bobber.vel.y) / 9.8) }); // [briga] linha assobiando no voo
   },
 });
 

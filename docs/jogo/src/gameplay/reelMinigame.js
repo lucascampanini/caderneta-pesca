@@ -222,11 +222,16 @@ export class ReelFight {
     const rx = this.fishPoint.x - this.playerSpot.x, rz = this.fishPoint.z - this.playerSpot.z;
     const rl = Math.hypot(rx, rz) || 1;
     let alvoRumo = this.rumo;
-    if (vel > 0.15) {
+    if (perto > 0.35 && !surging) {
+      // perto do barranco ele não vem de cabeça: atravessa de um lado para o outro na frente do pescador
+      const lado = Math.sign(Math.sin(this.t * 0.7) * this.angleDrift) || 1;
+      const tx = rz / rl * lado, tz = -rx / rl * lado; // tangente à volta do pescador
+      alvoRumo = Math.atan2(-(tz - rz / rl * 0.35), tx - rx / rl * 0.35);
+    } else if (vel > 0.15) {
       const radial = (v.x * rx + v.z * rz) / (rl * (v.length() || 1));
       if (radial < -0.3 && !surging) {
         // sendo arrastado pela boca: a cabeça aponta para o pescador, o corpo de lado
-        alvoRumo = Math.atan2(rz / rl, -rx / rl) + Math.sign(this.angleDrift) * 0.5;
+        alvoRumo = Math.atan2(rz / rl, -rx / rl) + Math.sign(this.angleDrift) * 0.9;
       } else alvoRumo = Math.atan2(-v.z, v.x);
     }
     const da = difAng(alvoRumo, this.rumo);
@@ -234,9 +239,10 @@ export class ReelFight {
     this.rumoVel = lerp(this.rumoVel, giro, 1 - Math.exp(-6 * dt));
     this.rumo += this.rumoVel * dt;
 
-    // de lado quando cansa (mostra o flanco), balançando
-    const deLado = cansado && this.progress > 62 ? 1.25 + Math.sin(this.t * 1.7) * 0.2 : Math.sin(this.t * 2.3) * 0.12;
-    this.rolagem = lerp(this.rolagem, -deLado, 1 - Math.exp(-2 * dt));
+    // de lado quando cansa, balançando, deitando o flanco para o lado do pescador (que olha de cima)
+    const deLado = cansado && this.progress > 62 ? 0.85 + Math.sin(this.t * 1.7) * 0.2 : Math.sin(this.t * 2.3) * 0.12;
+    const flancoParaPescador = Math.sin(this.rumo) * -rx + Math.cos(this.rumo) * -rz > 0 ? 1 : -1;
+    this.rolagem = lerp(this.rolagem, -deLado * flancoParaPescador, 1 - Math.exp(-2 * dt));
 
     m.visible = this.prof < 2.3;
     m.castShadow = false;

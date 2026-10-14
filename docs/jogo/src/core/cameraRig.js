@@ -96,11 +96,13 @@ export class CameraRig {
     this.pertoS = lerp(this.pertoS || 0, B ? Math.max(perto * 0.8, B.phase === "landing" ? 1 : 0) : 0, 1 - Math.exp(-2 * dt));
     this.destS = lerp(this.destS || 0, dest, 1 - Math.exp(-5 * dt));
     this.tensaoS = lerp(this.tensaoS || 0, B ? B.tension / 100 : 0, 1 - Math.exp(-6 * dt));
+    // na briga a câmera passa para o ombro esquerdo: a vara (na mão direita) fica de lado e não tapa o peixe
+    this.brigaS = lerp(this.brigaS || 0, B ? 1 : 0, 1 - Math.exp(-1.5 * dt));
 
     this._desired
       .copy(this.anchor)
       .addScaledVector(this._dir, -C.back + this.pertoS * 0.7)
-      .addScaledVector(right, C.side * (1 - this.pertoS * 0.4))
+      .addScaledVector(right, C.side - this.brigaS * (this.ladoBriga ?? 1.0))
       .addScaledVector(UP, C.height - this.pertoS * 0.2);
 
     if (this.focus) {
@@ -139,7 +141,7 @@ export class CameraRig {
     );
     cam.lookAt(this._look);
 
-    const targetFov = C.fov - this.fovPulse * C.chargeFovDrop - this.pertoS * 4 - this.destS * 13;
+    const targetFov = C.fov - this.fovPulse * C.chargeFovDrop - this.pertoS * 9 - this.destS * 13;
     cam.fov = lerp(cam.fov, targetFov, 1 - Math.exp(-8 * dt));
     cam.updateProjectionMatrix();
     this.snapNext = false;
