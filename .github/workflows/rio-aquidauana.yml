@@ -50,7 +50,7 @@ jobs:
                   d.pop(k, None)
               return d
           try:
-              antigo = subprocess.run(["git", "show", f"HEAD:{pasta}/rio.json"], capture_output=True, text=True, check=True).stdout
+              antigo = subprocess.run(["git", "show", f"HEAD:{pasta}/rio.json"], capture_output=True, text=True, encoding="utf-8", check=True).stdout
               mudou_json = sem_ruido(antigo) != sem_ruido(open(f"{pasta}/rio.json", encoding="utf-8").read())
           except subprocess.CalledProcessError:
               mudou_json = True
