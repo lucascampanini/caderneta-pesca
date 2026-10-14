@@ -14,6 +14,7 @@ import { WaterSurface } from "./world/water.js";
 import { SkySystem } from "./world/sky.js";
 import { PostFX } from "./world/postfx.js"; // [ceu]
 import { EnvironmentManager } from "./world/environment.js";
+import { setVento } from "./world/impostores.js";
 import { Effects } from "./world/effects.js";
 import { CastingSystem } from "./gameplay/casting.js";
 import { Bobber } from "./gameplay/bobber.js";
@@ -109,6 +110,7 @@ const screens = new Screens({
   onQualityChange: (q) => {
     core.setQuality(q);
     water.setQuality(q);
+    travelTo(S.world.current, true); // a densidade da vegetação e os modelos dependem da qualidade
     saveGame();
   },
 });
@@ -584,6 +586,9 @@ function updateWeather(dt) {
     if (next !== S.world.weather) {
       S.world.weather = next;
       events.emit("weather", { weather: next });
+      const vento = next === "cloudy" ? 1.6 : 0.8;
+      water.setWind?.(vento / 2);
+      setVento(vento);
     }
   }
   const target = S.world.weather === "cloudy" ? 1 : 0;

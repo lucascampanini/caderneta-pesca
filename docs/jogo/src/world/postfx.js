@@ -11,6 +11,20 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
 import { S } from "../state/gameState.js";
 
+// Filtro de segurança antes do bloom: um único pixel NaN/infinito (de qualquer shader) seria espalhado
+// pelo desfoque do bloom e pintaria a tela de preto. Aqui ele vira 0 e o brilho fica limitado.
+const SanitizeShader = {
+  uniforms: { tDiffuse: { value: null } },
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `uniform sampler2D tDiffuse; varying vec2 vUv;
+    void main(){
+      vec4 c = texture2D(tDiffuse, vUv);
+      bvec4 ruim = bvec4(isnan(c.r) || isinf(c.r), isnan(c.g) || isinf(c.g), isnan(c.b) || isinf(c.b), isnan(c.a) || isinf(c.a));
+      if (any(ruim)) c = vec4(0.0, 0.0, 0.0, 1.0);
+      gl_FragColor = vec4(min(c.rgb, vec3(64.0)), c.a);
+    }`,
+};
+
 // roda depois do OutputPass, então trabalha em cor de tela (sRGB)
 const GradeShader = {
   uniforms: {
@@ -76,6 +90,7 @@ export class PostFX {
     this.bloom = null;
     if (alta) {
       // limiar alto em HDR: só o sol, o brilho dele na água e reflexos fortes acendem
+      composer.addPass(new ShaderPass(SanitizeShader));
       this.bloom = new UnrealBloomPass(new THREE.Vector2(w / 2, h / 2), 0.22, 0.55, 2.2);
       composer.addPass(this.bloom);
     }

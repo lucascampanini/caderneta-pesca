@@ -102,7 +102,7 @@ export class CameraRig {
     this._desired
       .copy(this.anchor)
       .addScaledVector(this._dir, -C.back + this.pertoS * 0.7)
-      .addScaledVector(right, C.side - this.brigaS * (this.ladoBriga ?? 1.0))
+      .addScaledVector(right, C.side - this.brigaS * (this.ladoBriga ?? 0.6))
       .addScaledVector(UP, C.height - this.pertoS * 0.2);
 
     if (this.focus) {

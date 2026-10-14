@@ -235,8 +235,8 @@ export function colocarObjetosTrapiche(group, { x = 0, y = 0.62, z = -2.6, lado 
   const alta = qualidadeAlta();
   // o pescador olha para -Z; os objetos ficam ao lado e um pouco atrás para não tapar o arremesso
   const e = -lado; // X da esquerda do pescador
-  colocarObjeto(g, "banquinho", { x: 0.78 * e, z: 0.7, giro: 0.4 });
-  if (alta) colocarObjeto(g, "chapeu", { x: 0.78 * e, y: 0.445, z: 0.7, giro: 2.1 });
+  colocarObjeto(g, "banquinho", { x: 0.95 * e, z: 1.3, giro: 0.4 });
+  if (alta) colocarObjeto(g, "chapeu", { x: 0.95 * e, y: 0.445, z: 1.3, giro: 2.1 });
   colocarObjeto(g, "balde", { x: 0.7 * e, z: 1.7, giro: 1.2 });
   if (alta) colocarObjeto(g, "lampiao", { x: 0.85 * e, z: -0.6, giro: -0.6, sombra: false });
   return g;

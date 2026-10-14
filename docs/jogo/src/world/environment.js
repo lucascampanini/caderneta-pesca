@@ -8,6 +8,7 @@
 import * as THREE from "three";
 import { disposeObject3D, randRange } from "../utils/utils.js";
 import { S } from "../state/gameState.js";
+import { colocarTrapiche, colocarGalhada, colocarPedra, colocarObjetosTrapiche, colocarEstacas, preCarregarModelos } from "./modelos.js";
 import {
   Vegetacao, mataCiliar, mataDistante, camalotes, chaoMargem, alturaMargem,
   garca, tuiuiu, barranco, ranchinho, voadeira,
@@ -67,25 +68,26 @@ function makeDock({ length = 13, width = 2.4, deckY = 0.62, startZ = 9 }) {
   return g;
 }
 
-/** Baía: só o trapiche de madeira. */
+/** Baía: trapiche de madeira real, banquinho, balde e lampião, galhadas e estacas na água. */
 function objetosDePerto_lake(group) {
-  group.add(makeDock({ length: 13, width: 2.4, deckY: 0.62, startZ: 9 }));
+  colocarTrapiche(group, { comprimento: 13, largura: 2.4, alturaDeck: 0.62, inicioZ: 9 });
+  colocarObjetosTrapiche(group, { x: 0, y: 0.62, z: -2.6 });
+  colocarGalhada(group, -16, -30, 0.7, { tipo: "grosso", escala: 1.8 });
+  colocarGalhada(group, 19, -44, -1.1, { tipo: "fino", escala: 2.4, inclina: 0.2 });
+  colocarEstacas(group, 5, -12, 0.4);
 }
 
-/** Rio de água clara: trapiche curto, pedras na água e na beira, galhada caída. */
+/** Rio de água clara: trapiche curto, pedras escaneadas na água e na beira, galhada caída. */
 function objetosDePerto_river(group) {
-  group.add(makeDock({ length: 9, width: 2.1, deckY: 0.58, startZ: 8 }));
-  const rockMat = std(0x7d7a72, { flatShading: true });
+  colocarTrapiche(group, { comprimento: 9, largura: 2.1, alturaDeck: 0.58, inicioZ: 8 });
+  colocarObjetosTrapiche(group, { x: 0, y: 0.58, z: -0.8 });
   for (const [x, z, s] of [
     [-6, -6, 0.7], [9, -12, 0.9], [-13, -18, 1.1], [4, -24, 0.6], [16, -8, 0.8], [-22, -40, 1.4], [25, -55, 1.2], [-3, -58, 1.6],
     [-3, 8.5, 0.6], [6, 9, 0.8], [-9, 10, 0.7],
-  ]) {
-    const r = makeRock(rockMat, s);
-    r.position.set(x, 0.08, z);
-    group.add(r);
-  }
-  // galho caído na água (galhada), onde a piraputanga se esconde
-  group.add(mesh(new THREE.CylinderGeometry(0.18, 0.3, 14, 7), std(0x4a3a2a), { x: -18, y: 0.1, z: -57, rz: Math.PI / 2 - 0.15, ry: 0.5, shadow: true }));
+  ]) colocarPedra(group, x, z, s * 1.8);
+  // galhada onde a piraputanga se esconde
+  colocarGalhada(group, -18, -55, 0.5, { tipo: "grosso", escala: 3.2, inclina: 0.15 });
+  colocarGalhada(group, 14, -30, -0.8, { tipo: "fino", escala: 2.0 });
 }
 
 /** Barranco: trapiche alto com guarda-corpo e o ranchinho em cima do barranco. */
@@ -93,7 +95,9 @@ function objetosDePerto_pier(group, deckY) {
   const r = ranchinho();
   r.position.set(-7, 3.2, 16);
   group.add(r);
-  group.add(makeDock({ length: 14, width: 2.6, deckY, startZ: 8 }));
+  colocarTrapiche(group, { comprimento: 14, largura: 2.6, alturaDeck: deckY, inicioZ: 8 });
+  colocarObjetosTrapiche(group, { x: 0, y: deckY, z: -4.5 });
+  colocarGalhada(group, -14, -26, 0.9, { tipo: "grosso", escala: 2.4, inclina: 0.18 });
   const railMat = std(WOOD_DARK);
   for (const sx of [-1, 1]) {
     group.add(mesh(new THREE.BoxGeometry(0.07, 0.07, 12), railMat, { x: sx * 1.22, y: deckY + 0.95, z: 2, shadow: true }));
