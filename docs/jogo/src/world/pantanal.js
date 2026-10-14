@@ -72,7 +72,7 @@ function materialChao() {
         vec4 cLama = texture2D(map, vMapUv);
         vec4 cCapim = texture2D(uCapim, vMapUv * 0.7);
         float k = smoothstep(0.25, 0.75, vColor.r);
-        diffuseColor.rgb *= mix(cLama.rgb * vec3(0.5, 0.48, 0.44), cCapim.rgb * vec3(0.8, 0.85, 0.7), k) * (0.45 + 0.55 * vColor.g);`
+        diffuseColor.rgb *= mix(cLama.rgb * vec3(0.42, 0.4, 0.36), cCapim.rgb * vec3(0.5, 0.62, 0.38), k) * (0.45 + 0.55 * vColor.g);`
       )
       .replace("#include <color_fragment>", "");
   };
@@ -87,6 +87,9 @@ const TONS_VERDE = [
   [1, 1, 1], [0.92, 1.0, 0.9], [1.05, 1.02, 0.9], [0.85, 0.95, 0.85], [1.0, 0.96, 0.82],
 ];
 
+// alcance (m) das espécies baixas
+const PEQUENAS = { grama: 160, grama2: 160, samambaia: 140, capim_alto: 260, taboa: 260, aguape: 300, arbusto: 340, pachira: 340 };
+
 export class Vegetacao {
   /** @param {string} qualidade "low" | "medium" | "high" */
   constructor(qualidade = "high") {
@@ -95,6 +98,12 @@ export class Vegetacao {
   }
 
   add(id, x, y, z, o = {}) {
+    // planta baixa muito longe do pescador vira menos de um pixel: rareia e depois some
+    const alcance = PEQUENAS[id];
+    if (alcance) {
+      const d = Math.hypot(x, z);
+      if (d > alcance || (d > alcance * 0.5 && Math.random() < (d - alcance * 0.5) / (alcance * 0.5))) return;
+    }
     if (!this.campos.has(id)) this.campos.set(id, new CampoImpostores(id));
     const c = this.campos.get(id);
     if (!o.cor) {
@@ -243,7 +252,7 @@ function cortinaMata(tr, d, altura) {
  */
 export function mataCiliar(veg, pontos, lado, {
   profundidade = 45, altura = 1.1, densidade = 1, chanceIpe = 0.07, chancePalmeira = 0.1,
-  aguape = 0.25, taboa = 0.14, capimAlto = 2.6, alturaArvore = [11, 27], livre = () => true,
+  aguape = 0.25, taboa = 0.2, capimAlto = 6, alturaArvore = [11, 27], livre = () => true,
 } = {}) {
   const tr = trilha(pontos, lado);
   const L = tr.total;
@@ -256,10 +265,10 @@ export function mataCiliar(veg, pontos, lado, {
   const dn = (base) => veg.n(base * L * densidade);
   // 1) beira d'água: capim alto e taboa com o pé dentro d'água, aguapé encostado
   for (let i = 0; i < dn(capimAlto); i++) {
-    const d = randRange(-2.2, 2.5);
+    const d = randRange(-2.2, 4);
     const [x, z] = pt(Math.random() * L, d);
     if (!livre(x, z)) continue;
-    veg.add("capim_alto", x, alturaMargem(d, altura) + 0.05, z, { altura: randRange(0.9, 2.0) });
+    veg.add("capim_alto", x, alturaMargem(d, altura) + 0.05, z, { altura: randRange(1.0, 2.3), largura: randRange(1, 1.8) });
   }
   for (let i = 0; i < dn(taboa); i++) {
     const s0 = Math.random() * L, d0 = randRange(-2.5, 0.5);
@@ -276,17 +285,17 @@ export function mataCiliar(veg, pontos, lado, {
     veg.add("aguape", x, 0, z, { escala: randRange(0.9, 1.5), variante: Math.random() < 0.6 ? 3 : 2, afundar: 0.28 });
   }
   // 2) beira seca: grama, arbustos, samambaia e pachira (mamorana)
-  for (let i = 0; i < dn(3.5); i++) {
+  for (let i = 0; i < dn(5); i++) {
     const d = randRange(0.2, 12);
     const [x, z] = pt(Math.random() * L, d);
-    veg.add(Math.random() < 0.6 ? "grama" : "grama2", x, alturaMargem(d, altura), z, { altura: randRange(0.35, 0.8), largura: randRange(1, 1.6) });
+    veg.add(Math.random() < 0.6 ? "grama" : "grama2", x, alturaMargem(d, altura), z, { altura: randRange(0.5, 1.1), largura: randRange(1.2, 2) });
   }
-  for (let i = 0; i < dn(0.8); i++) {
+  for (let i = 0; i < dn(1.4); i++) {
     const d = randRange(1.0, 14);
     const [x, z] = pt(Math.random() * L, d);
     const r = Math.random();
     const id = r < 0.5 ? "arbusto" : r < 0.8 ? "pachira" : "samambaia";
-    const h = id === "arbusto" ? randRange(1.4, 3.2) : id === "pachira" ? randRange(1.8, 3.6) : randRange(0.6, 1.1);
+    const h = id === "arbusto" ? randRange(1.8, 4) : id === "pachira" ? randRange(2.2, 4.5) : randRange(0.7, 1.3);
     veg.add(id, x, alturaMargem(d, altura) - 0.05, z, { altura: h });
   }
   // 3) sub-bosque: parede de arvoretas e arbustos altos que fecha o vão embaixo das copas
@@ -385,7 +394,7 @@ let matBarranco = null;
 /** Barranco de terra vermelha (foto de corte de solo), com o topo de chão de capim. */
 export function barranco(largura = 120, altura = 3.2, z = 6) {
   const g = new THREE.Group();
-  const geo = new THREE.PlaneGeometry(largura, altura + 1.6, 160, 10);
+  const geo = new THREE.PlaneGeometry(largura, altura + 1.6, Math.round(largura * 1.2), 10);
   const p = geo.attributes.position;
   const uv = geo.attributes.uv;
   for (let i = 0; i < p.count; i++) {

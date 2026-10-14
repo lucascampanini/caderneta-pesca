@@ -173,8 +173,8 @@ function buildLake(group) {
 function buildRiver(group) {
   // Rio de Água Clara: margem da frente perto, pedras e galhada
   const veg = new Vegetacao(qualidade());
-  const frente = margemReta(-320, -62, 320, -66, 10, 5);
-  const daqui = margemReta(-320, 7.5, 320, 7.5, 10, 2.5);
+  const frente = margemReta(-650, -62, 650, -66, 10, 5);
+  const daqui = margemReta(-650, 7.5, 650, 7.5, 10, 2.5);
   const trapiche = (x, z) => !(Math.abs(x) < 3.2 && z < 12);
   group.add(chaoMargem(frente, -1, { profundidade: 80, altura: 1.6 }));
   group.add(chaoMargem(daqui, 1, { profundidade: 70, altura: 0.9 }));
@@ -191,28 +191,28 @@ function buildPier(group) {
   // Barranco do Rio Paraguai: barranco de terra vermelha atrás, rio largo e barrento, outra margem lá longe
   const veg = new Vegetacao(qualidade());
   const altB = 3.2, deckY = 1.05;
-  group.add(barranco(170, altB, 7));
+  group.add(barranco(500, altB, 7));
   // em cima do barranco: capim na beirada, arbustos e mata atrás
-  for (let i = 0; i < veg.n(1400); i++) {
-    const x = randRange(-85, 85), z = randRange(7.6, 14);
+  for (let i = 0; i < veg.n(3600); i++) {
+    const x = randRange(-240, 240), z = randRange(7.6, 14);
     if (Math.abs(x) < 2 && z < 10) continue;
     veg.add(Math.random() < 0.5 ? "capim_alto" : "grama", x, altB, z, { altura: randRange(0.6, 1.6) });
   }
-  for (let i = 0; i < veg.n(120); i++) {
-    const x = randRange(-85, 85), z = randRange(11, 24);
+  for (let i = 0; i < veg.n(300); i++) {
+    const x = randRange(-240, 240), z = randRange(11, 24);
     if (Math.abs(x + 7) < 4 && Math.abs(z - 16) < 4) continue; // ranchinho
     veg.add(Math.random() < 0.6 ? "arbusto" : "pachira", x, altB, z, { altura: randRange(1.5, 3.4) });
   }
-  const fundo = margemReta(85, 22, -85, 22, 10, 3);
+  const fundo = margemReta(240, 22, -240, 22, 10, 3);
   mataCiliar(veg, fundo, -1, { profundidade: 40, altura: altB, aguape: 0, taboa: 0, capimAlto: 0.4, chanceIpe: 0.1, chancePalmeira: 0.14 });
   // capim e taboa no pé do barranco, dentro d'água, dos dois lados do trapiche
-  for (let i = 0; i < veg.n(260); i++) {
-    const x = randRange(-80, 80), z = randRange(4.5, 6.5);
+  for (let i = 0; i < veg.n(700); i++) {
+    const x = randRange(-240, 240), z = randRange(4.5, 6.5);
     if (Math.abs(x) < 3.5) continue;
     veg.add(Math.random() < 0.75 ? "capim_alto" : "taboa", x, -0.1, z, { altura: randRange(1.0, 2.2) });
   }
   // outra margem, lá longe
-  const longe = margemReta(-700, -320, 700, -310, 14, 10);
+  const longe = margemReta(-950, -320, 950, -310, 14, 10);
   group.add(chaoMargem(longe, -1, { profundidade: 120, altura: 1.4 }));
   mataCiliar(veg, longe, -1, { profundidade: 90, altura: 1.4, densidade: 0.7, chanceIpe: 0.05, chancePalmeira: 0.08, alturaArvore: [15, 26], aguape: 0.1 });
   // camalotes descendo o rio
