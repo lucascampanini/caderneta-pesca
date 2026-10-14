@@ -20,5 +20,7 @@ Foram reduzidos no Blender (Decimate, texturas em 1k/512 e compressão Draco) pa
 ## Água (`../agua/`)
 
 - `waternormals.jpg`: normal map de água dos exemplos do [three.js](https://github.com/mrdoob/three.js/blob/r170/examples/textures/waternormals.jpg) (licença MIT, © 2010-2024 three.js authors).
+- `fundo_seixos_cor.jpg`, `fundo_seixos_normal.jpg`: [Ganges River Pebbles](https://polyhaven.com/a/ganges_river_pebbles), Amal Kumar, Poly Haven (CC0), reduzidas para 512 px.
+- `fundo_lodo_cor.jpg`: [Brown Mud Leaves 01](https://polyhaven.com/a/brown_mud_leaves_01), Rob Tuytel, Poly Haven (CC0), reduzida para 512 px.
 
 Os decodificadores Draco são carregados do jsDelivr (pacote `three@0.170.0`, licença Apache 2.0 do Draco/Google).
