@@ -12,6 +12,7 @@ import { GameClock } from "./core/time.js";
 import { CameraRig } from "./core/cameraRig.js";
 import { WaterSurface } from "./world/water.js";
 import { SkySystem } from "./world/sky.js";
+import { PostFX } from "./world/postfx.js"; // [ceu]
 import { EnvironmentManager } from "./world/environment.js";
 import { Effects } from "./world/effects.js";
 import { CastingSystem } from "./gameplay/casting.js";
@@ -47,6 +48,7 @@ const gclock = new GameClock(S.world.hour);
 const rig = new CameraRig(camera);
 const water = new WaterSurface(scene, S.settings.quality);
 const sky = new SkySystem(scene, renderer, core.sunLight, core.hemiLight, core.ambient, water);
+const postfx = new PostFX(renderer, scene, camera); // [ceu] pós-processamento (bloom, ACES, cor, vinheta)
 const env = new EnvironmentManager(scene);
 const effects = new Effects(scene);
 const casting = new CastingSystem(scene);
@@ -684,7 +686,7 @@ function tick() {
 
   rig.setAimYaw(casting.aimYaw);
   rig.update(dt);
-  renderer.render(scene, camera);
+  postfx.render(); // [ceu] era renderer.render(scene, camera)
 }
 
 // ---------------------------------------------------------------------------
