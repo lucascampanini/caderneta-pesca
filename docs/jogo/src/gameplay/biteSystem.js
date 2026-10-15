@@ -26,10 +26,13 @@ export class BiteSystem {
     this.nibbleEnd = 0;
   }
 
-  begin(zone) {
+  /** modo: "boia" | "fundo" | "artificial" (com artificial o peixe só ataca a isca em movimento). */
+  begin(zone, modo = this.modo || "boia") {
     const env = this.getEnv();
     this.zone = zone;
-    this.wait = rollBiteWait({ ...env, zone });
+    this.modo = modo;
+    this.atividade = 1;
+    this.wait = rollBiteWait({ ...env, zone }) * (modo === "artificial" ? 0.5 : 1);
     this.t = 0;
     this.fish = null;
     this.state = "waiting";
@@ -55,9 +58,15 @@ export class BiteSystem {
     return fish;
   }
 
+  /** Isca artificial: quanto ela está trabalhando (0 parada ... 1 nadando ou levando toques). */
+  setAtividade(a) {
+    this.atividade = a;
+  }
+
   update(dt) {
     if (this.state === "waiting") {
-      this.t += dt;
+      // isca artificial parada quase não recebe ataque; na boia e no fundo o tempo corre normal
+      this.t += dt * (this.modo === "artificial" ? 0.15 + 0.85 * this.atividade : 1);
 
       if (this.nibbleEnd > 0 && this.t >= this.nibbleEnd) {
         this.bobber.setDip(0);
@@ -67,12 +76,17 @@ export class BiteSystem {
         this.nibbles.shift();
         this.bobber.setDip(0.13);
         this.nibbleEnd = this.t + 0.35;
-        events.emit("bite:nibble");
+        events.emit("bite:nibble", { modo: this.modo });
       }
 
       if (this.t >= this.wait) {
         const env = this.getEnv();
         this.fish = rollFish({ ...env, zone: this.zone });
+        if (!this.fish) {
+          // ninguém se interessou pela isca aqui: o tempo de espera recomeça
+          this.begin(this.zone, this.modo);
+          return;
+        }
         // anzol grande demais para a boca do peixe: ele belisca, rouba a isca e vai embora
         const av = !this.fish.tutorial && env.eq ? avaliar(this.fish.speciesId, env.eq, this.fish.sizeNorm) : null;
         if (av && av.anzolGrande && chance(0.6)) {
@@ -83,10 +97,10 @@ export class BiteSystem {
           events.emit("bite:stolen", { fish, reason: av.problemas.find((p) => p.startsWith("Anzol")) });
           return;
         }
-        this.windowT = this.fish.hookWindow;
+        this.windowT = this.fish.hookWindow * (this.modo === "artificial" ? 0.85 : 1);
         this.state = "window";
         this.bobber.setDip(0.42);
-        events.emit("bite:start", { fish: this.fish });
+        events.emit("bite:start", { fish: this.fish, modo: this.modo });
       }
     } else if (this.state === "window") {
       this.windowT -= dt;

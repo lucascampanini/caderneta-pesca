@@ -30,6 +30,7 @@ export function getEquipped() {
     reel: GEAR.reels[S.gear.equipped.reels],
     line: GEAR.lines[S.gear.equipped.lines],
     term: GEAR.terminals[S.gear.equipped.terminals],
+    rig: GEAR.rigs[S.gear.equipped.rigs ?? 0] || GEAR.rigs[0],
     bait: GEAR.baits[S.gear.equipped.baits],
   };
 }

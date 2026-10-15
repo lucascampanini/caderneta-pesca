@@ -29,7 +29,15 @@ export const REGRAS = {
   "anzolTxt": "Circular 4/0–8/0",
   "aco": false,
   "linhaTxt": "Multifilamento 4X 40–65 lb",
-  "dica": "Deixe o peixe levar a isca de 3 a 5 segundos antes de travar. Com anzol circular, só recolha firme, sem fisgada brusca."
+  "dica": "Deixe o peixe levar a isca de 3 a 5 segundos antes de travar. Com anzol circular, só recolha firme, sem fisgada brusca.",
+  "colunas": [
+   "fundo"
+  ],
+  "colunasArt": [
+   "fundo"
+  ],
+  "rig": "fundo-corrida",
+  "rigNome": "Fundo para bagre grande"
  },
  "cachara": {
   "nome": "Cachara",
@@ -60,7 +68,17 @@ export const REGRAS = {
   "anzolTxt": "Circular 4/0–8/0",
   "aco": false,
   "linhaTxt": "Multifilamento 4X 40–65 lb",
-  "dica": "No fim da tarde, arremesse a meia-água rente às praias rasas antes de mudar para a isca natural."
+  "dica": "No fim da tarde, arremesse a meia-água rente às praias rasas antes de mudar para a isca natural.",
+  "colunas": [
+   "fundo",
+   "meia"
+  ],
+  "colunasArt": [
+   "meia",
+   "fundo"
+  ],
+  "rig": "fundo-corrida",
+  "rigNome": "Fundo para bagre grande"
  },
  "jau": {
   "nome": "Jaú",
@@ -89,7 +107,13 @@ export const REGRAS = {
   "anzolTxt": "Circular 8/0–12/0",
   "aco": true,
   "linhaTxt": "Multifilamento 80–100 lb",
-  "dica": "Ao fisgar, tire o peixe da toca nos primeiros segundos, sem dar linha."
+  "dica": "Ao fisgar, tire o peixe da toca nos primeiros segundos, sem dar linha.",
+  "colunas": [
+   "fundo"
+  ],
+  "colunasArt": [],
+  "rig": "fundo-pesado",
+  "rigNome": "Fundo pesado"
  },
  "barbado": {
   "nome": "Barbado",
@@ -120,7 +144,13 @@ export const REGRAS = {
   "anzolTxt": "Circular 2/0–5/0",
   "aco": false,
   "linhaTxt": "Multifilamento 25–40 lb",
-  "dica": "Quando um sai, insista no ponto: costuma estar em cardume."
+  "dica": "Quando um sai, insista no ponto: costuma estar em cardume.",
+  "colunas": [
+   "fundo"
+  ],
+  "colunasArt": [],
+  "rig": "fundo-corrida",
+  "rigNome": "Fundo médio"
  },
  "jurupoca": {
   "nome": "Jurupoca",
@@ -150,7 +180,13 @@ export const REGRAS = {
   "anzolTxt": "Circular 2/0–5/0",
   "aco": false,
   "linhaTxt": "Multifilamento 25–40 lb",
-  "dica": "Use equipamento médio: o peixe é pequeno, mas mora perto de pauleira."
+  "dica": "Use equipamento médio: o peixe é pequeno, mas mora perto de pauleira.",
+  "colunas": [
+   "fundo"
+  ],
+  "colunasArt": [],
+  "rig": "fundo-corrida",
+  "rigNome": "Fundo médio"
  },
  "jurupensem": {
   "nome": "Jurupensém",
@@ -180,7 +216,13 @@ export const REGRAS = {
   "anzolTxt": "Circular 2/0–5/0",
   "aco": false,
   "linhaTxt": "Multifilamento 25–40 lb",
-  "dica": "Boca pequena para o tamanho do bico: prefira anzol circular 2/0–3/0."
+  "dica": "Boca pequena para o tamanho do bico: prefira anzol circular 2/0–3/0.",
+  "colunas": [
+   "fundo"
+  ],
+  "colunasArt": [],
+  "rig": "fundo-corrida",
+  "rigNome": "Fundo médio"
  },
  "palmito": {
   "nome": "Palmito",
@@ -210,7 +252,14 @@ export const REGRAS = {
   "anzolTxt": "Circular 2/0–5/0",
   "aco": false,
   "linhaTxt": "Multifilamento 25–40 lb",
-  "dica": "Boca grande e mole: recolha firme e constante, sem trancos."
+  "dica": "Boca grande e mole: recolha firme e constante, sem trancos.",
+  "colunas": [
+   "meia",
+   "fundo"
+  ],
+  "colunasArt": [],
+  "rig": "fundo-corrida",
+  "rigNome": "Fundo médio"
  },
  "armado": {
   "nome": "Armado",
@@ -241,7 +290,13 @@ export const REGRAS = {
   "anzolTxt": "Circular 2/0–5/0",
   "aco": false,
   "linhaTxt": "Multifilamento 25–40 lb",
-  "dica": "Os espinhos das placas e das nadadeiras cortam: use alicate e pano para segurar."
+  "dica": "Os espinhos das placas e das nadadeiras cortam: use alicate e pano para segurar.",
+  "colunas": [
+   "fundo"
+  ],
+  "colunasArt": [],
+  "rig": "fundo-corrida",
+  "rigNome": "Fundo médio"
  },
  "pati": {
   "nome": "Pati",
@@ -271,7 +326,13 @@ export const REGRAS = {
   "anzolTxt": "Circular 2/0–5/0",
   "aco": false,
   "linhaTxt": "Multifilamento 25–40 lb",
-  "dica": "Pesca de fundo à noite, com chumbo que segure na correnteza."
+  "dica": "Pesca de fundo à noite, com chumbo que segure na correnteza.",
+  "colunas": [
+   "fundo"
+  ],
+  "colunasArt": [],
+  "rig": "fundo-corrida",
+  "rigNome": "Fundo médio"
  },
  "mandi": {
   "nome": "Mandi-amarelo",
@@ -302,7 +363,13 @@ export const REGRAS = {
   "anzolTxt": "Chinu ou maruseigo nº 4 a nº 1",
   "aco": false,
   "linhaTxt": "Mono 0,28–0,30 mm ou multi 10–15 lb",
-  "dica": "Segure por trás das nadadeiras peitorais, com o polegar na nuca, para não levar ferroada."
+  "dica": "Segure por trás das nadadeiras peitorais, com o polegar na nuca, para não levar ferroada.",
+  "colunas": [
+   "fundo"
+  ],
+  "colunasArt": [],
+  "rig": "boia",
+  "rigNome": "Boia e linha fina"
  },
  "pacu": {
   "nome": "Pacu",
@@ -333,7 +400,17 @@ export const REGRAS = {
   "anzolTxt": "Maruseigo 1/0–4/0",
   "aco": false,
   "linhaTxt": "Multifilamento 30–40 lb",
-  "dica": "Espere o pacu levar a isca e fisgue firme: a boca é dura."
+  "dica": "Espere o pacu levar a isca e fisgue firme: a boca é dura.",
+  "colunas": [
+   "sup",
+   "fundo",
+   "meia"
+  ],
+  "colunasArt": [
+   "meia"
+  ],
+  "rig": "fruta",
+  "rigNome": "Pacu na fruta e no caranguejo"
  },
  "pacupeva": {
   "nome": "Pacu-peva",
@@ -363,7 +440,14 @@ export const REGRAS = {
   "anzolTxt": "Chinu ou maruseigo nº 4 a nº 1",
   "aco": false,
   "linhaTxt": "Mono 0,28–0,30 mm ou multi 10–15 lb",
-  "dica": "Boia sensível e anzol pequeno: ele belisca antes de engolir."
+  "dica": "Boia sensível e anzol pequeno: ele belisca antes de engolir.",
+  "colunas": [
+   "meia",
+   "sup"
+  ],
+  "colunasArt": [],
+  "rig": "boia",
+  "rigNome": "Boia e linha fina"
  },
  "piavucu": {
   "nome": "Piauçu",
@@ -393,7 +477,13 @@ export const REGRAS = {
   "anzolTxt": "Maruseigo nº 1 a 2/0",
   "aco": false,
   "linhaTxt": "Multifilamento 15–25 lb",
-  "dica": "Fisgue no primeiro toque firme; se esperar, ele limpa o anzol."
+  "dica": "Fisgue no primeiro toque firme; se esperar, ele limpa o anzol.",
+  "colunas": [
+   "fundo"
+  ],
+  "colunasArt": [],
+  "rig": "fundo-corrida",
+  "rigNome": "Fundo leve para peixe de escama"
  },
  "trespintas": {
   "nome": "Piau-três-pintas",
@@ -424,7 +514,13 @@ export const REGRAS = {
   "anzolTxt": "Chinu ou maruseigo nº 4 a nº 1",
   "aco": false,
   "linhaTxt": "Mono 0,28–0,30 mm ou multi 10–15 lb",
-  "dica": "Anzol pequeno (chinu ou maruseigo 2 a 4) e linha fina: ele desconfia."
+  "dica": "Anzol pequeno (chinu ou maruseigo 2 a 4) e linha fina: ele desconfia.",
+  "colunas": [
+   "fundo"
+  ],
+  "colunasArt": [],
+  "rig": "boia",
+  "rigNome": "Boia e linha fina"
  },
  "piapara": {
   "nome": "Piapara",
@@ -454,7 +550,13 @@ export const REGRAS = {
   "anzolTxt": "Maruseigo nº 1 a 2/0",
   "aco": false,
   "linhaTxt": "Multifilamento 15–25 lb",
-  "dica": "Ceve o ponto por um ou dois dias antes, se puder."
+  "dica": "Ceve o ponto por um ou dois dias antes, se puder.",
+  "colunas": [
+   "fundo"
+  ],
+  "colunasArt": [],
+  "rig": "fundo-corrida",
+  "rigNome": "Fundo leve para peixe de escama"
  },
  "piraputanga": {
   "nome": "Piraputanga",
@@ -486,7 +588,16 @@ export const REGRAS = {
   "anzolTxt": "Chinu ou maruseigo nº 4 a nº 1",
   "aco": false,
   "linhaTxt": "Mono 0,28–0,30 mm ou multi 10–15 lb",
-  "dica": "Aproxime-se em silêncio e use linha fina."
+  "dica": "Aproxime-se em silêncio e use linha fina.",
+  "colunas": [
+   "sup",
+   "meia"
+  ],
+  "colunasArt": [
+   "meia"
+  ],
+  "rig": "boia",
+  "rigNome": "Boia e linha fina"
  },
  "dourado": {
   "nome": "Dourado",
@@ -518,7 +629,17 @@ export const REGRAS = {
   "anzolTxt": "Circular ou wide gap 2/0–4/0",
   "aco": true,
   "linhaTxt": "Multifilamento 30–40 lb",
-  "dica": "Fisgue forte e mais de uma vez: a boca é dura."
+  "dica": "Fisgue forte e mais de uma vez: a boca é dura.",
+  "colunas": [
+   "meia"
+  ],
+  "colunasArt": [
+   "meia",
+   "sup",
+   "fundo"
+  ],
+  "rig": "viva-aco",
+  "rigNome": "Isca viva com empate de aço"
  },
  "traira": {
   "nome": "Traíra",
@@ -551,7 +672,17 @@ export const REGRAS = {
   "anzolTxt": "Haste longa 1/0–3/0",
   "aco": true,
   "linhaTxt": "Multifilamento 20–30 lb",
-  "dica": "Dentes muito afiados: use alicate para tirar o anzol."
+  "dica": "Dentes muito afiados: use alicate para tirar o anzol.",
+  "colunas": [
+   "meia",
+   "fundo"
+  ],
+  "colunasArt": [
+   "sup",
+   "meia"
+  ],
+  "rig": "piranha",
+  "rigNome": "Dente afiado (piranha, traíra na isca natural)"
  },
  "piranha": {
   "nome": "Piranha",
@@ -581,7 +712,15 @@ export const REGRAS = {
   "anzolTxt": "Haste longa 1/0–3/0",
   "aco": true,
   "linhaTxt": "Multifilamento 20–30 lb",
-  "dica": "Use alicate e segure por trás da cabeça."
+  "dica": "Use alicate e segure por trás da cabeça.",
+  "colunas": [
+   "meia"
+  ],
+  "colunasArt": [
+   "meia"
+  ],
+  "rig": "piranha",
+  "rigNome": "Dente afiado (piranha, traíra na isca natural)"
  },
  "curimbata": {
   "nome": "Curimbatá",
@@ -608,7 +747,13 @@ export const REGRAS = {
   "anzolTxt": "Chinu ou maruseigo nº 4 a nº 1",
   "aco": false,
   "linhaTxt": "Mono 0,28–0,30 mm ou multi 10–15 lb",
-  "dica": "Equipamento leve e ceva constante. Fisgue suave: a boca é delicada."
+  "dica": "Equipamento leve e ceva constante. Fisgue suave: a boca é delicada.",
+  "colunas": [
+   "fundo"
+  ],
+  "colunasArt": [],
+  "rig": "boia",
+  "rigNome": "Boia e linha fina"
  },
  "cachorra": {
   "nome": "Cachorra",
@@ -638,7 +783,15 @@ export const REGRAS = {
   "anzolTxt": "Circular ou wide gap 2/0–4/0",
   "aco": true,
   "linhaTxt": "Multifilamento 30–40 lb",
-  "dica": "As presas cortam: empate de aço sempre."
+  "dica": "As presas cortam: empate de aço sempre.",
+  "colunas": [
+   "meia"
+  ],
+  "colunasArt": [
+   "meia"
+  ],
+  "rig": "viva-aco",
+  "rigNome": "Isca viva com empate de aço"
  },
  "tucunare": {
   "nome": "Tucunaré",
@@ -672,7 +825,17 @@ export const REGRAS = {
   "anzolTxt": "Wide gap ou circular 1/0–3/0",
   "aco": false,
   "linhaTxt": "Multifilamento 20–30 lb",
-  "dica": "O primeiro metro depois da queda da isca é quando mais ataca."
+  "dica": "O primeiro metro depois da queda da isca é quando mais ataca.",
+  "colunas": [
+   "meia"
+  ],
+  "colunasArt": [
+   "sup",
+   "meia",
+   "fundo"
+  ],
+  "rig": "viva",
+  "rigNome": "Isca viva com líder"
  },
  "corvina": {
   "nome": "Corvina",
@@ -703,7 +866,15 @@ export const REGRAS = {
   "anzolTxt": "Circular 2/0–5/0",
   "aco": false,
   "linhaTxt": "Multifilamento 25–40 lb",
-  "dica": "Onde sai uma, há cardume: repita o arremesso no mesmo ponto."
+  "dica": "Onde sai uma, há cardume: repita o arremesso no mesmo ponto.",
+  "colunas": [
+   "fundo"
+  ],
+  "colunasArt": [
+   "fundo"
+  ],
+  "rig": "fundo-corrida",
+  "rigNome": "Fundo médio"
  },
  "tilapia": {
   "nome": "Tilápia",
@@ -733,6 +904,12 @@ export const REGRAS = {
   "anzolTxt": "Chinu ou maruseigo nº 4 a nº 1",
   "aco": false,
   "linhaTxt": "Mono 0,28–0,30 mm ou multi 10–15 lb",
-  "dica": "Ceva pouca e frequente segura o cardume no ponto."
+  "dica": "Ceva pouca e frequente segura o cardume no ponto.",
+  "colunas": [
+   "meia"
+  ],
+  "colunasArt": [],
+  "rig": "boia",
+  "rigNome": "Boia e linha fina"
  }
 };

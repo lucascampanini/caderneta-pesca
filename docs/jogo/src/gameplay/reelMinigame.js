@@ -322,7 +322,9 @@ export class ReelFight {
     // linha saindo: quando a captura recua, o peixe está tirando linha; na arrancada o freio patina forte
     const recuo = Math.max(0, (this.prevProgress - this.progress) / dt);
     this.prevProgress = this.progress;
-    const alvoSaida = clamp(recuo / 9, 0, 1) * 0.8 + (surging ? 0.55 + 0.45 * clamp(strength / 1.6, 0, 1) : 0);
+    // o freio só patina (linha saindo, carretel girando) na arrancada ou com a tensão perto do limite;
+    // parado e sem arrancada, o carretel fica parado
+    const alvoSaida = surging ? 0.55 + 0.45 * clamp(strength / 1.6, 0, 1) : this.tension > 88 ? (this.tension - 88) / 12 * 0.5 : 0;
     this.saindo = lerp(this.saindo, clamp(alvoSaida, 0, 1), 1 - Math.exp(-10 * dt));
 
     // cabeçadas: o peixe sacode a cabeça e a ponta da vara treme

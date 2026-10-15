@@ -466,7 +466,7 @@ export class CastingSystem {
     if (this.reel) {
       this.reel.manivela.rotation.x -= this.reelIn * dt * 14;
       if (this.reel.rotor) this.reel.rotor.rotation.y -= this.reelIn * dt * 14 * 5.2;
-      if (this.lineOut > 0) this.reel.carretel.rotateY(this.lineOut * dt * 40);
+      if (this.lineOut > 0.05) this.reel.carretel.rotateY(this.lineOut * dt * 40);
       if (!this.reel.rotor && this.reelIn > 0) this.reel.carretel.rotateY(-this.reelIn * dt * 30);
       // alça do pick-up: abre no arremesso, fecha com estalo quando a boia cai
       const alca = this.reel.alca;

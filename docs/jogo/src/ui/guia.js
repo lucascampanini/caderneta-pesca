@@ -42,6 +42,7 @@ function equip() {
     <div class="guia-card"><h4>O elo mais fraco arrebenta</h4><p>Linha (lb), vara (libragem) e freio do molinete (drag) precisam aguentar o peixe. O mais fraco dos três decide. Peixe maior que o conjunto: a tensão sobe rápido e a linha estoura.</p></div>
     <div class="guia-card"><h4>Anzol do tamanho da boca</h4><p>Anzol grande demais: o peixe belisca e rouba a isca. Pequeno demais: abre na briga. Em isca artificial vale a garatéia da própria isca.</p></div>
     <div class="guia-card"><h4>Dente pede aço</h4><p>Piranha, traíra, cachorra, dourado e jaú cortam a linha. Use anzol com empate de aço.</p></div>
+    <div class="guia-card"><h4>Boia, fundo ou artificial</h4><p>Peixe de escama que belisca a meia-água (piraputanga, piau, pacu-peva, tilápia) vai de <b>boia</b>. Bagre e peixe de fundo (pintado, cachara, piauçu, piapara, jaú) vai de <b>chumbada corrida</b>: a mordida aparece na ponta da vara. Com <b>isca artificial</b> não tem boia nem chumbo: você recolhe e dá toques para a isca trabalhar, e o ataque vem no recolhimento.</p></div>
     <div class="guia-card"><h4>Cada peixe tem a sua isca</h4><p>Com a isca errada, quase nada morde. A isca certa atrai a espécie e faz a mordida vir mais rápido.</p></div>
     <div class="guia-card"><h4>Mono ou multi</h4><p>Multifilamento não estica: arremessa mais longe e dá mais tempo para fisgar. Monofilamento estica e perdoa os trancos da briga.</p></div>
   </div>`;

@@ -287,8 +287,33 @@ function modeloIsca(item) {
   return g;
 }
 
-const MODELOS = { rods: modeloVara, reels: modeloMolinete, lines: modeloLinha, terminals: modeloAnzol, baits: modeloIsca };
-const TAMANHO = { rods: [420, 90], reels: [180, 130], lines: [150, 120], terminals: [130, 130], baits: [170, 110] };
+function modeloMontagem(item) {
+  const g = new THREE.Group();
+  if (item.tipo === "boia") {
+    const baixo = new THREE.Mesh(new THREE.SphereGeometry(0.06, 16, 12), m(0xf2f0ea, { roughness: 0.35 }));
+    const cima = new THREE.Mesh(new THREE.SphereGeometry(0.057, 16, 12), m(0xe23b3b, { roughness: 0.35 }));
+    cima.position.y = 0.05;
+    const haste = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.12, 8), m(0xe2b53b));
+    haste.position.y = 0.15;
+    const linha = new THREE.Mesh(new THREE.CylinderGeometry(0.0015, 0.0015, 0.22, 4), m(0xd6e6e0, { transparent: true, opacity: 0.7 }));
+    linha.position.y = -0.16;
+    const chumbinho = new THREE.Mesh(new THREE.SphereGeometry(0.012, 8, 6), m(0x55585c, { metalness: 0.6 }));
+    chumbinho.position.y = -0.2;
+    g.add(baixo, cima, haste, linha, chumbinho);
+  } else {
+    const chumbo = new THREE.Mesh(item.pesada ? new THREE.CylinderGeometry(0.06, 0.07, 0.025, 6) : new THREE.SphereGeometry(0.04, 16, 12), m(0x6a6e73, { metalness: 0.55, roughness: 0.45 }));
+    if (!item.pesada) chumbo.scale.set(1, 1.6, 1);
+    const furo = new THREE.Mesh(new THREE.CylinderGeometry(0.0015, 0.0015, 0.3, 4), m(0xd6e6e0, { transparent: true, opacity: 0.7 }));
+    const girador = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.02, 8), m(0x3a3a3a, { metalness: 0.8 }));
+    girador.position.y = -0.1;
+    g.add(chumbo, furo, girador);
+  }
+  g.rotation.set(0.2, 0.4, 0);
+  return g;
+}
+
+const MODELOS = { rigs: modeloMontagem, rods: modeloVara, reels: modeloMolinete, lines: modeloLinha, terminals: modeloAnzol, baits: modeloIsca };
+const TAMANHO = { rigs: [130, 130], rods: [420, 90], reels: [180, 130], lines: [150, 120], terminals: [130, 130], baits: [170, 110] };
 
 /** Imagem (dataURL) do item, renderizada na primeira vez e guardada. */
 export function fotoItem(catKey, item, tamanho = null) {

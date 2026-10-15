@@ -26,10 +26,35 @@ export function baitScore(speciesId, bait) {
   return Math.max(0, ...bait.keys.map((k) => r.iscas[k] || 0));
 }
 
-/** Peso da espécie no sorteio de mordida, conforme a isca. */
-export const baitMult = (speciesId, bait) => {
+// em que altura da água cada isca artificial trabalha
+const COLUNA_ART = { zara: "sup", helice: "sup", popper: "sup", sapo: "sup", meia: "meia", colher: "meia", spinner: "meia", jig: "fundo", shad: "fundo", crank: "fundo" };
+
+/** Como se pesca com o conjunto: "boia", "fundo" ou "artificial" (isca artificial dispensa boia e chumbada). */
+export function modoPesca(eq) {
+  if (eq.bait.art) return "artificial";
+  return eq.rig?.tipo === "fundo" ? "fundo" : "boia";
+}
+
+/** Alturas da água em que a isca fica com esse conjunto. */
+export function colunaDoConjunto(eq) {
+  if (eq.bait.art) return [...new Set(eq.bait.keys.map((k) => COLUNA_ART[k]).filter(Boolean))];
+  return eq.rig?.coluna || ["meia", "sup"];
+}
+
+/** A isca está na altura em que a espécie come? (1 sim, 0,2 quase nunca) */
+export function colunaMult(speciesId, eq) {
+  const r = REGRAS[speciesId];
+  if (!r || !eq) return 1;
+  const cols = eq.bait.art ? r.colunasArt : r.colunas;
+  // peixe que não ataca isca artificial nenhuma (piauçu, curimbatá, bagres de fundo...) não pega artificial
+  if (!cols || !cols.length) return eq.bait.art ? 0 : 1;
+  return colunaDoConjunto(eq).some((c) => cols.includes(c)) ? 1 : eq.bait.art ? 0.08 : 0.2;
+}
+
+/** Peso da espécie no sorteio de mordida, conforme a isca e a altura em que ela está. */
+export const baitMult = (speciesId, bait, eq = null) => {
   const p = baitScore(speciesId, bait);
-  return p > 0 ? 0.3 + 0.6 * p : 0.05;
+  return (p > 0 ? 0.3 + 0.6 * p : bait.art ? 0.005 : 0.05) * colunaMult(speciesId, eq);
 };
 
 /** Alcance do arremesso em metros com a vara e a linha atuais. */
@@ -96,6 +121,15 @@ export function avaliar(speciesId, eq, sizeNorm = 0.5) {
       out.problemas.push(`Anzol ${hookTxt(eq.term.hook)} grande demais para a boca do ${nome}: ele rouba a isca. ${r.anzolTxt}.`);
     }
   }
+  if (eq.rig && colunaMult(speciesId, eq) < 1) {
+    const cols = (art ? r.colunasArt : r.colunas) || [];
+    const ondeCome = cols.includes("fundo") && cols.length === 1 ? "no fundo" : cols.includes("fundo") ? "no fundo e a meia-água" : "a meia-água e na superfície";
+    out.problemas.push(art
+      ? `${nome} ataca ${ondeCome}: essa isca trabalha em outra altura da água.`
+      : `${nome} come ${ondeCome}: ${cols.includes("fundo") ? "troque a boia por chumbada corrida" : "use boia, não chumbada no fundo"}.`);
+    out.coluna = true;
+  }
+  if (!art && r.rig === "fundo-pesado" && eq.rig?.tipo === "fundo" && !eq.rig.pesada) out.problemas.push(`Na correnteza do poço do ${nome.toLowerCase()}, chumbada leve rola: use a chumbada chata.`);
   if (baitScore(speciesId, eq.bait) === 0) out.problemas.push(`${nome} quase não pega ${eq.bait.name.toLowerCase()}. Melhores iscas: ${r.melhores.join(", ").toLowerCase()}.`);
   return out;
 }
@@ -114,7 +148,7 @@ export function bomPara(eq, location) {
     .map(([id]) => id)
     .filter((id) => {
       if (FISH_BY_ID[id].solta) return false;
-      if (baitScore(id, eq.bait) < 1.5 || !alcanca(id, eq)) return false;
+      if (baitScore(id, eq.bait) < 1.5 || !alcanca(id, eq) || colunaMult(id, eq) < 1) return false;
       const a = avaliar(id, eq, 0.5);
       return a.ratio >= 0.9 && !a.dentes && !a.anzolPequeno && !a.anzolGrande;
     })
@@ -132,6 +166,7 @@ export function indicadoPara(catKey, item) {
       case "lines": return item.lb >= r.linha[0] && item.lb <= r.linha[1] * 1.3;
       case "terminals": return r.anzol && item.hook >= r.anzol[0] - 1 && item.hook <= r.anzol[1] + 1 && (!r.aco || item.aco);
       case "baits": return baitScore(id, item) >= 2;
+      case "rigs": return (r.colunas || []).some((c) => item.coluna.includes(c)) && (item.pesada ? r.rig === "fundo-pesado" : r.rig !== "fundo-pesado") && (item.tipo === "fundo" ? r.colunas.includes("fundo") : true);
       default: return false;
     }
   });

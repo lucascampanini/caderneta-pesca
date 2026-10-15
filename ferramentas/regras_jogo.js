@@ -15,6 +15,8 @@ for (const e of ESPECIES) {
     return xs.length ? [Math.min(...xs.map(x => x[0])), Math.max(...xs.map(x => x[1]))] : null;
   };
   const iscas = {};
+  const colNat = new Set(), colArt = new Set();
+  for (const i of e.iscas) (i.tipo === 'artificial' ? colArt : colNat).add(i.col);
   for (const i of e.iscas) {
     const k = i.tipo === 'artificial' ? i.art : i.ic;
     iscas[k] = Math.max(iscas[k] || 0, i.p);
@@ -31,7 +33,11 @@ for (const e of ESPECIES) {
     anzolTxt: anzolVar ? anzolVar.anzol.txt : '',
     aco: vars.some(v => v.lider && v.lider.tipo === 'aco'),
     linhaTxt: vars[0].linha.txt,
-    dica: (e.dicas && e.dicas[0]) || ''
+    dica: (e.dicas && e.dicas[0]) || '',
+    colunas: [...colNat],
+    colunasArt: [...colArt],
+    rig: perfil.rig,
+    rigNome: perfil.nome
   };
 }
 const out = '// Gerado por ferramentas/regras_jogo.js a partir de src/data.js da Caderneta. Não edite à mão.\n' +
