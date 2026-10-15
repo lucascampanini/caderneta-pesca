@@ -32,7 +32,7 @@ const ART = { zara: "superficie", helice: "superficie", popper: "superficie", me
 
 /** Converte os itens da mochila do site em índices de equipamento do jogo. */
 export function gearDaMochila(itens) {
-  const out = { rods: new Set(), reels: new Set(), lines: new Set(), terminals: new Set(), baits: new Set() };
+  const out = { rods: new Set(), reels: new Set(), lines: new Set(), terminals: new Set(), rigs: new Set(), baits: new Set() };
   if (!Array.isArray(itens)) return out;
   const temAco = itens.some((i) => i.cat === "empate");
   for (const it of itens) {
@@ -74,6 +74,12 @@ export function gearDaMochila(itens) {
       }
       case "empate":
         out.terminals.add(idx("terminals", GEAR.terminals.find((t) => t.id === "haste2aco")));
+        break;
+      case "boia":
+        out.rigs.add(idx("rigs", GEAR.rigs.find((r) => r.id === "boia")));
+        break;
+      case "chumbada":
+        out.rigs.add(idx("rigs", GEAR.rigs.find((r) => r.id === ((+it.gMax || +it.gMin || 0) >= 60 || it.tipo === "chata" ? "chata" : "oliva"))));
         break;
       case "isca": {
         const id = ART[it.art];

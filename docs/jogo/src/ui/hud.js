@@ -123,6 +123,7 @@ export class HUD {
       ["Molinete", eq.reel.tipo === "nenhum" ? "nenhum" : curto(eq.reel.name)],
       ["Linha", `${eq.line.tipo === "multi" ? "multi" : "mono"} ${eq.line.lb} lb`],
       ["Anzol", `${hookTxt(eq.term.hook)}${eq.term.aco ? " + aço" : ""}`],
+      ["Montagem", eq.bait.art ? "artificial (sem boia)" : eq.rig ? curto(eq.rig.name).replace(" com chumbinho", "") : "boia"],
       ["Isca", eq.bait.name.replace("Artificial: ", "")],
     ].map(([k, v]) => `<span><i>${k}</i>${v}</span>`).join("");
     const erro = compat(eq);

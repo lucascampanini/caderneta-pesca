@@ -70,6 +70,15 @@ export const GEAR = {
     { id: "circ10aco", name: "Anzol circular 10/0 com cabo de aço", hook: 10, aco: true, price: 380, level: 9,
       blurb: "Jaú: boca enorme e pedra que rala a linha." },
   ],
+  // montagem para isca natural: boia (meia-água e superfície) ou chumbada (fundo). Isca artificial dispensa as duas.
+  rigs: [
+    { id: "boia", name: "Boia com chumbinho", tipo: "boia", coluna: ["meia", "sup"], price: 0, level: 1,
+      blurb: "A isca fica a meia-água, pendurada na boia. Para peixe de escama que belisca." },
+    { id: "oliva", name: "Chumbada oliva corrida 20 g", tipo: "fundo", coluna: ["fundo"], price: 10, level: 1,
+      blurb: "A isca vai ao fundo e o peixe puxa a linha sem sentir o peso. Mordida na ponta da vara." },
+    { id: "chata", name: "Chumbada chata 80 g (correnteza)", tipo: "fundo", pesada: true, coluna: ["fundo"], price: 45, level: 6,
+      blurb: "Segura a isca parada no fundo mesmo com correnteza forte: poço de jaú e canal." },
+  ],
   baits: [
     { id: "minhoca", name: "Minhoca", keys: ["minhoca"], price: 0, level: 1, blurb: "De graça e quase todo peixe miúdo aceita." },
     { id: "massa", name: "Massa com ceva", keys: ["massa"], price: 15, level: 1, blurb: "Fubá e farinha: piau, pacu-peva, curimbatá, tilápia." },
@@ -93,6 +102,7 @@ export const GEAR_CATS = [
   { key: "reels", label: "Molinetes e carretilhas", um: "molinete" },
   { key: "lines", label: "Linhas", um: "linha" },
   { key: "terminals", label: "Anzóis e empates", um: "anzol" },
+  { key: "rigs", label: "Boia ou chumbada", um: "montagem" },
   { key: "baits", label: "Iscas", um: "isca" },
 ];
 
@@ -109,7 +119,9 @@ export function gearStatLines(catKey, item) {
     case "terminals":
       return [`Anzol ${hookTxt(item.hook)}`, item.aco ? "Empate de aço" : "Sem aço"];
     case "baits":
-      return [item.art ? "Isca artificial" : "Isca natural"];
+      return [item.art ? "Isca artificial (sem boia nem chumbada)" : "Isca natural"];
+    case "rigs":
+      return [item.tipo === "boia" ? "Meia-água e superfície" : "No fundo", item.pesada ? "Para correnteza" : ""].filter(Boolean);
     default:
       return [];
   }

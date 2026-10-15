@@ -17,7 +17,7 @@ import { EnvironmentManager } from "./world/environment.js";
 import { setVento } from "./world/impostores.js";
 import { Effects } from "./world/effects.js";
 import { CastingSystem } from "./gameplay/casting.js";
-import { Bobber } from "./gameplay/bobber.js";
+import { Bobber, zoneForDistance } from "./gameplay/bobber.js";
 import { BiteSystem } from "./gameplay/biteSystem.js";
 import { ReelFight } from "./gameplay/reelMinigame.js";
 import * as economy from "./economy/economy.js";
@@ -30,7 +30,7 @@ import { CatchCard } from "./ui/catchCard.js";
 import { preloadFishPhotos } from "./fish/fishFactory.js";
 import { lerp, randRange, projectToScreen } from "./utils/utils.js";
 import { Tutorial } from "./ui/tutorial.js";
-import { compat, avaliar, dicaConjunto } from "./gameplay/rules.js";
+import { compat, avaliar, dicaConjunto, modoPesca, colunaDoConjunto } from "./gameplay/rules.js";
 import { ModoLivre } from "./livre/modoLivre.js"; // [livre]
 
 // ---------------------------------------------------------------------------
@@ -298,6 +298,15 @@ machine.register(Phase.MAP, {
 const vibrar = (p) => { try { navigator.vibrate?.(p); } catch { /* sem vibração */ } };
 let ultimaArrancada = "calm";
 
+// [montagem] boia, chumbada no fundo ou isca artificial: cada uma é uma pesca diferente
+const COR_ISCA = { superficie: 0xf2f2ea, meia: 0x2c7a4a, sapo: 0x3a6a2a, colher: 0xd8dce0, jig: 0xf2c230 };
+const DICA_ESPERA = {
+  boia: "Olhe a <b>boia</b>: tremidinha é beliscada. Quando ela <b>afundar</b>, fisgue! · segure para recolher",
+  fundo: "Linha esticada no fundo: olhe a <b>ponta da vara</b>. Tremidinha é beliscada; quando ela <b>vergar</b>, fisgue! · segure para recolher",
+  artificial: "<b>Segure</b> para recolher a isca e dê <b>toques</b> para ela trabalhar. O ataque vem no meio do recolhimento!",
+};
+let modoAtual = "boia";
+
 const lastBobberPos = new THREE.Vector3();
 let lastAv = null;
 
@@ -306,21 +315,36 @@ events.on("bobber:landed", ({ distance, zone }) => {
   casting.fecharPickup(); // [briga] alça do pick-up fecha
   audio.play("pickupFecha"); // [briga]
   hud.setZone(`Água ${CONFIG.zones.labels[zone]} · ${Math.round(distance)} m da margem`);
-  bite.begin(zone);
+  bite.begin(zone, modoAtual); // [montagem]
   machine.set(Phase.WAITING);
+});
+
+events.on("phase", ({ to }) => {
+  if (to === Phase.WAITING) hud.setPrompt(DICA_ESPERA[modoAtual] || DICA_ESPERA.boia); // [montagem]
 });
 
 events.on("bobber:retrieved", () => {
   machine.set(Phase.IDLE);
 });
 
-events.on("bite:nibble", () => {
-  audio.play("plip");
-  effects.ripple(bobber.pos, 1.5, 0.8);
+events.on("bite:nibble", ({ modo } = {}) => {
+  // [montagem] boia: tremidinha na boia; fundo: a ponta da vara bate; artificial: o peixe segue a isca e faz redemoinho
+  if (modo === "fundo") {
+    casting.tremor(0.35);
+    audio.play("plip");
+  } else if (modo === "artificial") {
+    effects.ripple(bobber.pos, 2.2, 0.9);
+    hud.toast("Um peixe seguiu a isca... continue trabalhando!", "info");
+  } else {
+    audio.play("plip");
+    effects.ripple(bobber.pos, 1.5, 0.8);
+  }
 });
 
-events.on("bite:start", () => {
+events.on("bite:start", ({ modo } = {}) => {
   lastBobberPos.copy(bobber.pos);
+  if (modo === "fundo") { casting.bendVel += 6; casting.tremor(0.8); } // [montagem] a ponta da vara verga
+  if (modo === "artificial") effects.splash(bobber.pos, 1.1); // [montagem] o ataque estoura na isca
   audio.play("bite");
   vibrar(40);
   hud.shake();
@@ -437,6 +461,9 @@ function pressDown() {
     case Phase.BITE:
       bite.hookAttempt();
       break;
+    case Phase.WAITING:
+      if (modoAtual === "artificial") bobber.toque(); // [montagem] toque de vara na isca
+      break;
     case Phase.REELING:
       fight.setReeling(true);
       break;
@@ -451,6 +478,10 @@ function pressUp() {
     case Phase.CHARGING: {
       const power = casting.endCharge();
       const { origin, velocity } = casting.computeLaunch(power, economy.getStats().castMult);
+      // [montagem] o que vai na ponta da linha depende da isca e da montagem
+      const eqM = economy.getEquipped();
+      modoAtual = modoPesca(eqM);
+      bobber.setMontagem(modoAtual, colunaDoConjunto(eqM)[0] || "sup", COR_ISCA[eqM.bait.id] ?? null);
       bobber.launch(origin, velocity, env.playerSpot);
       machine.set(Phase.FLYING);
       break;
@@ -665,6 +696,17 @@ function tick() {
         bobber.update(dt);
         break;
       case Phase.WAITING:
+        if (modoAtual === "artificial") {
+          // [montagem] segurar recolhe a isca (ela vem nadando); sem recolher ela para e quase não recebe ataque
+          bobber.recolher(dt, inputHeld ? 1 : 0);
+          bite.setAtividade(Math.min(1, bobber.velIsca / 1.2));
+          bite.zone = zoneForDistance(bobber.distanceFromPlayer); // o ataque acontece onde a isca está agora
+          casting.setReelMotion(inputHeld ? economy.getEquipped().reel.speed : 0, 0);
+          if (economy.getEquipped().reel.tipo !== "nenhum") audio.reelTick(dt, inputHeld, economy.getEquipped().reel.speed);
+          bobber.update(dt);
+          bite.update(dt);
+          break;
+        }
         bobber.update(dt);
         bite.update(dt);
         if (inputHeld) {
@@ -679,7 +721,8 @@ function tick() {
       case Phase.BITE: {
         bobber.update(dt);
         bite.update(dt);
-        const p = projectToScreen(bobber.pos, camera, window.innerWidth, window.innerHeight, biteScreenPos);
+        // [montagem] no fundo o aviso aparece na ponta da vara, que é onde a mordida se vê
+        const p = projectToScreen(modoAtual === "fundo" ? casting.tipPos() : bobber.pos, camera, window.innerWidth, window.innerHeight, biteScreenPos);
         hud.positionBite(p);
         break;
       }
@@ -705,7 +748,12 @@ function tick() {
   }
 
   // the fishing line follows whatever is on the end of it
-  if (bobber.mode !== "hidden") casting.setLineTarget(bobber.pos, bobber.mode === "flying" ? "voando" : "boia"); // [briga] modo da linha
+  if (bobber.mode !== "hidden") {
+    // [montagem] boia: linha deitada na água; fundo e artificial: linha esticada até a chumbada/isca
+    const esticada = bobber.mode !== "flying" && modoAtual !== "boia";
+    if (esticada && (phase === Phase.WAITING || phase === Phase.BITE)) casting.setLineTension(modoAtual === "fundo" ? 0.55 : 0.4 + Math.min(0.4, bobber.velIsca * 0.3));
+    casting.setLineTarget(bobber.pos, bobber.mode === "flying" ? "voando" : esticada ? "esticada" : "boia"); // [briga] modo da linha
+  }
   else if (fight.active) casting.setLineTarget(fight.lineEnd, fight.phase === "landing" ? "embarque" : "briga"); // [briga] linha vai até a boca do peixe
   else casting.setLineTarget(null);
 

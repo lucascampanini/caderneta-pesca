@@ -24,12 +24,17 @@ export function rollSpecies(ctx) {
       w *= 0.2;
     }
     if (!sp.time.includes(segment)) w *= 0.32;
-    w *= baitMult(sp.id, ctx.bait); // a isca certa para cada peixe, pela Caderneta
+    w *= baitMult(sp.id, ctx.bait, ctx.eq); // a isca certa, na altura certa da água, pela Caderneta
     if (ctx.tutorial && sp.rarity !== "common") w *= 0.05; // primeiro peixe do tutorial: um comum
     if (cloudy && RARITIES[sp.rarity].order >= 2) w *= CONFIG.weather.cloudyRareBoost;
     return w;
   };
 
+  // isca artificial que nenhum peixe dali quer: não tem ataque (em vez de sortear um peixe qualquer)
+  if (ctx.eq && ctx.eq.bait.art) {
+    const total = ctx.location.fishTable.reduce((s, e) => s + weightFor(e, false), 0);
+    if (total < 0.6) return null;
+  }
   let entry = weightedPick(ctx.location.fishTable, (e) => weightFor(e, false));
   if (!entry) entry = weightedPick(ctx.location.fishTable, (e) => weightFor(e, true));
   if (!entry) entry = ctx.location.fishTable[0];
@@ -39,6 +44,7 @@ export function rollSpecies(ctx) {
 /** Rolls a full fish instance (size, weight, value, xp, fight profile). */
 export function rollFish(ctx) {
   const sp = rollSpecies(ctx);
+  if (!sp) return null;
   const [minS, maxS] = sp.sizeCm;
   // skew toward small: big specimens are rare
   const roll = ctx.tutorial ? Math.random() * 0.3 : Math.pow(Math.random(), 1.8);
@@ -78,7 +84,7 @@ export function rollBiteWait(ctx) {
   // isca que os peixes daqui gostam faz a mordida vir mais rápido
   const tab = ctx.location.fishTable.filter(([id]) => FISH_BY_ID[id]?.zones.includes(ctx.zone));
   const base = tab.reduce((s, [, w]) => s + w, 0) || 1;
-  const atrai = tab.reduce((s, [id, w]) => s + w * baitMult(id, ctx.bait), 0) / base;
+  const atrai = tab.reduce((s, [id, w]) => s + w * baitMult(id, ctx.bait, ctx.eq), 0) / base;
   wait /= clamp(atrai, 0.3, 1.8);
   if (ctx.tutorial) wait = Math.min(wait, 6);
   wait /= ctx.location.biteMult;

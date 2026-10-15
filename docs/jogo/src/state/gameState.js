@@ -62,8 +62,8 @@ export function createDefaultState() {
       level: 1,
     },
     gear: {
-      owned: { rods: [0], reels: [0], lines: [0], terminals: [0], baits: [0] },
-      equipped: { rods: 0, reels: 0, lines: 0, terminals: 0, baits: 0 },
+      owned: { rods: [0], reels: [0], lines: [0], terminals: [0], rigs: [0], baits: [0] },
+      equipped: { rods: 0, reels: 0, lines: 0, terminals: 0, rigs: 0, baits: 0 },
     },
     world: {
       current: "lake",
