@@ -556,7 +556,7 @@ export class ModoLivre {
     const info = `<p><b>Você está em</b> ${ll.lat.toFixed(5)}, ${ll.lon.toFixed(5)} · km ${(B.s / 1000).toFixed(1)} do trecho.</p>
       <p>Pindó: km ${(this.pindo.s / 1000).toFixed(1)} (${((this.pindo.s - B.s) / 1000).toFixed(1)} km ${this.pindo.s >= B.s ? "rio abaixo" : "rio acima"}).</p>
       <p><b>Satélite:</b> ${m.satelite.cenas.map((c) => c.data.split("-").reverse().join("/")).join(", ")} (Sentinel-2).<br>
-      <b>Nível:</b> ${nv ? `${Math.round(nv.cm)} cm em ${nv.data.split("-").reverse().join("/")} (ANA), ${nomeFase(this.fase)}` : "sem leitura"}.<br>
+      <b>Nível:</b> ${nv ? `${Math.round(nv.cm)} cm em ${nv.data.split("-").reverse().join("/")} (ANA, ${String(nv.nome || "Aquidauana").split(" (")[0]}), ${nomeFase(this.fase)}` : "sem leitura"}.<br>
       <b>Água:</b> ${this.agua}.</p>`;
     this.mapa.abrir(this.dados, this.hud.base, B, m.pontos, info);
   }

@@ -50,6 +50,10 @@ MARGEM_M = 1400  # corredor modelado de cada lado da linha do rio
 EPSG_UTM = 32721  # UTM 21S (a grade nativa do Sentinel-2 neste tile, 21KXT)
 CELULA = 10.0
 ESTACAO_ANA = "66945000"
+# Estações de nível no próprio Rio Aquidauana, em ordem de preferência. A de Aquidauana parou de medir
+# nível em 2026-09-24; Palmeiras (Dois Irmãos do Buriti, ~40 km rio acima) segue transmitindo a cada 15 min.
+ESTACOES_ANA = [("66945000", "Aquidauana"), ("66941000", "Palmeiras")]
+NIVEL_MAX_DIAS = 7  # leitura mais velha que isso: tenta a próxima estação
 DIAS_STAC = 75
 MAX_CENAS = 8
 
@@ -387,7 +391,7 @@ def relevo(grade, to_ll, z=13):
 
 
 # ---------------------------------------------------------------- ANA
-def nivel_ana():
+def nivel_ana(estacao=ESTACAO_ANA, nome="Aquidauana"):
     """Série de nível (cm) da telemetria da ANA. A estação às vezes fica dias sem transmitir."""
     hoje = dt.date.today()
     url = "https://telemetriaws1.ana.gov.br/ServiceANA.asmx/DadosHidrometeorologicos"
@@ -397,7 +401,7 @@ def nivel_ana():
         fim = hoje - dt.timedelta(days=30 * k)
         ini = fim - dt.timedelta(days=29)
         try:
-            r = S.get(url, params={"codEstacao": ESTACAO_ANA, "dataInicio": f"{ini:%d/%m/%Y}", "dataFim": f"{fim:%d/%m/%Y}"}, timeout=90)
+            r = S.get(url, params={"codEstacao": estacao, "dataInicio": f"{ini:%d/%m/%Y}", "dataFim": f"{fim:%d/%m/%Y}"}, timeout=90)
             root = ET.fromstring(r.content)
         except Exception as e:  # noqa: BLE001
             log("  ANA falhou", ini, e)
@@ -439,8 +443,8 @@ def nivel_ana():
     else:
         fase = "seco"
     return {
-        "estacao": ESTACAO_ANA,
-        "nome": "Aquidauana (ANA/SGB)",
+        "estacao": estacao,
+        "nome": nome,
         "cm": round(float(ultimo), 1),
         "data": data_ult.isoformat(),
         "variacao_7d_cm": round(delta, 1),
@@ -696,10 +700,22 @@ def main():
 
     # 7) nível e clima
     nivel = None
-    try:
-        nivel = nivel_ana()
-    except Exception as e:  # noqa: BLE001
-        log("  ANA falhou:", e)
+    for cod, nome in ESTACOES_ANA:
+        try:
+            n = nivel_ana(cod, nome)
+        except Exception as e:  # noqa: BLE001
+            log(f"  ANA {cod} falhou:", e)
+            continue
+        if not n:
+            log(f"  ANA {cod} ({nome}): sem leitura de nível")
+            continue
+        idade = (dt.date.today() - dt.date.fromisoformat(n["data"])).days
+        log(f"  ANA {cod} ({nome}): {n['cm']} cm em {n['data']} ({idade} dias)")
+        if nivel is None or n["data"] > nivel["data"]:
+            nivel = n
+        if idade <= NIVEL_MAX_DIAS:
+            nivel = n
+            break
     log("nível ANA:", {k: v for k, v in (nivel or {}).items() if k != "serie_30d"})
     meio = cen[len(cen) // 2]
     mlon, mlat = to_ll.transform(*meio)
@@ -843,7 +859,7 @@ def main():
             "© OpenStreetMap contributors (ODbL)",
             "Contém dados modificados do Copernicus Sentinel %s" % usadas[0]["data"][:4],
             "Relevo: Terrain Tiles (Mapzen/AWS Open Data, SRTM)",
-            "Nível: ANA — Agência Nacional de Águas e Saneamento Básico (estação %s)" % ESTACAO_ANA,
+            "Nível: ANA — Agência Nacional de Águas e Saneamento Básico (estação %s)" % ((nivel or {}).get("estacao") or ESTACAO_ANA),
             "Clima: Open-Meteo.com (CC BY 4.0)",
         ],
     }
